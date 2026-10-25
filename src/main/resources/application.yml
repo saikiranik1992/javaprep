@@ -1,0 +1,24 @@
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+
+spring:
+  application:
+    name: zero-to-hero-interview-portal
+  thymeleaf:
+    cache: ${SPRING_THYMELEAF_CACHE:false}
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
