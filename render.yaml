@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: architect-zero-to-hero-thymeleaf-portal
+    runtime: docker
+    plan: standard
+    region: oregon
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_THYMELEAF_CACHE
+        value: true
+      - key: IDE_EXECUTION_TIMEOUT_SECONDS
+        value: 8
