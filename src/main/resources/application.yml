@@ -6,7 +6,7 @@ server:
 
 spring:
   application:
-    name: zero-to-hero-interview-portal
+    name: zero-to-hero-interview-guide
   thymeleaf:
     cache: ${SPRING_THYMELEAF_CACHE:false}
     mode: HTML
