@@ -2,7 +2,7 @@ services:
   - type: web
     name: architect-zero-to-hero-thymeleaf-portal
     runtime: docker
-    plan: standard
+    plan: free
     region: oregon
     healthCheckPath: /actuator/health
     envVars:
@@ -13,4 +13,6 @@ services:
       - key: SPRING_THYMELEAF_CACHE
         value: true
       - key: IDE_EXECUTION_TIMEOUT_SECONDS
-        value: 8
+        value: 20
+      - key: JAVA_TOOL_OPTIONS
+        value: "-XX:+UseSerialGC -XX:MaxRAMPercentage=70.0 -XX:TieredStopAtLevel=1"
