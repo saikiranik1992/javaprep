@@ -22,7 +22,9 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +43,76 @@ public class IdeExecutionService {
     private static final Pattern PUBLIC_CLASS_PATTERN = Pattern.compile("\\bpublic\\s+class\\s+([A-Za-z_][A-Za-z0-9_]*)");
     private static final Pattern ANY_CLASS_PATTERN = Pattern.compile("\\bclass\\s+([A-Za-z_][A-Za-z0-9_]*)");
 
+    private static final Map<String, String> AUTO_IMPORT_CLASS_MAP = new LinkedHashMap<>();
+
+    static {
+        // java.util
+        for (String cls : List.of(
+                "List", "ArrayList", "LinkedList", "Map", "HashMap", "LinkedHashMap", "TreeMap",
+                "Set", "HashSet", "LinkedHashSet", "TreeSet", "Queue", "Deque", "ArrayDeque",
+                "PriorityQueue", "Collections", "Arrays", "Optional", "OptionalInt", "OptionalLong",
+                "OptionalDouble", "Objects", "Comparator", "Iterator", "UUID", "Random", "Scanner",
+                "BitSet", "StringJoiner", "Base64", "Locale")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util." + cls);
+        }
+        // java.util.stream
+        for (String cls : List.of("Stream", "IntStream", "LongStream", "DoubleStream", "Collectors", "Collector")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util.stream." + cls);
+        }
+        // java.util.concurrent
+        for (String cls : List.of(
+                "CompletableFuture", "Future", "Callable", "Executors", "ExecutorService",
+                "ScheduledExecutorService", "ThreadPoolExecutor", "ForkJoinPool", "TimeUnit",
+                "CountDownLatch", "CyclicBarrier", "Semaphore", "Phaser", "Exchanger",
+                "ConcurrentHashMap", "CopyOnWriteArrayList", "BlockingQueue", "ArrayBlockingQueue",
+                "LinkedBlockingQueue", "PriorityBlockingQueue", "ConcurrentLinkedQueue", "ThreadLocalRandom")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util.concurrent." + cls);
+        }
+        // java.util.concurrent.atomic
+        for (String cls : List.of(
+                "AtomicInteger", "AtomicLong", "AtomicBoolean", "AtomicReference",
+                "AtomicStampedReference", "LongAdder", "DoubleAdder")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util.concurrent.atomic." + cls);
+        }
+        // java.util.concurrent.locks
+        for (String cls : List.of(
+                "Lock", "ReentrantLock", "ReadWriteLock", "ReentrantReadWriteLock",
+                "StampedLock", "Condition", "LockSupport")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util.concurrent.locks." + cls);
+        }
+        // java.util.function
+        for (String cls : List.of(
+                "Function", "BiFunction", "UnaryOperator", "BinaryOperator",
+                "Predicate", "BiPredicate", "Consumer", "BiConsumer", "Supplier")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.util.function." + cls);
+        }
+        // java.time & java.time.format
+        for (String cls : List.of(
+                "LocalDate", "LocalTime", "LocalDateTime", "ZonedDateTime",
+                "OffsetDateTime", "Instant", "Duration", "Period", "ZoneId", "ZoneOffset")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.time." + cls);
+        }
+        AUTO_IMPORT_CLASS_MAP.put("DateTimeFormatter", "java.time.format.DateTimeFormatter");
+        // java.math
+        for (String cls : List.of("BigDecimal", "BigInteger", "RoundingMode", "MathContext")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.math." + cls);
+        }
+        // java.io & java.nio
+        for (String cls : List.of("File", "IOException", "BufferedReader", "InputStreamReader", "ByteArrayOutputStream")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.io." + cls);
+        }
+        for (String cls : List.of("Files", "Path", "Paths")) {
+            AUTO_IMPORT_CLASS_MAP.put(cls, "java.nio.file." + cls);
+        }
+        AUTO_IMPORT_CLASS_MAP.put("StandardCharsets", "java.nio.charset.StandardCharsets");
+        AUTO_IMPORT_CLASS_MAP.put("ByteBuffer", "java.nio.ByteBuffer");
+        // java.util.regex & java.security
+        AUTO_IMPORT_CLASS_MAP.put("Pattern", "java.util.regex.Pattern");
+        AUTO_IMPORT_CLASS_MAP.put("Matcher", "java.util.regex.Matcher");
+        AUTO_IMPORT_CLASS_MAP.put("MessageDigest", "java.security.MessageDigest");
+        AUTO_IMPORT_CLASS_MAP.put("SecureRandom", "java.security.SecureRandom");
+    }
+
     private final Object executionLock = new Object();
 
     public IdeExecutionResponse executeCode(IdeExecutionRequest request) {
@@ -56,7 +128,9 @@ public class IdeExecutionService {
         String runtimeLabel = "OpenJDK " + hostJavaVersion + " (In-Memory Fast Compiler · Java " + requestedJava + ") · Spring Boot " + requestedBoot;
 
         try {
-            String sourceCode = request.sourceCode() != null ? request.sourceCode() : "";
+            String rawSourceCode = request.sourceCode() != null ? request.sourceCode() : "";
+            AutoImportResult importResult = injectMissingStandardImports(rawSourceCode);
+            String sourceCode = importResult.enrichedSource();
             String entryClassName = detectEntryClassName(sourceCode);
 
             tempDir = Files.createTempDirectory("architect-ide-");
@@ -66,7 +140,7 @@ public class IdeExecutionService {
             // Fast Path: In-process compilation via javax.tools.JavaCompiler (0 subprocess overhead, ~30ms on Render Free Tier)
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             if (compiler != null) {
-                return compileAndRunInProcess(compiler, tempDir, sourceFile, entryClassName, runtimeLabel, start);
+                return compileAndRunInProcess(compiler, tempDir, sourceFile, entryClassName, runtimeLabel, start, importResult.prependedLineCount());
             }
 
             // Fallback Path: Subprocess execution with lightweight flags (-XX:TieredStopAtLevel=1 -Xms16m -Xmx64m) and 30s timeout
@@ -82,13 +156,42 @@ public class IdeExecutionService {
         }
     }
 
+    private record AutoImportResult(String enrichedSource, int prependedLineCount) {}
+
+    private AutoImportResult injectMissingStandardImports(String sourceCode) {
+        List<String> missingImports = new ArrayList<>();
+        for (Map.Entry<String, String> entry : AUTO_IMPORT_CLASS_MAP.entrySet()) {
+            String simpleName = entry.getKey();
+            String fqcn = entry.getValue();
+            String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+
+            // Check if simpleName is used as a word token in sourceCode
+            Pattern usagePattern = Pattern.compile("\\b" + Pattern.quote(simpleName) + "\\b");
+            if (!usagePattern.matcher(sourceCode).find()) {
+                continue;
+            }
+            // Check if already imported explicitly or via package wildcard
+            boolean alreadyImported = sourceCode.contains("import " + fqcn + ";")
+                    || sourceCode.contains("import " + pkg + ".*;");
+            if (!alreadyImported) {
+                missingImports.add("import " + fqcn + ";");
+            }
+        }
+        if (missingImports.isEmpty()) {
+            return new AutoImportResult(sourceCode, 0);
+        }
+        String header = String.join("\n", missingImports) + "\n";
+        return new AutoImportResult(header + sourceCode, missingImports.size());
+    }
+
     private IdeExecutionResponse compileAndRunInProcess(
             JavaCompiler compiler,
             Path tempDir,
             Path sourceFile,
             String entryClassName,
             String runtimeLabel,
-            long start
+            long start,
+            int prependedLineCount
     ) throws Exception {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.ENGLISH, StandardCharsets.UTF_8)) {
@@ -99,8 +202,9 @@ public class IdeExecutionService {
             if (compiledOk == null || !compiledOk) {
                 StringBuilder err = new StringBuilder();
                 for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
+                    long userLine = Math.max(1, d.getLineNumber() - prependedLineCount);
                     err.append("Line ")
-                       .append(d.getLineNumber())
+                       .append(userLine)
                        .append(": ")
                        .append(d.getMessage(Locale.ENGLISH))
                        .append("\n");

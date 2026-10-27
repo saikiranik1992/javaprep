@@ -31,6 +31,25 @@ public class InterviewPortalController {
             @RequestParam(name = "chapter", defaultValue = "ALL") String selectedChapter,
             @RequestParam(name = "q", defaultValue = "") String searchQuery,
             @RequestParam(name = "questionsOnly", defaultValue = "false") boolean questionsOnly,
+            @RequestParam(name = "mode", defaultValue = "notebooks") String initialMode,
+            Model model
+    ) {
+        populatePortalModel(activeTabId, selectedChapter, searchQuery, questionsOnly, initialMode, model);
+        return "index";
+    }
+
+    @GetMapping("/ide")
+    public String dedicatedIdePage(Model model) {
+        populatePortalModel("core-java", "ALL", "", false, "ide", model);
+        return "index";
+    }
+
+    private void populatePortalModel(
+            String activeTabId,
+            String selectedChapter,
+            String searchQuery,
+            boolean questionsOnly,
+            String initialMode,
             Model model
     ) {
         List<PdfNotebookTab> allTabs = catalogService.getAllTabs();
@@ -49,13 +68,12 @@ public class InterviewPortalController {
         model.addAttribute("selectedChapter", selectedChapter);
         model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("questionsOnly", questionsOnly);
+        model.addAttribute("initialMode", initialMode);
         model.addAttribute("filteredPages", filteredPages);
         model.addAttribute("totalPagesAllPdfs", totalPagesAllPdfs);
         model.addAttribute("totalQuestionsAllPdfs", totalQuestionsAllPdfs);
         model.addAttribute("javaVersions", List.of("25 LTS (Latest)", "24", "21 LTS", "17 LTS", "11 LTS", "8 LTS"));
         model.addAttribute("springBootVersions", List.of("3.5.0 (Latest Stable)", "4.0.0-M1 (Next Gen)", "3.4.5", "3.3.10"));
-
-        return "index";
     }
 
     @GetMapping("/tab/{tabId}/fragment")
