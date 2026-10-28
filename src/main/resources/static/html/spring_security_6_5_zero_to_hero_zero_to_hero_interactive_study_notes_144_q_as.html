@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Security 6.5 Zero to Hero — Zero to Hero Interactive Study Notes (144 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #0d9488;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Spring Security 6.5 Zero to Hero</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              21 Chapters · 144 Q&amp;As · 10 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Premium Field Notebook (Auth, JWT, OAuth2 &amp; Method Security) · 144 Q&amp;As · Java 17+ · Spring Security 6.5 · 10 Labs
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (21)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (144)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (10)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 144</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Security &amp; Identity</span>
+              <span>•</span>
+              <span>185 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Spring Security 6.5 Zero to Hero — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Premium Field Notebook (Auth, JWT, OAuth2 &amp; Method Security) (144 Q&amp;As · Java 17+ · Spring Security 6.5 · 10 Labs). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 144 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">144</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (21)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 21 Chapters (144 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Spring Security 6.5 Zero to Hero</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 144</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Spring Security 6.5 Zero to Hero — Hands-On Labs &amp; Reference Guides (10)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Spring Security 6.5 Zero to Hero.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Spring Security 6.5 Zero to Hero — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"spring-security","title":"Spring Security 6.5 Zero to Hero","subtitle":"Premium Field Notebook (Auth, JWT, OAuth2 & Method Security)","category":"Security & Identity","badge":"144 Q&As · Java 17+ · Spring Security 6.5 · 10 Labs","color":"#0d9488","pages":185,"chapters":["Security Foundations","Servlet Filter Architecture","Authentication Model And Context","Password Authentication And User Storage","Sessions, Login, Logout And Remember-Me","Http Authorization And Chain Boundaries","Method And Object-Level Security","Csrf And Browser Credential Behavior","Cors, Headers And Transport Protection","Jwt Structure And Cryptographic Trust","Jwt Decoding, Validation And Authority Mapping","Oauth 2.0 Flows And Client Responsibilities","Oidc Login And Federated Identity","Resource-Server Tokens, Refresh And Revocation","Authorization Servers And Signing-Key Lifecycle","Multi-Tenant And Service-To-Service Boundaries","Reactive And Asynchronous Security","Security Testing And Negative Cases","Operational Security And Abuse Controls","Modern Api Choices And Legacy Migration","Senior Troubleshooting And Architecture Scenarios"],"questions":[["Q001",0,"What problem does Spring Security solve?","It supplies authentication, authorization, and common security protections integrated with Spring applications.","Request -> security processing -> permitted handler\nDenied request -> defined authentication or access response","The framework supplies mechanisms, but the application must define trusted identities, permissions, credential handling and data ownership. A dependency alone cannot decide who owns an order.","Security configuration is not a complete threat model.","Which business rule cannot be inferred from a valid login?","A successful login does not prove that the user owns a particular order, invoice, or tenant record. Check ownership for each requested object."],["Q002",0,"How do authentication and authorization differ?","Authentication establishes identity; authorization decides whether that identity may perform a particular action.","User Sai signs in successfully.\nSai requests another tenant's invoice.\nIdentity valid -> ownership check can still deny access.","A successful login is not universal permission. Protect both operation-level capability and the target object's ownership. Keep denied outcomes distinct from malformed input or unavailable data.","A valid token does not authorize every object id.","How would you test cross-tenant denial?","Create tenants A and B, sign in as A, request B's record, expect denial and confirm the database record was not read or changed."],["Q003",0,"How do principal, credentials and authorities differ?","Principal identifies the caller, credentials are evidence used to authenticate, and authorities describe granted capabilities.","Authentication auth = SecurityContextHolder.getContext().getAuthentication();\nObject principal = auth.getPrincipal();\nCollection<? extends GrantedAuthority> rights = auth.getAuthorities();","The principal can be UserDetails, Jwt, or another supported identity object. Credentials should be handled minimally and may be erased after authentication. Never assume a password remains available in an authenticated token.","Casting every principal to your entity is unsafe.","What principal type does JWT authentication normally expose?","With Spring's usual JWT resource-server setup, the principal is a Jwt, wrapped by JwtAuthenticationToken. Custom converters may change that shape."],["Q004",0,"How do roles and authorities differ?","Authorities are permission strings; role helpers conventionally add a ROLE_ prefix when checking a role.","hasAuthority(\"orders:approve\") -> exact authority\nhasRole(\"ADMIN\") -> normally checks ROLE_ADMIN\n// Role prefix can be configured in supported integrations.","Use a consistent mapping policy. A token claim named roles is not automatically mapped into Spring's expected strings. Grouping fine-grained permissions into roles is an application decision.","hasRole(\"ROLE_ADMIN\") commonly applies the wrong expectation.","How would you map identity-provider groups?","Map only trusted, allowlisted provider groups into approved GrantedAuthority values; do not accept an arbitrary roles claim from an untrusted issuer."],["Q005",0,"What do 401, 403 and login redirects mean?","401 requests or reports authentication failure in an API contract; 403 denotes refused access; browser login entry points can redirect instead.","Bearer API without valid credentials -> commonly 401\nAuthenticated caller lacking permission -> commonly 403\nForm-login browser request -> commonly redirect to login","The selected entry point, access-denied handler, and failure source determine the actual response. A CSRF failure can also produce 403. Do not diagnose solely from status without finding the denying component.","Anonymous access denial does not always produce the same response as an authenticated denial.","Which handler controls API unauthenticated responses?","AuthenticationEntryPoint controls unauthenticated API responses, normally 401 with an appropriate WWW-Authenticate challenge."],["Q006",0,"Why does adding the security starter change a Boot app?","Boot activates supported security defaults when its conditions match; explicit beans let the application own configuration.","spring-boot-starter-security -> relevant security classes\nNo custom chain -> default Boot security behavior\nCustom SecurityFilterChain -> application controls its rules","For the baseline, default web authentication and generated credentials are development starting points. Separate user-details defaults can have different back-off conditions from the web chain.","A custom chain alone does not configure a production identity store.","Which bean replaces the default user service?","Define your own UserDetailsService (or other authentication setup) to replace Boot's generated in-memory user defaults."],["Q007",1,"How do DelegatingFilterProxy and FilterChainProxy differ?","DelegatingFilterProxy bridges the servlet container to a Spring bean; FilterChainProxy selects and executes a Spring Security filter chain.","Servlet container\n-> DelegatingFilterProxy\n-> FilterChainProxy\n-> selected SecurityFilterChain -> DispatcherServlet","The bridge allows Spring-managed security infrastructure to participate in container requests. FilterChainProxy owns chain selection and other security integration. These names refer to different responsibilities, not alternative configurations.","A controller may never run when a security filter rejects the request.","Where would you debug which chain matches?","Enable narrow Spring Security debug/TRACE diagnostics and inspect FilterChainProxy's selected SecurityFilterChain; test route matching."],["Q008",1,"What is a SecurityFilterChain bean?","It pairs request-matching behavior with an ordered set of security filters for matching traffic.","@Bean\nSecurityFilterChain web(HttpSecurity http) throws Exception {\nhttp.authorizeHttpRequests(a -> a.anyRequest().authenticated())\n.formLogin(Customizer.withDefaults());\nreturn http.build();\n}","This browser-oriented sketch retains default CSRF behavior and assumes a configured user source. The DSL assembles filters; it is not a list of controller interceptors. Define the credential mechanism and authorization together.","Configuration snippets from different app types cannot be merged blindly.","What changes for a bearer-only API?","Use a dedicated matching API chain with oauth2ResourceServer JWT support, stateless context policy, narrow permissions, and reviewed CSRF/credential transport."],["Q009",1,"How are multiple security chains selected?","Only the first matching chain is selected, using chain order and its securityMatcher; a fallback prevents uncovered requests.","@Order(1) API chain: securityMatcher(\"/api/**\")\n@Order(2) Web chain: any remaining request\n// Request /api/orders -> API chain only, not both chains.","Rules in a later chain do not repair a permissive earlier match. Keep narrow chains first and a deliberate catch-all last. Test endpoints outside the expected prefixes.","A request matching no chain can bypass security-chain protections.","How would you detect a missing fallback?","Send a request outside every named chain and assert it is denied by a final catch-all chain; include unknown paths and verbs."],["Q010",1,"How do securityMatcher and requestMatchers differ?","securityMatcher chooses whether a chain applies; authorization requestMatchers choose rules inside the selected chain.","http.securityMatcher(\"/api/**\")\n.authorizeHttpRequests(a -> a\n.requestMatchers(\"/api/public/**\").permitAll()\n.anyRequest().authenticated());","/api/public belongs to this chain but receives a public authorization rule. /web/home does not belong to this chain at all and needs another matching chain. The two matcher levels have different scope.","anyRequest inside one chain does not protect unmatched chains globally.","Where should a catch-all deny rule live?","Put a last, lowest-priority catch-all chain with anyRequest().denyAll() so unmatched routes are not exposed."],["Q011",1,"Why does security filter order matter?","A filter can act only on state prepared upstream; credential validation normally precedes authorization using that identity.","Load context -> exploit protection -> authentication\n-> exception translation around downstream authorization\n-> authorization -> application","This is a conceptual sequence, not an exhaustive fixed filter list. Actual filters vary by enabled capabilities and version. Place custom filters relative to a known relevant framework filter.","Hard-coded numeric positions and copied full lists are brittle.","What information must a custom authorization filter already have?","It must receive a validated Authentication (identity and authorities) and trusted resource context before deciding permission."],["Q012",1,"What does Exception TranslationFilter do?","It translates relevant downstream authentication and access-denied failures into the configured security response path.","Authentication required -> AuthenticationEntryPoint\nAuthenticated access denied -> AccessDeniedHandler\n// Authentication filters also have their own failure handling.","It is a bridge from exceptions to HTTP security behavior, not the component that validates a password. A failure raised before it in the chain is not automatically caught by it.","@ControllerAdvice does not automatically handle servlet security failures.","How should a custom authentication filter report failure?","Handle AuthenticationException through the filter's configured failure handler or AuthenticationEntryPoint and stop further processing."],["Q013",2,"What does Authentication represent?","It can represent an authentication request or an authenticated result, carrying principal, credentials, authorities and status.","Authentication request = UsernamePasswordAuthenticationToken\n.unauthenticated(\"sai\", \"secret\");\nAuthentication result = authenticationManager.authenticate(request);","The manager delegates validation and returns the approved identity if successful. User-controlled data must not be marked trusted simply to bypass validation. A result's isAuthenticated state alone is not an object-level permission policy.","Application code should not fabricate trusted authorities from input.","What happens on an unsupported token type?","If no provider supports the token, ProviderManager cannot authenticate it and throws an appropriate authentication failure."],["Q014",2,"How do AuthenticationManager, ProviderManager and AuthenticationProvider differ?","AuthenticationManager is the entry contract; ProviderManager delegates to suitable providers; each provider validates supported authentication types.","Authentication request -> ProviderManager\n-> provider.supports(request class)\n-> provider.authenticate(request)\n-> authenticated result or failure","A provider can return null when it does not handle that request. Several providers can coexist. A custom provider should validate its mechanism and return authorities from a trusted source.","supports is not the same as successful credential verification.","How would you combine password and another authentication mechanism?","Register supported providers for each mechanism; each authenticates only tokens it understands and returns a trusted result."],["Q015",2,"What is SecurityContextHolder?","It exposes the current SecurityContext using a configured strategy; the servlet default associates it with the executing thread.","Authentication current = SecurityContextHolder.getContext().getAuthentication();\n// Framework processing owns loading and clearing during requests.","The context contains the current authentication. Manually setting it changes the current execution's identity but does not automatically persist a login for later requests. Keep lifecycle and trusted construction explicit.","ThreadLocal context does not automatically follow executor tasks.","Which repository persists servlet context?","A session-oriented implementation may use HttpSessionSecurityContextRepository; choose the repository deliberately."],["Q016",2,"What does SecurityContextRepository do?","It loads and saves security context according to the application's persistence policy, such as session or request-only storage.","Context repository -> load existing context\nAuthentication succeeds -> save if persistent login is intended\nRequest completes -> thread-associated state cleared","In modern explicit-save configurations, custom login code must save the context deliberately. Built-in mechanisms coordinate their supported persistence behavior. Do not rely on an old automatic-save assumption across versions.","Setting the holder is not sufficient proof that session login survives.","How does a stateless repository choice change the design?","A request-only or null repository does not preserve a login between requests; authenticate every request or supply a different persistence policy."],["Q017",2,"Why does anonymous authentication not mean a logged-in user?","It supplies a placeholder identity for anonymous processing, not verified end-user credentials.","Authentication a = context.getAuthentication();\n// An AnonymousAuthenticationToken can exist when no login occurred.\n// Use the appropriate trust resolver or authorization API.","Checking only a non-null Authentication or its raw authenticated flag can misclassify anonymous requests. Spring authorization helpers understand the relevant trust distinction. Use the configured access policy instead of ad hoc identity heuristics.","'Authentication object exists' is not a login guarantee.","How do authenticated and fullyAuthenticated differ with remember-me?","authenticated() normally includes remember-me authentication, while fullyAuthenticated() requires stronger, non-remember-me authentication."],["Q018",2,"How should security context propagate to async work?","Use supported propagation wrappers or explicit trusted context with bounded ownership, then clean up worker state.","Executor delegated = new DelegatingSecurityContextExecutor(executor);\ndelegated.execute(() -> protectedService.run());\n// Choose captured identity and task lifetime deliberately.","The wrapper manages context around a task; it is not a durable authorization grant forever. For background work, recording an approved business command can be safer than retaining a user's live credentials.","InheritableThreadLocal is not a general solution for reused pools.","How would you prevent stale context between tasks?","Use DelegatingSecurityContextExecutor wrappers or scoped setup; always restore/clear context in finally and test executor reuse."],["Q019",3,"What is UserDetailsService responsible for?","It loads user identity data, password representation, authorities and account flags; it does not itself implement the entire password-authentication flow.","UserDetails loadUserByUsername(String username) {\nAccount a = store.findNormalizedUsername(username).orElseThrow();\nreturn User.withUsername(a.username()).password(a.passwordHash())\n.authorities(a.authorities()).build();\n}","The sketch must translate absence into the supported UsernameNotFoundException and preserve account-status rules. A password provider uses the loaded data with its encoder. Do not expose the stored hash in an API response.","A database entity is not automatically the correct public principal.","How would disabled accounts be represented?","Expose enabled=false in UserDetails or equivalent account policy; authentication must reject disabled accounts."],["Q020",3,"How does DaoAuthenticationProvider use PasswordEncoder?","It obtains user details and verifies supplied credentials against the stored adaptive-hash representation through the configured encoder.","PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();\nString stored = encoder.encode(\"example\");\nSystem.out.println(encoder.matches(\"example\", stored)); // true","Salts mean two encode calls can produce different stored strings for the same password. Verify with matches, not string equality after re-encoding. Use the supported provider configuration for the exact baseline.","Do not log the supplied password during authentication.","Why should cost be measured on production-class hardware?","A hashing cost that is safe on a laptop may overload production CPU; benchmark login latency and throughput on representative hardware."],["Q021",3,"What does DelegatingPasswordEncoder add?","It selects a password-hash implementation from an identifier prefix, supporting verification and algorithm evolution.","{bcrypt}$2a$... -> bcrypt verification\n{argon2}...     -> configured Argon2 verification\n// Exact encoder ids and implementation availability depend on setup.","The prefix describes the stored format rather than encrypting the password. Supported upgrade detection can trigger rehashing after successful authentication using a user- details password update service.","Missing or unknown ids need a deliberate migration policy.","How would you upgrade an older hash safely?","On successful login, verify the old hash, check upgradeEncoding, and atomically store a new adaptive hash without ever storing plaintext."],["Q022",3,"Why is plain hashing with SHA-256 insufficient for passwords?","Fast general-purpose hashes are cheap to guess at scale; use salted adaptive password hashing with an appropriate cost and policy.","Bad: SHA256(password) as a login database scheme\nBetter: supported adaptive PasswordEncoder + measured cost\nStore hash, never reversible raw-password recovery data.","Salt prevents identical-password equality from being visible through identical unsalted hashes. Cost slows offline guessing. Pick a reviewed algorithm and implementation; do not invent a custom cryptographic scheme.","Encoding, hashing and encryption solve different problems.","What additional control slows online guessing?","Apply per-account/IP/device rate limits, progressive delays, abuse detection and MFA as appropriate."],["Q023",3,"How should authentication failures avoid user enumeration?","Use appropriately uniform public responses and timing policy while retaining safe internal diagnostics and abuse monitoring.","Unknown username -> generic public login failure\nWrong password   -> same public failure contract\nInternal event   -> safe category for monitoring, no password","Different wording, status, recovery flows or timing can disclose account existence. Balance usable recovery with abuse resistance. A uniform message alone does not eliminate every side channel.","Logging the entire login request can expose credentials.","How would reset-password responses follow the same policy?","Return the same public acknowledgement whether the account exists, and send recovery instructions only through its verified channel."],["Q024",3,"Which account-state checks matter beyond password validity?","Check enabled, locked, account expiry, credential expiry, and any application-specific authentication policy.","Valid password + disabled account -> refuse login\nValid password + required second factor -> incomplete assurance\nPermission change -> update authority and session/token policy","UserDetails flags cover common status conditions, while business assurance and factor policy may need additional design. Do not equate a correct password with unlimited access.","Account disablement may not immediately revoke an already-issued self- contained token.","Which component rechecks active sessions or tokens?","A session/token validation or central revocation/authorization layer must recheck status according to the required latency; issuing a token does not."],["Q025",4,"How does form login differ from HTTP Basic?","Form login commonly establishes a browser session; Basic sends username/ password credentials encoded in each applicable request.","Form: login submission -> authenticated session cookie\nBasic: Authorization: Basic <base64(username:password)>\n// Base64 is readable encoding, not encryption.","Require TLS for credential transport and choose client behavior deliberately. Browsers can automatically resend Basic credentials, which affects CSRF analysis. Neither mechanism is itself multi-factor authentication.","Do not call Basic secure merely because the value is encoded.","Why might an API use a bearer token instead?","Bearer tokens avoid resending the password to every API; validate issuer, signature, audience, expiry and scopes for each request."],["Q026",4,"What does SessionCreationPolicy.STATELESS guarantee?","Spring Security does not create or use an HttpSession to obtain its SecurityContext under that policy; unrelated application code can still create a session.","http.sessionManagement(s ->\ns.sessionCreationPolicy(SessionCreationPolicy.STATELESS));\n// Intended context strategy: authenticate bearer requests separately.","The setting controls security's session behavior, not a universal ban on every cookie or session in the application. Review request caching and other stateful mechanisms separately.","Stateless does not automatically mean CSRF-safe.","How would a servlet controller still create a session?","Code can still call request.getSession() or request.getSession(true); Security's stateless setting does not ban that servlet operation."],["Q027",4,"How does session fixation protection help?","It changes or replaces the session identifier/state at authentication according to supported policy, preventing reuse of a pre-login identifier.","Attacker knows pre-login session id\nVictim authenticates -> session id changes\nAttacker's old identifier should not grant the authenticated session.","Modern servlet integration can use changeSessionId. Exact strategy and session- attribute behavior depend on configuration. Validate the actual login flow when implementing custom authentication.","Rotating the id does not prevent every stolen-session attack.","What happens to concurrent tabs with the same browser session?","Tabs sharing the browser's session cookie generally follow the rotated session identifier; verify custom clients and in-flight requests."],["Q028",4,"How should logout behave for a session application?","Use the framework logout flow to clear security state and invalidate the relevant session, with CSRF protection for state-changing browser behavior.","<form method=\"post\" action=\"/logout\">\n<!-- Include framework CSRF token field. -->\n<button>Log out</button>\n</form>","The exact endpoint and success response can be configured. Cookie cleanup and remember-me cleanup should match your setup. A GET route that merely displays confirmation differs from the actual state-changing logout.","Local logout does not automatically log out an identity provider.","How does logout differ for self-contained bearer tokens?","Session logout invalidates the server session and clears authentication; JWT logout needs short lifetimes or a separate revocation mechanism."],["Q029",4,"What is remember-me authentication and what is its limitation?","It provides longer-lived browser reauthentication through a cookie-based policy; it is weaker than fresh full authentication for sensitive actions.","Remember-me cookie -> restored identity\nSensitive password change -> require fresh authentication/MFA\n// fullyAuthenticated can distinguish supported remember-me state.","Token storage, expiry, theft detection and revocation differ by implementation. Do not confuse remember-me with an OAuth refresh token. Keep sensitive-operation assurance explicit.","A remembered identity is not proof the password was just supplied.","How would password changes affect remember-me tokens?","Invalidate or rotate persistent remember-me tokens when passwords change; server-side token records are easier to revoke."],["Q030",4,"How can concurrent sessions be limited?","Configure the session-control mechanism and its registry for the selected login flow, then define whether new logins replace or reject old sessions.","http.sessionManagement(s -> s.maximumSessions(1));\n// Complete setup must match the application and session registry.","A cluster needs a distributed-session/registry strategy where required. Custom authentication must apply relevant session strategies. Browser session limits do not universally restrict OAuth token issuance.","Process-local session tracking does not automatically cover all replicas.","Which session should remain after a second login?","Choose a policy (reject new, expire old, or notify), test it explicitly, and explain what happens to the former session."],["Q031",5,"How are authorization request rules selected?","The first matching authorization rule in the selected chain is applied; order specific rules before broad ones.","http.authorizeHttpRequests(a -> a\n.requestMatchers(\"/admin/**\").hasRole(\"ADMIN\")\n.requestMatchers(\"/public/**\").permitAll()\n.anyRequest().authenticated());","A broad permitAll placed first can make narrower restrictions unreachable. This rule ordering is separate from security-chain ordering. Inspect both levels when a protected route unexpectedly succeeds.","anyRequest is normally the terminal fallback rule.","How would you test an unexpected route?","Test a new unmatched URL and an unexpected HTTP method; require a specific allow rule or a deny-all fallback."],["Q032",5,"How does permitAll differ from ignoring security processing?","permitAll allows authorization within the chain; ignoring bypasses the selected security protections for that request.","/public/** -> permitAll, security headers can still apply\nIgnored path -> security chain bypassed for that path","Prefer permitAll when public routes should retain exploit protection and headers. An ignored route cannot rely on that chain to populate or protect its context. Review static-resource policy deliberately.","'Public' need not mean 'outside all security filters'.","Why can a permitted POST still fail CSRF?","permitAll skips authorization denial, not CSRF validation for unsafe browser requests; a POST can still be rejected."],["Q033",5,"Why should authorization consider the HTTP method?","Read and write operations on the same path can require different permissions.",".requestMatchers(HttpMethod.GET, \"/orders/**\").hasAuthority(\"orders:read\")\n.requestMatchers(HttpMethod.POST, \"/orders/**\").hasAuthority(\"orders:create\")\n.anyRequest().denyAll()","Route shape alone does not distinguish a safe read from a modifying operation. Handle preflight and other dispatches in their correct mechanism. Backend ownership checks still apply.","Method-specific rules do not prevent unsafe business semantics inside GET.","What permission should a bulk export require?","Bulk export should require a dedicated, least-privilege permission plus row/tenant filtering and audit logging."],["Q034",5,"What is deny-by-default and why use it?","Unspecified operations are refused rather than accidentally opened as the application grows.","http.authorizeHttpRequests(a -> a\n.requestMatchers(\"/health/public\").permitAll()\n.requestMatchers(\"/api/orders/**\").hasAuthority(\"orders:read\")\n.anyRequest().denyAll());","New endpoints need an explicit policy instead of inheriting unrestricted access. Test framework endpoints, error dispatches and static paths that should work intentionally. Deny-by- default is useful only if rules express the real operation semantics.","An overly broad allowed prefix can still expose new sensitive routes.","How would a new endpoint fail a security regression test?","A new endpoint should fail closed under anyRequest().denyAll(), and a regression test should assert anonymous and underprivileged denial."],["Q035",5,"How do authenticated and fullyAuthenticated differ?","authenticated can include supported remembered authentication; fullyAuthenticated excludes anonymous and remember-me authentication states.","Public page -> permitAll\nAccount overview -> authenticated\nSensitive credential change -> fresh assurance policy","A helper expresses one trust distinction, not a complete MFA or recent-login policy. If recent authentication is required, check the actual assurance and time evidence from a trusted mechanism.","fullyAuthenticated is not universally equivalent to MFA.","Where would step-up authentication be recorded?","Record assurance level and authentication time in trusted session/token context, then enforce step-up on sensitive actions."],["Q036",5,"How should ERROR and ASYNC dispatches be considered?","Security matching can include dispatcher types, so test secondary dispatches and intentionally choose their access policy.",".requestMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()\n// Illustrative choice: review error/forward behavior before adopting.","An original authorized request can encounter another check during rendering or error handling. Avoid masking the original error with an unexpected denial, while ensuring forwards cannot reach sensitive operations unchecked.","Blanket dispatch exemptions require an actual boundary analysis.","How would a protected forwarded handler be tested?","Test FORWARD/ERROR/ASYNC dispatches to protected handlers, checking that authorization still prevents forbidden effects."],["Q037",6,"How is method security enabled?","Use @EnableMethodSecurity and supported annotations on eligible Spring- managed method boundaries.","@Configuration\n@EnableMethodSecurity\nclass MethodSecurityConfig {}\n@PreAuthorize(\"hasAuthority('orders:approve')\")\npublic void approve(long id) { /* domain work */ }","The call must cross the advice boundary. Enabling servlet request security does not automatically enable every method-security annotation. Check proxy eligibility and invocation paths.","Self-invocation can bypass ordinary proxy advice.","Which callers might bypass a controller's URL rule?","Service methods invoked by jobs, messages, or other controllers can bypass a particular controller URL rule; enforce reusable business authorization."],["Q038",6,"How do @PreAuthorize and @PostAuthorize differ?","PreAuthorize checks before invocation; PostAuthorize checks afterward and can inspect the returned object.","@PostAuthorize(\"returnObject.owner == authentication.name\")\npublic OrderView load(long id) { return store.loadView(id); }","Post-authorization can prevent returning a result but cannot undo arbitrary side effects already performed. Use prechecks or authoritative tenant-scoped operations for modifying methods. Query-level ownership can also avoid loading unrelated data.","PostAuthorize is unsuitable as the only guard on an irreversible write.","What happens to a null or Optional return shape?","A null/empty Optional result may affect the expression; define and test the actual return shape, especially for @PostAuthorize."],["Q039",6,"What do @PreFilter and @PostFilter do?","They filter supported input or output collections according to per-element expressions, rather than making every element safe automatically.","@PostFilter(\"filterObject.owner == authentication.name\")\npublic List<OrderView> list() { return store.findCandidateViews(); }","Filtering can remove unauthorized results, but loading all candidates may be expensive and counts/pagination can leak or mislead. Prefer appropriately scoped queries when possible. The returned type must be supported for the selected annotation.","Filtering an in-memory page can produce inconsistent totals.","How would row ownership be enforced in the query?","Apply tenant and ownership constraints in the database query itself, not only by filtering a large returned collection."],["Q040",6,"How can custom permission logic be used in expressions?","Delegate complex decisions to a trusted policy bean or supported permission evaluator rather than packing them into fragile strings.","@PreAuthorize(\"@orderPolicy.canRead(authentication, #id)\")\npublic OrderView read(long id) { return store.read(id); }","The policy checks the trusted identity and authoritative ownership. Preserve method parameter names or use a supported explicit naming approach. Keep policy decisions testable without granting privileges from request input.","Repeating a remote permission lookup can create latency and availability coupling.","What data should a policy cache include?","Include principal, tenant, effective permissions, resource/version, and policy-version/expiry in the cache key or invalidate on change."],["Q041",6,"How do @Secured and JSR-250 annotations compare with expressions?","They provide simpler role-oriented declarations; expression-based annotations support richer predicates and bean calls.","@EnableMethodSecurity(securedEnabled=true, jsr250Enabled=true)\n@Secured(\"ROLE_ADMIN\")\npublic void archive() { /* protected work */ }","The simpler annotations need their corresponding enablement. Boot 3's JSR-250 namespace is Jakarta where applicable. Choose one clear policy style rather than overlapping contradictory checks casually.","Enabling method security does not necessarily enable every optional annotation family.","When would a custom composed annotation help?","A composed annotation helps when many endpoints need the same stable permission policy; verify its meta-annotation behavior."],["Q042",6,"What is IDOR or broken object-level authorization?","It occurs when changing an object identifier lets a caller access another user's or tenant's resource without the required permission check.","GET /invoices/7 -> caller-owned invoice\nGET /invoices/8 -> another tenant's invoice\nQuery: WHERE id=:id AND tenant_id=:trustedTenant","A valid role is not sufficient if ownership is part of the contract. Derive tenant identity from trusted authentication, then enforce it in lookup and modification. Avoid distinguishing forbidden existence where policy forbids disclosure.","Random UUIDs are not an authorization policy.","How would a message consumer enforce the same rule?","A consumer must validate the trusted initiator/tenant and resource ownership before executing a message's business effect."],["Q043",7,"What is CSRF?","It is unwanted state-changing action induced through a victim's browser using credentials the browser supplies automatically.","Victim logged in with session cookie\nMalicious site triggers a modifying request\nBrowser may attach victim's credential -> server needs CSRF defense","The attacker need not read the response to cause the action. CSRF tokens establish a request-bound proof unavailable to an unrelated origin under the expected browser model. XSS can undermine that model.","CORS restrictions alone do not prevent every cross-site submission.","Why must GET avoid state-changing semantics?","GET must remain safe: browsers and intermediaries can prefetch or repeat it, so do not charge, delete or modify on GET."],["Q044",7,"How does a synchronizer CSRF token help?","The server checks a token associated with the legitimate session/request flow for unsafe methods, in addition to the automatically sent credential.","<form method=\"post\" action=\"/orders\">\n<input type=\"hidden\" name=\"_csrf\" value=\"SERVER_TOKEN\">\n</form>","Use the actual framework-provided parameter/header name and token, not the literal placeholder. Keep tokens out of logs and URLs. Missing or invalid tokens follow the CSRF failure path.","A static shared token provides no meaningful per-client binding.","How does a JavaScript client obtain the token safely?","Expose a token safely via approved token endpoint or cookie/header mechanism, then send it in a request header; guard against XSS."],["Q045",7,"When can a bearer-only API disable CSRF deliberately?","When its credential model does not rely on browser-automatically attached credentials, a dedicated bearer-header-only chain can use that policy.","API accepts only Authorization: Bearer <access-token>\nNo session-cookie, Basic, or token-cookie authentication in this chain\nThen assess .csrf(csrf -> csrf.disable()) for that boundary.","The decision follows credential transport, not the word REST or stateless. Reassess if browser cookies or additional authentication mechanisms are introduced. Keep another browser chain's CSRF protections intact.","JWT in an auto-sent cookie remains a different CSRF case.","What would a regression test assert after adding cookie login?","After adding cookie login, a regression test must send a modifying request without a CSRF token and assert denial/no business effect."],["Q046",7,"Does SameSite eliminate the need for CSRF protection?","It is useful defense in depth, but its mode, browser behavior and application flows must be considered; do not treat it as a universal substitute.","Session cookie: Secure; HttpOnly; SameSite=Lax\nCross-site workflow -> review redirects, form submissions and site boundaries\nUnsafe action -> framework CSRF policy remains deliberate","Same-site and same-origin are different concepts, and sibling subdomains can matter. Some applications need cross-site cookie behavior. Validate the entire flow rather than copying flags without testing.","SameSite=None requires a corresponding secure-cookie policy in modern browsers.","How would an embedded application affect cookie choice?","Embedded/third-party contexts may require SameSite=None; Secure and a stricter CSRF policy, with browser tests."],["Q047",7,"How does XSS differ from CSRF?","XSS executes attacker-controlled script in a trusted page context; CSRF abuses automatically supplied credentials across sites.","XSS -> attacker script can act as the trusted origin\nCSRF -> unrelated origin induces a credentialed request","Output encoding, safe templating, sanitization and CSP help address XSS, while CSRF tokens address a different request-authenticity boundary. HttpOnly protects cookie reading but not every action malicious script can perform.","A stolen-token prevention flag is not full XSS prevention.","What can XSS do even with HttpOnly cookies?","XSS can issue requests as the user, inspect page contents, or steal non-HttpOnly tokens even if it cannot read HttpOnly cookies."],["Q048",7,"What are important CSRF lifecycle cases to test?","Test first load, unsafe requests, invalid token, authentication transition, logout, and renewed token state for the selected client integration.","Login/logout -> token state may be cleared or renewed\nSPA -> obtain and send the correct current token\nMissing/invalid token -> denied unsafe request","Modern deferred-token and masking behavior affects how a client reads and sends tokens. Use the supported SPA configuration for the baseline instead of old cookie snippets. Test behavior, not merely cookie presence.","A stale token after login can cause persistent 403 responses.","Which endpoint safely refreshes the client token?","Use an authenticated safe endpoint with intended CSRF token repository/refresh behavior; check first load, login, logout and expiry."],["Q049",8,"What does CORS control?","It governs browser cross-origin access according to server response policy; it is not caller authentication.","Origin: https://app.example\nAllowed origin -> browser may accept permitted response access\ncurl or server-to-server client -> does not enforce browser CORS","Authenticate and authorize the actual request independently. A denied CORS response does not prove the server never executed a simple request. Distinguish preflight prevention from response-read restrictions.","An Origin header is not trusted account identity.","Why can Postman succeed when browser JavaScript fails?","Postman does not enforce browser cross-origin policy; browser JavaScript enforces CORS when reading cross-origin responses."],["Q050",8,"Why should CORS processing precede security authentication for preflight?","A preflight usually lacks the actual authentication credential, so it must receive the configured CORS decision before ordinary login requirements reject it.","OPTIONS /api/orders\nAccess-Control-Request-Method: GET\nAccess-Control-Request-Headers: authorization","Configure a CorsConfigurationSource or matching supported integration and enable CORS in the relevant chain. The following actual request still needs authentication and authorization.","Permitting preflight does not permit all business requests.","What headers must be returned for the allowed request?","The preflight response needs an allowed Origin, method, requested headers, and credentials permission only when configured."],["Q051",8,"How should allowed origins and credentials be configured?","Use a precise trusted-origin policy and deliberately enable credentials only when required by the browser architecture.","Allowed origin: https://app.example\nAllowed methods: GET, POST\nAllowed headers: Authorization, Content-Type, X-XSRF-TOKEN\nAllow credentials: choose from actual cookie/credential requirements","Wildcard origins do not combine with credentialed policy in the same way as explicit origins. Avoid broadly reflecting arbitrary origins. Keep development localhost settings separate from production trust.","A wildcard domain pattern can admit unexpected tenants or hosts.","How would you test a denied Origin?","Assert a disallowed Origin never receives permissive Access-Control-Allow-Origin/ credentials headers, even on OPTIONS."],["Q052",8,"What do common Spring Security response headers protect?","They provide selected browser protections, including content-type sniffing, framing and transport behavior according to configuration.","X-Content-Type-Options: nosniff\nX-Frame-Options: DENY (where configured)\nStrict-Transport-Security: HTTPS response policy","Header defaults vary by feature and release. HSTS is normally emitted for secure requests, making reverse-proxy scheme handling important. A header only works where the browser applies its semantics.","Security headers do not authenticate an API caller.","How would a TLS-terminating proxy affect HSTS?","Terminate HTTPS at a trusted proxy, correctly signal secure request scheme, and set HSTS only for reviewed HTTPS hosts."],["Q053",8,"What does Content Security Policy add?","CSP restricts permitted resource/script behavior according to a deliberately configured browser policy, helping reduce selected injection impact.","Content-Security-Policy: default-src 'self'; frame-ancestors 'none'\n// Tailor scripts, styles, nonce/hash rules and integrations.","Spring Security does not know the application's asset policy automatically. Test in report-only mode where useful, then enforce reviewed rules. Avoid unsafe directives that undermine the intended protection.","CSP is not a replacement for contextual output encoding.","How would third-party scripts change the policy?","Limit allowed script sources and nonces/hashes; every third-party script expands the trusted code surface."],["Q054",8,"How should trusted proxy headers be handled?","Accept forwarded scheme/host/client information only through a trusted proxy boundary with sanitization and correct application configuration.","Public HTTPS -> trusted ingress -> application HTTP\nIngress replaces untrusted forwarded headers\nApplication resolves secure scheme from trusted metadata","Forged forwarded host or scheme data can affect redirects, cookies, links and transport checks. Configure the selected Boot/server handling in conjunction with the network topology. Do not trust arbitrary internet-supplied forwarding headers.","Merely adding ForwardedHeaderFilter does not establish proxy trust.","How would you test an injected external redirect host?","Sanitize/validate trusted proxy headers; test Host/X-Forwarded-Host injection against absolute redirects and generated links."],["Q055",9,"What is a JWT and what are its parts?","A common signed JWT uses encoded header, payload and signature segments; the claims are readable unless a separate encryption format is used.","base64url(header).base64url(payload).signature\nHeader: algorithm and possible key id\nPayload: claims such as iss, sub, aud, exp","A signature verifies integrity and signer trust under the selected validation policy. Encoding does not hide claims. Not every JWT is signed in this exact compact form, so name the signed-token case.","Decoding a payload does not authenticate its contents.","Which claims should never contain secrets?","Avoid passwords, API keys, session IDs, personal information, or anything that must remain secret in signed-only token claims."],["Q056",9,"How do JWS and JWE differ?","JWS signs or authenticates content for integrity; JWE encrypts content for confidentiality.","JWS -> recipient can read claims, verifies signature/MAC\nJWE -> encrypted content, recipient needs decryption capability\nJWT -> claims format used with these supported representations","Encryption and signature policies can be combined in a designed protocol. An encrypted token still needs trusted keys and claim validation. Use reviewed libraries and identity- provider contracts rather than custom token formats.","HTTPS and token encryption address different exposure paths.","Why can a signed token still reveal personal data?","JWS protects integrity, not confidentiality: anyone holding the token can base64url-decode readable header/payload claims."],["Q057",9,"How do symmetric and asymmetric JWT signatures differ?","A symmetric MAC uses a shared secret; an asymmetric signature separates private signing from public verification keys.","HS256: signing and verification share a secret\nRS256/ES256: issuer signs privately, APIs verify publicly","Asymmetric design lets multiple resource servers verify without receiving token- minting capability. Symmetric trust must tightly control every holder of the shared secret. Key length and allowed algorithm policy matter.","A public key is not a signing secret.","What would a compromised API learn under each design?","With HMAC, a verifier possessing the shared key could also mint tokens; asymmetric verification exposes only a public key."],["Q058",9,"What do iss, sub, aud, exp and nbf mean?","They identify issuer, subject, intended recipient, expiry, and not-before time; validate the claims relevant to the API's trust contract.","iss=https://id.example/issuer\nsub=user-123; aud=orders-api\nexp=<expiry>; nbf=<earliest valid time>","sub is meaningful within its issuer context and is not automatically an email or application database id. The intended audience must include this API. Clock policy should allow only a justified small tolerance.","Subject alone can collide across independent issuers.","How would you form a stable federated identity key?","Treat (issuer, subject) as the stable federated identity key; sub alone can collide across issuers."],["Q059",9,"What is algorithm confusion and how is it avoided?","It is accepting a token under an unintended algorithm/key interpretation; constrain trusted algorithms and correct key types through supported decoder configuration.","Expected policy: issuer signs with approved asymmetric algorithm\nReject unsupported alg, invalid signature and untrusted key material\nNever choose arbitrary validation behavior solely from token input.","The token's header is untrusted until verification. A vetted library still needs a secure decoder and key source. Do not accept unsigned tokens for protected API authentication.","The alg field is not permission to use any advertised algorithm.","How would a negative test exercise an unexpected algorithm?","Send a token signed with an unsupported or unexpected algorithm, and assert the configured decoder rejects it."],["Q060",9,"How do kid and JWKS help key rotation?","kid identifies a candidate key in a trusted key set; JWKS publishes supported verification keys for the issuer.","Issuer signs with new key kid=B\nTrusted JWKS exposes A and B during overlap\nResource server resolves B and validates signature","Key id is a lookup hint, not proof of trust. Do not fetch an arbitrary attacker-provided URL from the token header. Plan cache refresh, availability, overlap and retirement according to token lifetimes.","Reusing kid for different key material can confuse caches.","What happens to tokens signed by a retired key?","Retain old public verification keys only for the defined outstanding-token lifetime; after retirement, old signed tokens must fail."],["Q061",10,"What does JwtDecoder do?","It decodes and verifies a JWT under configured cryptographic and claim- validation policy, returning trusted claims or failure.","Jwt verified = decoder.decode(accessToken);\nString subject = verified.getSubject();\n// Do not substitute an unverified Base64 parser.","A resource server uses the decoder during bearer authentication. Customize it for issuer, audience, supported algorithms and other contractual constraints. Token parsing success alone is insufficient.","JwtDecoder does not establish object ownership automatically.","Which failure should become an authentication response?","Signature/claim failures belong to authentication error handling (normally 401), not a successful anonymous fallback."],["Q062",10,"What does issuer-uri configuration provide?","It supplies a trusted issuer for supported metadata/key discovery and issuer-based validation, with behavior depending on decoder configuration and version.","spring.security.oauth2.resourceserver.jwt.issuer-uri=https://id.example/issuer\n// Resource-server chain and relevant dependencies are also required.","Do not assume this automatically enforces a custom application audience. Discovery and key access can introduce startup or runtime dependencies; check the selected release's behavior. Explicit key-set configuration can change discovery coupling.","The request must not choose an arbitrary issuer endpoint.","How would a known JWKS URI affect discovery?","A directly configured trusted jwk-set-uri may avoid discovery startup dependency; issuer validation must still be configured explicitly."],["Q063",10,"How do you add an audience validator safely?","Compose audience validation with default time and issuer checks rather than replacing them with a single custom predicate.","OAuth2TokenValidator<Jwt> checks = new DelegatingOAuth2TokenValidator<>(\nJwtValidators.createDefaultWithIssuer(issuer), audienceValidator);\ndecoder.setJwtValidator(checks);","The custom audience validator should require the intended API recipient and return a structured validation failure. Keeping default checks prevents accepting an expired or wrong-issuer token merely because audience matched.","setJwtValidator replaces the selected validator; composition is deliberate.","How would tests prove both expiry and audience rejection?","Test expired tokens and wrong audiences separately with a real decoder; then assert the combination of validators rejects both."],["Q064",10,"How are OAuth scopes mapped to Spring authorities by default?","The supported resource-server converter commonly maps scope or scp values into authorities prefixed with SCOPE_.","Token scope: orders.read orders.write\nAuthorities: SCOPE_orders.read, SCOPE_orders.write\nRule: hasAuthority(\"SCOPE_orders.read\")","Roles, groups and custom permissions require a trusted conversion policy when they use another claim shape. Distinguish client-requested scope from issued approved scope. Verify exact provider claim types.","hasRole(\"orders.read\") does not check the default scope authority.","How would a list-valued roles claim be mapped?","Convert only approved role strings to ROLE_ authorities using a trusted claim/issuer; handle absent and malformed list types safely."],["Q065",10,"How can JwtAuthenticationConverter customize identity and authorities?","It selects principal naming and granted-authority conversion from verified claims under the application's policy.","JwtGrantedAuthoritiesConverter rights = new JwtGrantedAuthoritiesConverter();\nrights.setAuthoritiesClaimName(\"permissions\");\nrights.setAuthorityPrefix(\"\");\nJwtAuthenticationConverter converter = new JwtAuthenticationConverter();\nconverter.setJwtGrantedAuthoritiesConverter(rights);","Wire the converter into the resource-server JWT DSL. This example assumes a supported permissions claim shape from a trusted issuer. Mapping a different claim can stop default scopes from being included unless you compose them.","Claim conversion must not create arbitrary privileges from untrusted inputs.","How would you preserve both scopes and roles?","Keep the default scope extractor, then add allowlisted roles from the verified issuer, not replace scopes accidentally."],["Q066",10,"How should expired, invalid and malformed tokens be handled?","Reject them through the bearer authentication failure contract without falling back to an invented authenticated identity.","Malformed token -> reject\nBad signature or issuer -> reject\nExpired beyond allowed skew -> reject\nValid token, insufficient scope -> authorization denial","Keep safe diagnostic categories without recording complete credentials. Anonymous optional routes need a deliberate behavior when an invalid credential is supplied; permitAll does not guarantee a supplied bad bearer token is ignored.","Never trust claims after decoder failure.","How would you distinguish authentication failure from permission denial in metrics?","Count invalid/expired/malformed credentials as authentication failures and missing rights as authorization denials without logging tokens."],["Q067",11,"What are OAuth's main roles?","The resource owner grants access, the client obtains a token, the authorization server issues it, and the resource server enforces access to protected resources.","User -> approves access at authorization server\nClient -> obtains access token\nClient -> calls API resource server with that token","The roles can run in separate services. The resource server does not become a token issuer just because it validates JWTs. Identify who owns user authentication, client registration and consent.","OAuth is not simply 'JWT login'.","Which role is your Spring API implementing?","A protected Spring API typically acts as the resource server; the OAuth authorization server issues access tokens."],["Q068",11,"How does authorization code with PKCE work?","The client starts authorization with a challenge and later exchanges the returned code with its matching verifier.","1. Authorization request: challenge + state + redirect URI\n2. Callback: authorization code\n3. Token exchange: code + verifier","Validate state and redirect handling, and OIDC nonce where applicable. PKCE reduces intercepted-code abuse but does not replace every client or browser control. Each code and verifier needs correct lifetime and single-operation ownership.","A public client cannot keep a browser-delivered static secret confidential.","How do you bind a callback to its initiating session?","Use state to bind the callback to the initiating browser flow, then validate registered redirect URI and PKCE proof."],["Q069",11,"What is client credentials grant for?","It authorizes a client application acting for itself, not a human login delegation flow.","Batch service -> token endpoint using trusted client authentication\nIssued access token -> approved service scopes\nBatch service -> resource API","The API's permissions should reflect service identity and its allowed capabilities. There is no automatic current-user principal just because the token is valid. Keep secrets or key credentials out of code and browser apps.","Do not use this grant as a user sign-in replacement.","How would tenant access be constrained for a service principal?","Use a service identity with tenant-specific authority or audience; do not infer every customer's rights from a client_credentials token."],["Q070",11,"How do public and confidential clients differ?","A confidential client can protect an authentication credential in its deployment; a public client cannot rely on a delivered static secret remaining confidential.","Backend web service -> potentially confidential client\nBrowser SPA/native app -> typically public client\nPKCE -> protects code exchange for applicable flows","Choose registered authentication methods from the actual execution environment. Obfuscation in JavaScript or a mobile binary does not create a trustworthy shared secret. Server- side key authentication may fit confidential clients.","Client id is an identifier, not a secret.","Why must redirect URIs still be constrained?","Registered redirect URIs prevent authorization codes/tokens from being sent to an attacker-controlled callback."],["Q071",11,"Why avoid implicit and password-grant designs for new applications?","They create avoidable token/credential exposure and responsibility problems; prefer modern supported flows such as code with PKCE or client credentials where appropriate.","User-facing client -> authorization code + PKCE\nService-to-service -> client credentials with narrow scopes\nLegacy password forwarding -> migration problem, not default design","Use current provider and protocol guidance for the intended client. Do not make an unrelated app collect identity-provider passwords merely to obtain a token. Legacy interoperability needs a specific plan.","A convenient one-step token endpoint is not a sound client boundary.","How would a legacy password flow be migrated?","Move to authorization code + PKCE, stop password collection by the client, and migrate/ rotate credentials and consent deliberately."],["Q072",11,"How should scopes and consent be designed?","Scopes represent approved delegated capabilities; minimize them and separate them from domain ownership and client registration policy.","Requested: orders.read orders.write\nGranted: orders.read\nAPI accepts only the issued scope and still checks order ownership.","The authorization server decides approved grant policy. Scope names should have stable meaning rather than act as arbitrary role strings. User consent may differ from machine- client approval.","A token can request no rights merely by inventing a scope string.","Who limits a client's maximum permitted scopes?","The authorization server enforces the registered client's allowed scopes and user consent/ authorization policy."],["Q073",12,"What does OpenID Connect add to OAuth?","It adds an identity layer with ID tokens, standardized claims and supported authentication/discovery behavior.","OAuth access token -> protected resource access\nOIDC ID token -> client's authentication result\nUserInfo -> provider-defined identity claims through supported access","Use the provider's OIDC validation and login integration. JWT formatting alone does not turn a homemade token into OIDC. Identity assurance and claims depend on the provider contract.","An ID token is not automatically a valid API access token.","Which audience should an ID token target?","The ID token's audience is the OAuth/OIDC client application (client_id), not an arbitrary downstream resource server."],["Q074",12,"How do state and nonce differ?","State binds the authorization callback to the initiating flow; OIDC nonce binds an ID token to the expected authentication request.","Authorization request -> random state and applicable nonce\nCallback -> validate matching state\nID token -> validate expected nonce through supported flow","Keep values unpredictable and tied to the correct operation. Their exact storage and validation are managed by a supported client integration when configured correctly. PKCE binds a separate code-exchange proof.","State, nonce and PKCE are not interchangeable.","Which attack remains if redirect validation is missing?","Even with valid state/nonce, a loose redirect URI or open redirect can leak authorization results to an attacker."],["Q075",12,"How does oauth2Login configure browser authentication?","It integrates the application as an OAuth/OIDC client handling authorization redirects, callbacks and authenticated identity.","http.authorizeHttpRequests(a -> a.anyRequest().authenticated())\n.oauth2Login(Customizer.withDefaults());\n// Configure client registration/provider settings externally.","The application needs approved registration, redirect URI and credential policy. Browser login commonly uses session state. This is different from oauth2ResourceServer accepting bearer tokens at an API.","Enabling login does not automatically secure an API's token audience.","Can one app use separate login and API chains?","Yes: use ordered browser OAuth login and a separate narrow bearer-resource-server API chain with a deny-by-default fallback."],["Q076",12,"What is an OAuth2AuthorizedClient?","It represents a registered client associated with an authenticated principal and authorized tokens for calling protected resources.","Principal + ClientRegistration\n-> OAuth2AuthorizedClient\n-> approved access token, optional refresh token","A manager/repository/service controls storage and renewal according to the chosen integration. It is not the same object as an end-user account. Protect retained credentials and define their lifecycle.","A user's login session and outbound token can expire independently.","How would a background call obtain client credentials safely?","A background service uses a supported OAuth2AuthorizedClientManager/client-credentials grant with protected server credentials."],["Q077",12,"How should external claims become local permissions?","Map verified provider identity to local account and permission policy through an explicit trusted translation.","Identity key: (issuer, subject)\nLocal link -> application user id\nVerified group/claim -> approved local permission mapping","Email can change and may not be a stable unique identity unless the contract guarantees it. Avoid granting administrator rights from an arbitrary claim without provider and client policy. Account linking needs authenticated proof.","Matching email alone can create account-takeover risk in federation.","How would two issuers with the same sub be distinguished?","Map (trusted issuer, subject) to local identity and obtain application privileges from an approved authority, not raw display names."],["Q078",12,"What does single logout require beyond local session clearing?","Coordinate the local session/token lifecycle with the identity provider's supported logout protocol and the desired application scope.","Local logout -> application session removed\nProvider logout -> supported OIDC/SAML mechanism\nOther apps -> may retain independent sessions unless coordinated","Define what 'log out everywhere' means, including refresh tokens, remembered sessions, and existing access-token lifetime. Redirect logout and back-channel capabilities are provider/version dependent.","Clearing one cookie does not revoke every issued token.","How would you test logout across two applications?","Use two client apps sharing an IdP, sign out at one, and verify the other app's local/ federated session behavior against the contract."],["Q079",13,"How do JWT and opaque access tokens differ for resource servers?","JWT can be validated locally under trusted keys and claims; opaque tokens commonly require authorization-server introspection or another authoritative lookup.","JWT -> local signature/claims validation\nOpaque -> introspection result and active-status policy\n// Both can be bearer access tokens under OAuth.","Local validation reduces request-time coupling but delays some revocation knowledge. Introspection adds latency and availability requirements; caching changes freshness. Choose from actual risk and provider behavior.","Opaque does not mean 'less secure', and JWT does not mean 'always faster enough'.","Which design supports immediate centralized active-status checks?","Opaque-token introspection checks active state centrally when online, subject to caches and introspection availability."],["Q080",13,"What does opaqueT oken resource-server configuration do?","It enables bearer authentication by introspecting opaque tokens through the configured trusted service.","http.oauth2ResourceServer(o -> o.opaqueToken(Customizer.withDefaults()));\n# Configure introspection URI and protected client credentials.","The returned active status and authorities follow provider/converter policy. Configure deadline, credential protection and availability handling. Do not accept tokens merely because introspection failed or timed out.","Caching positive responses can delay revocation effects.","What status should an unavailable identity dependency produce?","Fail authentication safely and surface dependency unavailability through the API policy; never permit anonymous access because introspection failed."],["Q081",13,"How do access and refresh tokens differ?","Access tokens authorize resource calls; refresh tokens are presented to the authorization server to obtain renewed access tokens.","API request -> access token\nToken endpoint renewal -> refresh token\nAPI must not treat refresh token as a resource credential.","Not every flow issues a refresh token. Store refresh credentials according to client architecture, and enforce provider rotation and client binding. Their longer useful lifetime makes theft especially consequential.","A refresh token is not a remember-me cookie.","How does a public client store tokens without a static secret?","A public browser/native client cannot keep a static secret; use PKCE and an appropriate protected refresh-token/storage strategy."],["Q082",13,"What is refresh-token rotation and reuse detection?","Rotation replaces a refresh token during renewal; reuse detection identifies later attempts with an already-replaced token and applies the provider's compromise policy.","Refresh A -> issue B, retire A\nA used again -> detect reuse and apply token-family policy","Concurrent renewals and retries need a clear client coordination and provider policy. The resource server typically does not implement refresh-token issuance. Define what becomes invalid after suspected theft.","Rotation alone without authoritative tracking does not detect every reuse.","How would simultaneous browser tabs coordinate renewal?","Serialize or coordinate renewal per session, rotate tokens atomically, and handle reuse detection and overlapping tab refreshes."],["Q083",13,"Why can logout leave a JWT usable until expiry?","A self-contained token validated only from signature and claims has no automatic knowledge of the local logout event.","Logout at 12:00\nJWT exp at 12:10\nLocal cryptographic validation may accept until expiry unless another policy intervenes.","Short lifetime, denylisting, token-version checks or introspection can improve revocation according to requirements. Deleting the client's copy does not invalidate a stolen one. Include operational cost and outages in the design.","Signing-key rotation is not a precise one-user logout action.","What revocation latency is acceptable for administrators?","Choose an explicit short revocation bound for admins (possibly near-immediate); implement central checks or denylist if required."],["Q084",13,"What is a token-replay threat and what controls help?","A stolen bearer token can generally be replayed by its holder; use protected transport/storage, short scope/lifetime and supported sender-constraining where required.","Bearer secret stolen -> attacker sends same Authorization header\nPossible controls -> TLS, reduced audience/scope/lifetime,\nsupported mTLS/DPoP protocol integration","Sender constraints require end-to-end client, issuer and resource-server support; adding a random claim does not implement them. Avoid logging credentials or placing them in URLs.","JWT signature verifies issuer, not possession by the original browser.","When would a sender-constrained token be worth the complexity?","Sender-constrained tokens help high-risk APIs where stolen bearer-token replay is serious enough to justify mTLS/DPoP complexity."],["Q085",14,"How does an authorization server differ from a resource server?","The authorization server authenticates relevant actors and issues approved tokens; the resource server validates credentials and enforces resource permissions.","Authorization server -> authorization/token endpoints\nResource server -> /orders and other protected business APIs\nClient -> participates in the chosen grant","A Spring resource-server starter does not turn an API into a complete identity provider. Use supported authorization-server software or a trusted external provider with reviewed operations.","Homemade password-to-JWT controllers omit many protocol responsibilities.","Who owns consent and registered redirect URIs?","The authorization server owns registered clients, redirect URIs and consent; the resource server enforces issued-token access rules."],["Q086",14,"What does a RegisteredClient describe?","It stores a client's identity and permitted authentication methods, grant types, redirects, scopes and related settings in supported server models.","Client id -> identifier\nAuthentication method -> secret/key/public policy\nRedirects + grants + scopes -> approved client capabilities","Persist production registration under a controlled lifecycle and audit changes. Public clients should not be configured as though they can protect a delivered secret. Registration is distinct from user-account storage.","An in-memory development repository is not a durable production registry.","How would you revoke one client's authorization?","Revoke related authorizations/grants and refresh tokens using the server's supported persistence and revocation mechanism."],["Q087",14,"What should production signing-key management include?","Protect private keys, limit signer access, rotate with overlap, publish trusted verification keys, and plan compromise recovery.","Active signing key -> private protected material\nJWKS -> approved public verification keys\nRotation -> publish new, switch signer, retire old after policy window","Retention must consider still-valid tokens and emergency revocation. Persist keys across expected restarts rather than generating a new ephemeral signer accidentally. Hardware or managed key services can fit stronger requirements.","Publishing a public JWKS must not leak private parameters.","How would you recover from a private-key compromise?","Emergency-rotate the signing key, stop issuing from it, revoke/shorten affected tokens, publish trusted replacements and audit exposure."],["Q088",14,"How should redirect URIs be validated?","Register and enforce approved redirect targets through supported protocol rules, avoiding broad attacker-controlled destinations.","Registered: https://app.example/login/oauth2/code/company\nUnexpected: https://evil.example/callback -> reject\nLoopback native-client cases -> use the supported protocol policy.","Redirect validation, state and PKCE address different requirements. Open redirects in your application can still create credential or code exposure. Do not assume wildcard matching is safe because a domain looks familiar.","A client-supplied returnUrl is not automatically trusted.","How would post-login navigation avoid open redirects?","Match exact registered URIs; post-login navigation should use local allowlisted paths, not arbitrary return URLs."],["Q089",14,"Why should custom grants or token claims be added cautiously?","They expand the trust contract and interoperability surface, so each needs clear issuer authority, validation and lifecycle rules.","Claim tenant_id -> authoritative issuer policy\nClaim permissions -> defined approved mapping\nCustom grant -> reviewed client authentication and replay controls","Do not copy arbitrary request attributes into approved credentials. Minimize personal data and claim size, and version meaning deliberately. A resource server must agree on the interpretation.","More claims do not mean stronger authorization.","Which claim should stay in an authoritative database instead?","Keep frequently changing, sensitive entitlement and current account status in an authoritative service/database rather than stale long-lived tokens."],["Q090",14,"How do MFA and step-up authentication fit the design?","They establish additional assurance through a supported factor and authentication flow, with sensitive operations requiring trusted evidence of the necessary assurance.","Password login -> baseline assurance\nApprove high-value action -> require supported stronger/recent authentication\nResource policy -> check trusted assurance claims/state as specified","Do not infer MFA solely from a local role or token signature. Provider support, factor recovery and freshness policy matter. Legacy and modern framework integrations vary by version.","A second page asking the same password is not an independent factor.","How would account recovery avoid bypassing MFA?","Offer secure recovery codes and verified reset flows with equivalent assurance; do not let a weak recovery channel bypass MFA."],["Q091",15,"How should tenant identity be resolved?","Resolve it from a verified identity or an independently authorized selection, then enforce its relation to the requested data.","Verified issuer + subject -> approved tenant memberships\nRequested tenant -> confirm membership\nRepository query -> tenant predicate + object id","A header can express a selection but cannot alone prove membership. Service identities may require a different tenant policy from end users. Carry only trusted normalized context downstream.","The browser choosing tenant_id does not create authorization.","What if a user belongs to several tenants?","Require an explicit selected tenant among authorized memberships, and enforce it on every data query and cache key."],["Q092",15,"How should multiple JWT issuers be trusted?","Use a finite approved issuer/decoder policy and reject untrusted issuer values instead of discovering arbitrary URLs from incoming tokens.","Allowed issuers: company-A, company-B\nIncoming iss -> choose only an approved authentication manager\nEach manager -> its own keys, audience and claim policy","Issuer resolution commonly inspects unverified data only to choose a trusted policy; the selected manager must then verify it. Limit network targets and authority mappings independently.","Arbitrary discovery can create SSRF and trust escalation.","How would the same subject string differ across issuers?","Treat identity as (issuer, subject), and configure allowlisted issuers/algorithms/keys; a repeated sub across issuers is not one person."],["Q093",15,"How should machine-client permissions differ from user permissions?","Model the service principal's approved capabilities explicitly rather than pretending every client-credentials token represents a human.","Service billing-worker -> scope orders.settle\nUser account -> own-order read/modify policy\nAudit -> record actual actor type and operation identity","A service may legitimately act across users but should have narrow audience and scope. Avoid granting universal administrator capability simply because it is internal. Track delegated versus service-owned actions correctly.","Internal network location is not sufficient identity.","When would on-behalf-of delegation be required?","Machine roles should be tightly scoped; delegation is required when the downstream must act on behalf of a real user."],["Q094",15,"Should inbound access tokens be forwarded to every downstream service?","Forward only when audience, delegation and trust contracts allow it; otherwise obtain an appropriate downstream credential.","Inbound token audience=orders-api\nDownstream audience=billing-api\nBlind relay -> billing may reject, or unsafe validation may overtrust it.","Use approved token exchange, client credentials, or authorized-client integration as appropriate. Keep downstream scope narrow and avoid accidental privilege amplification. Access- token relay is not automatic universal delegation.","A token valid at one API need not be valid at another.","Who should be audited for a delegated payment?","Audit both service client and delegated end-user identity, plus transaction/tenant correlation IDs and decision outcome."],["Q095",15,"How can cached permissions or data leak authorization?","A cache hit can bypass method execution or reuse a result across a missing user/tenant/policy dimension.","Outer service: authorize caller on every request\nInner cache: tenant-safe authorization-independent data\nCache key: all result-affecting dimensions","Do not place the only ownership check inside a @Cacheable method that is skipped on hits. Decide invalidation for membership or permission changes. Authority caching needs a defined revocation lag.","A structurally immutable DTO can still contain another tenant's data.","How would a hit-path denial be tested?","Test a warmed cache entry for tenant A requested by tenant B and assert denial/no data leakage on a cache hit."],["Q096",15,"How should database row rules complement application security?","Use authoritative tenant-scoped queries and, where required, database isolation/row policies as defense in depth.","UPDATE orders SET ...\nWHERE id=:id AND tenant_id=:trustedTenant AND version=:version","Check affected rows and distinguish permitted absence/conflict semantics safely. Application and database identity propagation must remain correct, especially with pooled connections. Direct alternate entry points should not bypass the invariant.","A controller filter does not protect batch or message paths automatically.","How would connection reuse affect per-session database tenant state?","Clear/reset session-level tenant variables on pooled connection return and always bind tenant constraints to the query/transaction."],["Q097",16,"How does reactive SecurityWebFilterChain differ from servlet SecurityFilterChain?","It configures WebFlux security using reactive web filters and ServerHttpSecurity rather than servlet HttpSecurity filters.","@Bean\nSecurityWebFilterChain api(ServerHttpSecurity http) {\nreturn http.authorizeExchange(a -> a.anyExchange().authenticated())\n.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults())).build();\n}","Configure a ReactiveJwtDecoder and explicit credential/CSRF policy. Do not mix servlet request matchers or servlet filters into this chain. Reactive context and transport behavior require reactive integration.","Identical policy intent does not imply identical classes or callback signatures.","Which testing client fits WebFlux?","Use WebTestClient with reactive security test support and the actual SecurityWebFilterChain configuration."],["Q098",16,"Where is authentication stored in a reactive chain?","Reactive security uses Reactor context through supported holders, not ordinary thread-local identity assumptions.","Mono<String> name = ReactiveSecurityContextHolder.getContext()\n.map(c -> c.getAuthentication().getName());","Execution can move among threads while the subscriber context carries supported state. An imperative SecurityContextHolder lookup on the current thread may not find the intended identity. Compose the lookup inside the chain.","Calling subscribe separately creates another context/ownership boundary.","How would context be propagated to a blocking bridge?","Carry security via Reactor Context or a deliberately managed context bridge; do not assume ThreadLocal follows reactive hops."],["Q099",16,"How does reactive method security work?","It applies supported authorization to reactive method results and context when enabled through the reactive method-security integration.","@EnableReactiveMethodSecurity\n@Configuration\nclass ReactiveMethodConfig {}\n@PreAuthorize(\"hasAuthority('SCOPE_orders.read')\")\npublic Mono<OrderView> read(long id) { return repository.read(id); }","Use compatible return types and policy APIs for the baseline. A publisher defers work, so subscription and context matter. Ensure the method does not perform an irreversible action eagerly before returning a publisher.","Mono.just(sideEffect()) runs the side effect immediately.","How would you test denial before deferred work occurs?","Use method-security tests around returned publishers; subscribe and assert denied calls do not execute deferred business work."],["Q100",16,"Why should identity lookup not block a reactive event loop?","Blocking directory/database calls can stall shared reactive processing; use an appropriate non-blocking integration or isolate known blocking work.","Mono<User> user = Mono.fromCallable(() -> blockingStore.load(id))\n.subscribeOn(Schedulers.boundedElastic());","This defers and isolates the blocking call, but still needs deadline and concurrency limits. An unlimited authentication backlog can become denial-of-service exposure. Offloading does not make the underlying store non-blocking.","Returning Mono after already performing the call is not isolation.","How would identity-store saturation be measured?","Measure event-loop blocked time, identity-store queue/backlog, request latency, pool utilization and rejected work under load."],["Q101",16,"How should async authorization differ from delayed business-job authorization?","A queued job needs a defined approved-command and revalidation policy, not indefinite trust in a captured web authentication context.","At submission -> authorize action, persist approved operation\nAt execution -> validate required current invariants or recorded approval\nAudit -> record submitter and executing service","Decide whether permission changes after submission should cancel the job or leave the prior approval valid. This is a business contract. Propagation wrappers solve context handling, not durable authorization semantics.","A user's short-lived token may expire before a queued task runs.","Which policy applies to a scheduled payment approved yesterday?","Reauthorize at execution using current policy or persist an approved, narrowly scoped business command with expiry and auditability."],["Q102",16,"Do virtual threads remove security-context lifecycle concerns?","No. Cheap threads do not decide trusted identity, cleanup, credential lifetime, or cross-task propagation policy.","Virtual-thread request -> framework security integration\nCustom task thread -> use supported context handling if required\nLong-lived job -> explicit actor and approval policy","Check the framework and executor integration rather than assuming every new thread inherits the correct context. Database, crypto and network capacity still constrain authentication throughput.","Changing thread type is not an authorization fix.","How would a context-leak regression test run across reused tasks?","Repeat tasks on reused executors, including exceptions and cancellation, asserting each sees only its approved identity and no leaked context."],["Q103",17,"What does @WithMockUser test and what does it not test?","It supplies a test authentication for authorization behavior; it does not prove real password hashing, login or JWT signature verification.","@WithMockUser(authorities=\"orders:read\")\n@Test void allowedReader() { /* call protected boundary */ }","Use it for policy tests and denied authority cases. Add actual authentication/decoder tests for credential trust. The tested call still needs the intended managed proxy or filter setup.","Mocked identity cannot prove audience rejection.","Which tests should use a signed JWT and real decoder?","@WithMockUser covers authorization under a supplied mock identity; use actual JWT signature/claim decoding tests separately."],["Q104",17,"How should MockMvc include Spring Security?","Use the appropriate Boot slice/integration support or apply the security test integration so the real filter chain participates.","mvc.perform(get(\"/orders/7\").with(user(\"sai\").authorities(\nnew SimpleGrantedAuthority(\"orders:read\"))))\n.andExpect(status().isOk());","This assumes the handler fixture, matching policy and security filter integration are configured. Add anonymous and wrong-authority cases. A standalone controller test without security cannot validate route authorization.","addFilters=false removes important coverage.","How would a test prove which chain matched?","Test which SecurityFilterChain matched with route-specific permission behavior and Spring Security filter/debug instrumentation."],["Q105",17,"How should CSRF be tested?","Exercise missing, valid and invalid tokens on a real unsafe request under a CSRF-protected credential model.","mvc.perform(post(\"/orders\").with(user(\"sai\")))\n.andExpect(status().isForbidden());\nmvc.perform(post(\"/orders\").with(user(\"sai\")).with(csrf()))\n.andExpect(status().isCreated());","The positive status assumes valid body, allowed permissions and a functioning handler. Add invalid-token helpers and login/logout lifecycle cases. Do not disable security to make a validation test pass unknowingly.","A GET success does not prove unsafe-method CSRF protection.","What would differ for a dedicated bearer-only chain?","Browser session POST needs CSRF; a reviewed Authorization-header-only chain can legitimately use a different CSRF policy."],["Q106",17,"How does the jwt() request helper differ from a real token test?","It installs a test JWT-based authentication for authority policy; it does not perform real cryptographic token decoding.","mvc.perform(get(\"/orders\").with(jwt().authorities(\nnew SimpleGrantedAuthority(\"SCOPE_orders.read\"))))\n.andExpect(status().isOk());","Use real signed tokens and the configured decoder for issuer, audience, expiry, key and algorithm cases. Both test levels are valuable because they isolate different failures. Avoid calling a fake claim test a signature verification test.","Mocking JwtDecoder can hide incorrect validators.","Which invalid tokens belong in an integration suite?","Real integration tests should reject altered signatures, unknown keys, wrong issuer/ audience, expired/nbf and unsupported algorithms."],["Q107",17,"How should method security be tested?","Invoke the actual managed service boundary under allowed and denied identities, asserting both result and absence of denied side effects.","@WithMockUser(authorities=\"orders:read\")\n@Test void cannotApprove() {\nassertThrows(AccessDeniedException.class, () -> service.approve(7));\nverify(store, never()).approve(anyLong());\n}","The test must enable method security and use the proxied bean, not a manually constructed unadvised target. Also test ownership and alternate callers. The exact exception/result form can differ for reactive behavior.","A URL-only test misses non-HTTP service entry points.","How would self-invocation be exposed?","Call the managed proxied service from tests and separately demonstrate that an internal self-call bypasses proxy method advice."],["Q108",17,"What should a minimum negative security matrix include?","Include absent/invalid credentials, wrong permission, wrong issuer/audience, expiry, tenant mismatch, unsafe browser requests, uncovered paths and credential leakage.","Authentication failures -> no business side effect\nAuthorization failures  -> no forbidden state change\nSuccess fixture -> exact intended permission and owner","Test status and safe error contract, but also assert the invariant. A deny returning 403 after a database update is still a security defect. Add key rotation and identity-provider outage cases where relevant.","Happy-path coverage is not a security boundary proof.","How would you detect a token written to logs?","Emit synthetic requests with unique fake credentials and assert sanitized audit/log capture never contains the raw bearer token."],["Q109",18,"How should security events be logged?","Record safe actor/operation identifiers and failure categories with correlation, avoiding passwords, complete tokens and unnecessary sensitive claims.","Safe: category=invalid_audience, traceId=...\nUnsafe: Authorization=Bearer <complete token>\nAudit: actor, action, target, outcome, approved retention policy","Diagnostic logging and durable business audit can have different consistency requirements. Restrict access and retention. Broad debug capture can expose headers through other infrastructure too.","Redacting one application logger does not sanitize ingress logs.","How would a sensitive action's audit be made durable?","Write an append-only or durable audit event with actor, action, object, outcome and correlation, without raw secrets."],["Q110",18,"How can adaptive password hashing become an availability concern?","Each verification intentionally costs work, so unbounded login attempts can saturate CPU or memory without abuse controls.","Admission/rate policy -> bounded authentication work\nPassword verification -> measured adaptive cost\nFailure monitoring -> account/IP/device signals with reviewed policy","Tune using real hardware and traffic, not by weakening hashing blindly. Limit expensive work and design lockout to avoid letting attackers deny access to legitimate users easily. Multi-factor and recovery paths also need protection.","An unlimited executor can convert abuse into memory exhaustion.","Which signal distinguishes credential stuffing from an ordinary typo?","Use IP/account/device rate-and-failure patterns, credential reuse indicators and distributed sources to distinguish abuse from typos."],["Q111",18,"What should happen when JWKS or introspection is unavailable?","Follow the validation mode's supported cache and freshness policy; never authenticate an unvalidated token solely because the identity dependency is down.","Known cached key + valid applicable token -> supported local decision\nUnknown key with failed refresh -> cannot establish signature trust\nIntrospection outage -> defined unavailable/failure contract","Test behavior for existing versus new keys and cache expiry. Timeouts, circuit policy and metrics should show dependency failure without granting anonymous fallback privileges. Local validation has different coupling from per-request introspection.","Fail-open authentication is not a generic availability solution.","What operational alert would distinguish key rotation from an outage?","Alert on sudden unknown kid, JWKS refresh failures, validation error spikes and remote- fetch latency to separate rotation from outage."],["Q112",18,"How should credentials and client secrets be rotated?","Use controlled secret/key versions, compatible overlap where appropriate, tested rollout, and explicit invalidation of compromised credentials.","Publish/activate replacement -> migrate clients\nVerify successful use -> retire old version by policy\nCompromise -> emergency revocation with reviewed blast radius","Not every provider supports simultaneous secrets, so use its documented lifecycle. A configuration update must reach the actual token client or pool. Keep private signing keys and client secrets distinct.","Merely editing a secret file does not prove every running client adopted it.","How would you verify zero accidental fallback to old credentials?","Ensure old secret paths fail after the defined overlap; verify new credentials work and there is no implicit fallback to retired keys."],["Q113",18,"How should actuator endpoints be secured in a security service?","Expose only needed management capabilities and protect diagnostics with explicit chain, network and operator-access policy.","/actuator/health -> limited probe policy\n/actuator/prometheus -> monitoring identity/network\n/actuator/env or heapdump -> sensitive diagnostic access","Management exposure and authorization are different. A separate port is not automatically private. Test custom-chain behavior and avoid disclosing credentials or personally identifying claims.","PermitAll on /actuator/** can expose more than intended.","What must remain reachable for probes during an outage?","Keep liveness and narrowly authorized health probes reachable as designed; do not expose secret actuator endpoints publicly."],["Q114",18,"How should revocation and permission changes be communicated operationally?","Define required enforcement latency, identify which caches/sessions/tokens retain old rights, and monitor invalidation or expiry mechanisms.","Permission removed now\nSession snapshot -> may retain old authorities\nJWT -> may remain valid until expiry or revocation check\nPolicy -> refresh, invalidate, or revalidate as required","The right choice depends on risk and availability. High-risk administrative actions may need fresher authority than ordinary cached reads. Audit policy changes and confirm the effective behavior.","Updating a database role does not instantly rewrite issued tokens.","How would a suspension test prove the required latency?","Suspend a test account and poll token/session-based protected actions until they fail; measure elapsed time against the revocation objective."],["Q115",19,"Why should new configuration use SecurityFilterChain instead of WebSecurityConfigurerAdapter?","The adapter is removed in the modern baseline; bean-based chain configuration expresses supported composable policy.","@Bean\nSecurityFilterChain security(HttpSecurity http) throws Exception {\n// Supported lambda DSL and explicit authentication mechanism\nreturn http.build();\n}","This empty sketch is not a complete protection policy. Migration must preserve chain scope, rule order, defaults and identity storage, not only change syntax. Use the actual baseline documentation.","A compiling migrated config can still leave routes uncovered.","How would old and new configurations be behavior-compared?","Exercise the same routes with anonymous, authorized and unauthorized callers against both implementations, including CSRF/session behavior."],["Q116",19,"What replaces old authorizeRequests and access- decision patterns in common new code?","The modern request DSL uses authorizeHttpRequests and AuthorizationManager-based infrastructure, with migration appropriate to the policy's complexity.","http.authorizeHttpRequests(a -> a\n.requestMatchers(\"/admin/**\").hasRole(\"ADMIN\")\n.anyRequest().authenticated());","Legacy voters and metadata sources may need targeted translation rather than mechanical renaming. Method and reactive policies have their own supported APIs. Verify denied cases and custom decisions after migration.","An expression copied into the wrong DSL may not preserve semantics.","How would a custom authorization manager be tested?","Test AuthorizationManager rules for allowed and denied actor/action/object combinations, including missing/null authentication."],["Q117",19,"Why is matcher migration version-sensitive?","Matcher implementations and supported DSLs evolve, and path, servlet, dispatch and rule-selection semantics must be rechecked in the chosen release.","Old matcher configuration -> inventory paths and servlet assumptions\nNew supported requestMatchers -> test encoded and boundary paths\nFallback -> explicit coverage of unmatched traffic","Do not assume an old antMatcher or a tutorial's package is available unchanged. Test trailing slash, context path, servlet path and alternate HTTP methods according to the app's routing. Avoid relaxing firewall checks to make odd paths work blindly.","Security matcher equivalence is a behavior question, not just compilation.","Which endpoint could become uncovered after migration?","After migrating matchers, assert coverage for unknown methods, forwarded routes, static paths and endpoints outside old prefixes."],["Q118",19,"What are the important Spring Security 6 context/ CSRF migration distinctions?","Modern context persistence uses explicit-save behavior for custom login paths, and CSRF client handling includes deferred/masked-token considerations.","Custom login -> invoke applicable session strategy and save context\nSPA CSRF -> use supported token repository/handler integration\nTest later request, not only the login response.","Built-in mechanisms coordinate their supported behavior. A hand-written controller or filter needs the missing responsibilities. Compare against the old application's exact credential and session model.","Setting SecurityContextHolder alone can make login appear successful for one request only.","What must a custom persistent-login test assert?","Prove custom login saves to the selected SecurityContextRepository and that a second request is authenticated only when intended."],["Q119",19,"How should Spring Security 7 be approached from a 6.x codebase?","Use the selected migration guide and aligned Spring/Boot ecosystem, verifying APIs, matchers, serialization and behavior before switching production.","Inventory -> framework/security/authorization-server versions\nUpdate supported DSL/types -> compile\nVerify -> chain coverage, login, CSRF, method checks, token validation","This guide keeps executable-style snippets on the Security 6.5/Boot 3.5 baseline. Security 7 details are release-specific and should not be inferred from the major number alone. Dependency alignment and third-party integration matter.","Overriding only the security version can create unsupported combinations.","Which test would detect changed session behavior?","Test login, next request, logout and fixation protections on the migrated stack; inspect actual session/cookie state."],["Q120",19,"How should a complete security design be reviewed?","Start from assets, actors, trust boundaries and invariants, then verify identity, authorization, browser policy, token lifecycle, failure behavior and evidence.","Actor -> credential -> trusted identity\nAction + object -> permission and ownership\nFailure/rotation/logout -> defined effective behavior\nEvidence -> negative tests, safe telemetry, reviewed operations","Annotation count is not security assurance. Require a concrete policy for unknown outcomes and identity-service outages. Capture material tradeoffs and operational ownership.","A valid JWT and a passing 200 test do not prove isolation.","Which unresolved security requirement would block release?","Missing object-level access control, failing tenant isolation, permissive unknown routes or unvalidated JWT audience should block release."],["Q121",20,"An endpoint outside /api/** is unexpectedly public. What failed?","The configured chain may cover only /api/** with no matching fallback, leaving other requests outside its protection.","Chain 1: securityMatcher(\"/api/**\")\nNo other chain -> /reports may be uncovered\nRepair -> deliberate catch-all chain and negative route tests","Inspect actual chain match logs and the new route's path/dispatch behavior. Define a permitted or denied fallback rather than assuming anyRequest within one chain is global.","Adding a rule to an unselected chain has no effect.","How would a new endpoint be protected automatically?","A final lowest-priority deny-all chain catches new routes, and a regression test verifies unmapped URLs cannot reach handlers."],["Q122",20,"A restrictive second chain never runs. Why?","A higher-priority chain already matches, and chain selection uses the first match rather than merging all policies.","Order 1: all requests permitted\nOrder 2: /admin/** requires ADMIN\n/admin/report -> first chain selected","Narrow the first chain or reorder deliberately, then test representative paths across every chain. Also verify matcher rules inside the selected chain.","Two chains do not mean two cumulative security gates.","Where should a browser fallback sit relative to an API chain?","Put the narrow @Order(1) /api/** chain before the broader lower-priority browser catch-all chain."],["Q123",20,"A logged-in user receives 403 on POST but GET works. What do you inspect?","Check CSRF, method-specific authority, matched chain and ownership before assuming authentication failed.","GET /orders -> succeeds\nPOST /orders -> missing CSRF token in cookie app -> denied\nAlternative -> POST requires a write authority absent from user","Find the component responsible through safe diagnostics and reproduce with a focused test. Disabling CSRF globally can hide the issue while weakening the browser boundary.","403 is not proof of one unique cause.","How would an invalid-token case differ?","Inspect CSRF rejection, role policy and request match; invalid credentials usually trigger authentication failure rather than a logged-in CSRF denial."],["Q124",20,"A token has a role claim but hasRole fails. Why?","The verified claim may not have been converted into the ROLE_ authority expected by the rule.","Claim: roles=[\"ADMIN\"]\nCurrent converter: only SCOPE_orders.read\nRule: hasRole(\"ADMIN\") -> no ROLE_ADMIN -> deny","Define a trusted converter and inspect the actual granted authorities without exposing credentials. Preserve scopes if both sets are needed. Never grant arbitrary roles just to make the test green.","A field named role has no automatic universal semantics.","How would converter tests cover malformed claim types?","Use typed claim validation and trusted allowlist conversion; test absent, wrong-type, extra and malicious role values."],["Q125",20,"A JWT is signed correctly but intended for another API. What is missing?","The intended audience validation is absent or wrong, permitting a token outside this API's trust contract.","Token aud=profile-api\nRequest target=payments-api\nSignature valid -> still reject for wrong audience","Compose the audience check with issuer and time validation. Use actual negative signed-token tests, not only mocked JWT identities. The repair must cover every decoder/issuer path.","One issuer can legitimately issue tokens for many audiences.","What if aud contains multiple approved recipients?","Accept only configured target audiences; if multiple are present, require at least the resource's trusted audience and enforce policy."],["Q126",20,"A custom validator accepts expired tokens. What went wrong?","It may have replaced default time/issuer validation instead of composing with it.","decoder.setJwtValidator(audienceOnly); // Lost other checks\nRepair: default issuer/time validator + audience validator","Test expired, not-yet-valid, wrong-issuer and wrong-audience tokens independently. Check clock-skew policy and fixture times. A valid audience says nothing about expiry.","Passing one positive token cannot detect dropped validators.","Which library API makes composition explicit?","Use DelegatingOAuth2TokenValidator together with JwtValidators.createDefaultWithIssuer and a custom audience validator."],["Q127",20,"Login works once but the next request is anonymous. Why?","Custom authentication may have set the current context without saving it or applying the required session strategy.","Login request -> SecurityContextHolder populated\nNext request -> repository has no persisted context\nRepair -> supported persistent login flow with explicit responsibilities","Inspect selected session policy, repository, response cookie and browser transport. Built-in and custom flows differ. Test authentication on a second request with the returned session.","An API intended to be stateless should authenticate the next bearer request independently.","How would a cookie blocked by the browser change diagnosis?","Check whether the context was saved, response set cookie, browser sends it, session store survives restart, and cookie flags allow it."],["Q128",20,"Anonymous users appear authenticated in application code. Why?","The code may treat a non-null or raw isAuthenticated Authentication as proof of end-user login despite anonymous tokens.","Authentication object exists -> not enough\nAnonymousAuthenticationToken -> placeholder identity\nUse supported trust-resolution/authorization semantics.","Remove ad hoc checks and enforce policy at the proper boundary. Test anonymous and remember-me cases separately. A fabricated context must never bypass a business ownership check.","Anonymous authentication is not a verified account.","How would a service distinguish fresh from remembered authentication?","Use AuthenticationTrustResolver / framework request authorization to distinguish anonymous, remember-me and fully authenticated."],["Q129",20,"A method annotation is ignored during an internal call. Why?","Ordinary proxy-based method security is bypassed by direct self-invocation or an unmanaged target.","this.approve(id) -> target self-call\nCollaboratorProxy.approve(id) -> applicable advice boundary","Refactor protected operations into a service boundary reached by every relevant caller. Verify method security is enabled and the method is eligible. Test a non-HTTP caller too.","Adding URL rules does not repair batch access automatically.","How would a plain new Service() behave?","A manually constructed non-managed Service lacks Spring proxy advice entirely; no @PreAuthorize interception happens."],["Q130",20,"A denied method changes the database before failing. What failed?","Authorization may occur after invocation, or the check sits after the modifying work rather than protecting the operation before effect.","@PostAuthorize on approve -> target may already perform effect\nRepair -> pre-authorization plus authoritative ownership/invariant","Review transaction behavior separately; a later exception does not undo arbitrary HTTP side effects. Assert no forbidden state change in negative tests, not only an access-denied response.","A 403 response can coexist with a security defect if work already happened.","Which boundary must be atomic for ownership plus update?","Enforce ownership and state change atomically at the service/database write boundary; an after-the-fact check is too late."],["Q131",20,"A cache exposes another customer's order. What failed?","The key/result omitted ownership dimensions or the only access check was skipped on a cache hit.","Outer: authorize trusted user and tenant every time\nInner: cache approved representation under correct key\nOld unsafe entries: invalidate/rebuild deliberately","A new key definition does not erase already stored entries. Check user-specific visibility, role changes and tenant isolation. Use immutable safe DTOs but remember immutability does not determine permission.","Valid login cannot correct wrong cached ownership.","How would a hit-path test expose the defect?","Warm the cache with A's data then request the same key under B; require access rejection or tenant-scoped cache key."],["Q132",20,"A custom JWT filter runs twice. What do you inspect?","The filter may be registered both with the servlet container and inside Spring Security, or dispatch handling may differ from expectations.","@Component custom Filter -> Boot servlet registration\nhttp.addFilterBefore(sameFilter, ...) -> security registration too\nReview registration and actual request dispatches.","Use a FilterRegistrationBean policy when necessary to avoid unintended container registration for a security-only filter. OncePerRequestFilter has specific async/error dispatch semantics; it is not a promise for every conceivable lifecycle.","Do not fix double execution by skipping authentication blindly.","Where should the filter's failure handler run?","Check registration as both servlet filter and Spring chain filter, REQUEST/ASYNC/ERROR dispatch, and OncePerRequestFilter behavior."],["Q133",20,"Postman succeeds but browser preflight returns 401. What failed?","CORS may not be processed before ordinary authentication in the selected chain or the expected origin/header policy is missing.","OPTIONS with requested Authorization header -> no access token\nCORS policy should decide preflight\nActual GET -> still requires valid bearer token","Inspect both network requests and their returned headers. Enable the supported CORS integration and exact origin rules. Do not open all API methods to make OPTIONS pass.","A CORS error can conceal a separate actual-request failure.","Which test asserts allowed and denied origins?","Test allowed/disallowed Origin on preflight and actual requests; compare Access-Control headers and ensure policy does not bypass auth."],["Q134",20,"JWT in a cookie is used after CSRF was disabled. What is wrong?","The token format was mistaken for a credential-transport defense; browser- auto-sent token cookies can still support CSRF.","Cookie holds signed JWT\nBrowser attaches it to applicable requests\nUnsafe request -> still needs deliberate CSRF protection","Restore a reviewed browser policy or change to a genuinely bearer-header-only architecture with its own storage tradeoffs. Validate logout, origin and SameSite behavior. Token signature does not prove the victim intended the action.","Statelessness does not eliminate credential auto-submission.","What risks remain if JavaScript stores tokens instead?","JavaScript-readable token storage is exposed to XSS; use a storage/CSRF/CSP design that acknowledges this different risk."],["Q135",20,"A JWT still works after account suspension. Why?","Local token validation does not automatically consult the changed account state or revoke its issued authority snapshot.","Suspend account -> database state changed\nIssued JWT -> signature, issuer and exp still valid\nNeed defined revocation or fresh-policy check for required latency.","Choose short lifetime, introspection, token-version or denylist policy based on risk and outage requirements. Include cached results and active sessions in the design. Verify actual enforcement delay.","Removing a role in a table does not edit an existing token.","Which operations need near-immediate revocation?","Financial transfers, admin actions, data export and irreversible operations often require near-immediate suspension enforcement."],["Q136",20,"T okens fail after every authorization-server restart. What failed?","Signing keys or issuer configuration may be regenerated or changed without the required durable key lifecycle and overlap.","Restart -> ephemeral signing key replaced\nOld tokens -> published verification key no longer available\nRepair -> protected persistent signing-key policy and rotation window","Compare kid, issuer and JWKS across restarts, then validate a pre-restart token. Emergency key compromise differs from an ordinary restart. Never preserve a compromised key merely for availability.","Session restart and JWT signer restart are different failure modes.","How would planned retirement honor token lifetime?","Keep the old public key available for the maximum valid old-token lifetime plus clock skew; then remove it deliberately."],["Q137",20,"A new kid fails only on some API instances. What do you inspect?","Inspect trusted JWKS propagation, cache refresh, network access, clock/ claim policy and actual key material consistency.","Some pods cache old set -> new kid unresolved\nOthers refreshed -> verify succeeds\nObserve refresh failure and overlap policy, not only token text.","Plan publication before using a new signer and test cache behavior under failures. A bad kid or algorithm must still fail. Do not fetch an arbitrary header URL to bypass the problem.","Caching forever and disabling signature checks are unsafe repairs.","How would you retire old keys without a stampede?","Stagger refresh and cache compatible old/new verification keys; monitor kid misses without synchronized retry storms."],["Q138",20,"An async task executes as the previous request's user. Why?","Context was not cleaned up or was propagated using an unsuitable pooled- thread strategy.","Task A sets user A -> no cleanup\nReused worker handles task B -> stale identity observed\nRepair -> supported wrapper/restoration and explicit task actor policy","Test at least two identities across reused workers and failure paths. Authentication state, MDC and request-owned data need separate proper cleanup. A durable task should not inherit accidental worker state.","InheritableThreadLocal does not solve task reuse.","How would context be restored after nested propagation?","Save previous context before delegation and restore it in finally after nested tasks; test exceptional exits on pooled workers."],["Q139",20,"A reactive service sees no authentication through SecurityContextHolder. Why?","It is using imperative thread-local lookup instead of the reactive security context associated with the subscriber chain.","ReactiveSecurityContextHolder.getContext()\n.map(c -> c.getAuthentication().getName())","Compose inside the supported publisher chain and test subscription context. Avoid separate subscribe calls that detach ownership. If bridging to imperative work, use a deliberate integration rather than an arbitrary current thread.","A debugger's thread identity is not a reactive authentication model.","How would WebTestClient supply test authentication?","Use mockJwt()/mockAuthentication() with WebTestClient's reactive security testing setup, then check actual reactive context."],["Q140",20,"Security tests pass while invalid signatures are accepted in production. What was missed?","The suite may mock JwtDecoder or use jwt()/WithMockUser, testing authorization while bypassing real credential trust.","Policy test -> mock identity acceptable for rule checks\nDecoder/integration test -> actual signed/invalid token required\nWrong key, algorithm, issuer, audience, time -> negative matrix","Use a deterministic test issuer/key fixture and the actual validation configuration. Assert no business side effect for every rejected credential. A happy-path signed token still misses validator omissions.","More mocked claims do not prove signature verification.","Which production decoder bean must the integration test exercise?","Run a signed-token request against the same real JwtDecoder bean/configuration used in production, not a mocked jwt() shortcut."],["Q141",20,"An identity-provider outage results in permitAll fallback. Why is this dangerous?","Availability handling is granting access without established identity or permission, violating the security boundary.","Introspection times out -> defined dependency failure\nDo not convert failure into authenticated anonymous/default admin identity.\nKnown valid cached credentials -> only within reviewed freshness policy.","Fix the fallback and assess exposure. Use bounds and observability to handle the outage without silently widening access. Public operations can have a separate intentional policy.","Circuit-breaker fallback must not invent privileges.","What degradation remains safe for the protected operation?","Allow only explicitly public, non-sensitive operations to degrade; protected reads/writes must fail closed when identity is unknown."],["Q142",20,"A service accepts tokens from arbitrary iss URLs. What failed?","Untrusted token data is choosing trust roots or network destinations instead of selecting from an approved issuer policy.","Incoming iss -> allowlist lookup only\nApproved issuer -> predetermined trusted decoder policy\nUnknown issuer -> reject without arbitrary discovery","Besides overtrust, network fetches can create SSRF and resource exhaustion. Validate issuer again after choosing the policy. Keep audience and authority mapping specific to each approved issuer.","A valid signature from an attacker's issuer is not your trust contract.","How would adding a new tenant's issuer be reviewed?","Require a reviewed issuer allowlist, trusted metadata/JWKS origin and issuer-specific validation before onboarding a tenant."],["Q143",20,"A password-login surge exhausts CPU. How should it be handled?","Bound expensive authentication work, detect abuse, and tune adaptive hashing with real evidence without weakening password protection indiscriminately.","Admission -> finite concurrency/rate budget\nVerification -> measured cost\nMonitoring -> failure categories, account/device signals, safe correlation","Check legitimate peaks versus credential stuffing and avoid a lockout policy attackers can exploit to disable everyone. Protect recovery and MFA endpoints too. Load-test accepted and rejected paths.","Unlimited retries can amplify authentication pressure.","Which capacity limit should produce a controlled response?","Bound in-flight expensive password checks and emit 429/503 or equivalent controlled failure under overload; never bypass hashing."],["Q144",20,"How would you approve a security configuration for release?","Require explicit chain coverage, trust roots, credential/browser policy, permissions and ownership, lifecycle/rotation rules, negative tests, and operational evidence.","Review -> all routes and method entry points\nTrust -> issuers, audiences, algorithms, keys, identity mappings\nProof -> denied cases produce no forbidden effect or credential leak\nOperations -> logout, revocation, outage and recovery behavior","Explain the concrete invariant and tradeoff for each important action. A compiling configuration is not proof of confidentiality, integrity or isolation. Name an owner for ongoing key/ secret lifecycle and security incident handling.","Documentation that says 'JWT secured' is not enough evidence.","Which unanswered requirement would block approval?","Block approval for unknown authorization ownership, uncovered routes, unverified JWT audience/issuer, missing CSRF policy or untested denial."]],"labs":[["HANDS-ON LAB C01 — Build a browser session policy","Configure a real user source and PasswordEncoder. Check anonymous redirect, USER success, USER denied admin, ADMIN policy as intended, missing/valid CSRF for POST, logout and a second request after login. An ADMIN does not automatically also have USER unless your authority policy supplies it; decide that mapping explicitly.","@Bean\nSecurityFilterChain browser(HttpSecurity http) throws Exception {\nhttp.authorizeHttpRequests(a -> a\n.requestMatchers(\"/public/**\", \"/login\").permitAll()\n.requestMatchers(\"/admin/**\").hasRole(\"ADMIN\")\n.anyRequest().hasRole(\"USER\"))\n.formLogin(Customizer.withDefaults())\n.logout(Customizer.withDefaults());\nreturn http.build();\n}"],["HANDS-ON LAB C02 — Build a dedicated bearer-header API chain","The API must accept only explicit bearer headers, with no cookie/Basic authentication added to that boundary. Configure the trusted decoder from C03. Test allowed GET, wrong scope, invalid token, other HTTP methods and paths outside /api. If browser session endpoints are needed, replace the deny fallback with a reviewed browser chain rather than leaving paths uncovered.","@Bean @Order(1)\nSecurityFilterChain api(HttpSecurity http) throws Exception {\nhttp.securityMatcher(\"/api/**\")\n.csrf(c -> c.disable()) // Only this reviewed bearer-only boundary.\n.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n.authorizeHttpRequests(a -> a\n.requestMatchers(HttpMethod.GET, \"/api/orders/**\")\n.hasAuthority(\"SCOPE_orders.read\")\n.anyRequest().denyAll())\n.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));\nreturn http.build();\n}\n@Bean @Order(2)\nSecurityFilterChain fallback(HttpSecurity http) throws Exception {\nhttp.authorizeHttpRequests(a -> a.anyRequest().denyAll());\nreturn http.build();\n}"],["HANDS-ON LAB C03 — Compose issuer, time and audience checks","Supply security.issuer from a trusted setting, never directly from the incoming request. Test valid signature/claims, wrong signing key, wrong issuer, absent/wrong audience, expiry, not-before and unexpected algorithm. Discovery/key dependencies need deadlines and operational policy. Import the Spring Security OAuth2 core and jose JWT types appropriate to the baseline.","@Bean\nJwtDecoder decoder(@Value(\"${security.issuer}\") String issuer) {\nNimbusJwtDecoder d = JwtDecoders.fromIssuerLocation(issuer);\nOAuth2TokenValidator<Jwt> audience = jwt ->\njwt.getAudience().contains(\"orders-api\")\n? OAuth2TokenValidatorResult.success()\n: OAuth2TokenValidatorResult.failure(\nnew OAuth2Error(\"invalid_token\", \"Wrong audience\", null));\nd.setJwtValidator(new DelegatingOAuth2TokenValidator<>(\nJwtValidators.createDefaultWithIssuer(issuer), audience));\nreturn d;\n}"],["HANDS-ON LAB C04 — Map scopes and approved application roles","This trusts ADMIN only if the issuer is authoritative for that application role and the client/grant policy permits it. Check scope preservation, absent roles, disallowed roles, malformed claim types, and every trusted issuer separately. Do not map an arbitrary client-controlled role into an administrator privilege.","JwtAuthenticationConverter converter() {\nJwtGrantedAuthoritiesConverter scopes = new JwtGrantedAuthoritiesConverter();\nJwtAuthenticationConverter out = new JwtAuthenticationConverter();\nout.setJwtGrantedAuthoritiesConverter(jwt -> {\nList<GrantedAuthority> granted = new ArrayList<>(scopes.convert(jwt));\nList<String> roles = jwt.getClaimAsStringList(\"roles\");\nif (roles != null && roles.contains(\"ADMIN\"))\ngranted.add(new SimpleGrantedAuthority(\"ROLE_ADMIN\"));\nreturn granted;\n});\nreturn out;\n}\n// Wire with jwt(j -> j.jwtAuthenticationConverter(converter()))."],["HANDS-ON LAB C05 — Verify CSRF before business work","Use MockMvc with the actual browser filter chain, mocked Notes service fixture, a real controller and its valid DTO. The positive status assumes the handler's defined contract. Add invalid tokens and login/logout token renewal. Static imports come from SecurityMockMvcRequestPostProcessors and MockMvc result matchers. A test using disabled filters does not verify this boundary.","@Test void deniesMissingCsrf() throws Exception {\nmvc.perform(post(\"/notes\").with(user(\"sai\").roles(\"USER\")))\n.andExpect(status().isForbidden());\nverify(notes, never()).create(any());\n}\n@Test void permitsValidCsrf() throws Exception {\nmvc.perform(post(\"/notes\").with(user(\"sai\").roles(\"USER\"))\n.with(csrf()).contentType(MediaType.APPLICATION_JSON)\n.content(\"{\\\"text\\\":\\\"hello\\\"}\"))\n.andExpect(status().isCreated());\n}"],["HANDS-ON LAB C06 — Configure a narrow CORS policy","The chosen origin and credential mode are illustrative policy, not a universal recommendation. Check allowed/denied Origin, requested method/header combinations, OPTIONS without a bearer token and actual GET without credentials. An allowed preflight must not grant access to protected resources. Add cookie credentials only through a reviewed changed policy.","@Bean\nCorsConfigurationSource cors() {\nCorsConfiguration c = new CorsConfiguration();\nc.setAllowedOrigins(List.of(\"https://app.example\"));\nc.setAllowedMethods(List.of(\"GET\", \"POST\"));\nc.setAllowedHeaders(List.of(\"Authorization\", \"Content-Type\"));\nc.setAllowCredentials(false); // Explicit bearer-header-only SPA policy.\nUrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();\nsource.registerCorsConfiguration(\"/api/**\", c);\nreturn source;\n}\n// Enable http.cors(Customizer.withDefaults()) in the matching chain."],["HANDS-ON LAB C07 — Protect a reusable ownership boundary","Implement OrderPolicy from verified identity and tenant memberships, with no client-header trust shortcut. Invoke the managed service proxy in tests. Check permitted owner, other owner, other tenant, anonymous caller and a message/batch entry path. Also test the query's tenant predicate. A policy that checks existence must avoid forbidden information disclosure under the API contract.","@Configuration @EnableMethodSecurity\nclass MethodConfig {}\n@Service\nclass OrderService {\nprivate final OrderStore store;\nOrderService(OrderStore store) { this.store = store; }\n@PreAuthorize(\"@orderPolicy.canRead(authentication, #p0)\")\npublic OrderView read(long id) { return store.read(id); }\n}"],["HANDS-ON LAB C08 — Propagate and clear async context","Test user A, user B and an exceptional task on the same underlying worker. Assert every task sees only its assigned policy. Define what happens if permissions change before delayed execution. This is context propagation, not durable approval storage. Do not retain complete access tokens or browser session objects when an approved operation record is sufficient.","Executor secured = new DelegatingSecurityContextExecutor(executor);\nsecured.execute(() -> protectedWork());\n// Capture task identity under deliberate ownership.\n// Wrapper restores/clears worker context on completion."],["HANDS-ON LAB C09 — Build real decoder negative tests","The fixture is a helper you must implement with a vetted JWT library, deterministic test-only keys and configurable claims. Use the actual configured decoder, trusted key endpoint/fixture and stable clock policy. Add issuer, not-before, expiry and algorithm cases. jwt() and @WithMockUser intentionally do not replace these tests. No production private key belongs in the test repository.","@Test void rejectsWrongAudience() {\nString token = fixture.signedAccessToken(\nissuer, \"different-api\", futureExpiry, trustedPrivateKey);\nassertThrows(JwtException.class, () -> decoder.decode(token));\n}\n@Test void rejectsWrongKey() {\nString token = fixture.signedAccessToken(\nissuer, \"orders-api\", futureExpiry, unrelatedPrivateKey);\nassertThrows(JwtException.class, () -> decoder.decode(token));\n}"],["HANDS-ON LAB C10 — Review and repair an unsafe configuration","Produce a concrete review decision: each required invariant, its evidence, remaining risk and owner. Verify deployment proxy headers, management access, permission-change latency, key rotation and identity-provider outage. Do not approve merely because a valid token returns 200. Test that denied operations never perform the prohibited business effect.","Findings -> policy requirement -> minimal repair -> negative test\nUncovered path -> fallback chain -> deny unknown route\nAudience missing -> composed validator -> wrong-audience rejection\nCookie credential -> CSRF policy -> unsafe request denied\nToken logged -> safe event category -> log-redaction regression"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

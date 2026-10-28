@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Boot with Redis — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #dc2626;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Spring Boot with Redis</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 10 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Clean Premium Edition · Java 17+ · Spring Boot 3.5 · Spring Data Redis 3.5
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (10)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Caching &amp; Data Stores</span>
+              <span>•</span>
+              <span>140 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Spring Boot with Redis — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Clean Premium Edition (Java 17+ · Spring Boot 3.5 · Spring Data Redis 3.5). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Spring Boot with Redis</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Spring Boot with Redis — Hands-On Labs &amp; Reference Guides (10)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Spring Boot with Redis.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Spring Boot with Redis — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"spring-redis","title":"Spring Boot with Redis","subtitle":"Zero to Hero Clean Premium Edition","category":"Caching & Data Stores","badge":"Java 17+ · Spring Boot 3.5 · Spring Data Redis 3.5","color":"#dc2626","pages":140,"chapters":["Redis Foundations And Tradeoffs","Data Types And Access Patterns","Keys, Expiration And Atomic Commands","Spring Boot Wiring And Clients","Templates, Serialization And Repositories","Spring Cache Annotations","Redis Cache Manager Configuration","Cache Consistency And Invalidation","Stampedes, Penetration And Hot Keys","Transactions, Pipelines And Scripts","Distributed Locks And Fencing","Rate Limiting And Idempotency","Redis Cluster","Replication, Sentinel And Durability","Memory, Eviction And Performance","Sessions, Pub/Sub And Streams","Reactive Redis And Asynchronous Boundaries","Testing, Observability And Security","Production Troubleshooting Scenarios","Senior Architecture And Design Challenges"],"questions":[["Q001",0,"What is Redis and why use it with Spring Boot?","Redis is a low-latency data store with useful data structures; Spring Boot supplies configuration and Spring Data integration.","Application -> Redis cache -> fewer repeated database reads","Common uses include caching, sessions, counters and short-lived coordination. Each use needs a different durability and failure policy. A catalog cache can be rebuilt; losing a session or reservation can affect users directly.","Do not treat every Redis key as disposable cache data.","WHICH OF YOUR REDIS KEYS COULD BE SAFELY LOST?","Product cards, search suggestions and derived rankings can usually be rebuilt from the database. Sessions, reservations, payment decisions and audit records need an explicit recovery policy; never assume they are safe to discard."],["Q002",0,"Is Redis only a cache?","No. Redis can hold primary application state, but correctness then depends on persistence, replication, backup and recovery choices.","Rebuildable product cache != sole payment ledger","Separate state by business importance. If Redis is authoritative, define acceptable loss, restore tests and write semantics. A relational database can remain the durable source for business transactions while Redis accelerates reads.","Enabling persistence is not a complete recovery strategy.","HOW WOULD YOU CHOOSE THE AUTHORITATIVE STORE FOR BALANCES?","Keep monetary balances and transfers in a durable store with transaction isolation, constraints, auditability and tested recovery. Use Redis for fast derived reads only unless its durability model demonstrably meets the financial requirement."],["Q003",0,"Why is Redis fast?","Many operations work on in-memory data with efficient structures and low protocol overhead.","GET product:42 -> one keyed lookup, no table scan","Network round trips, large payloads and command complexity still matter. Long commands or scripts can delay unrelated work. Redis uses multiple threads for some activities, so describing the entire server as universally single-threaded is inaccurate.","In-memory does not mean every command has constant cost.","WHAT CAN MAKE A SMALL REDIS DEPLOYMENT SLOW?","Network round trips, CPU-heavy Lua, large keys, eviction pressure, swapping, persistence I/O, slow clients and hot-key contention can all increase latency. Check server latency and client/network timings separately."],["Q004",0,"How does Redis differ from a relational database?","Redis favors key-oriented structures and direct operations; relational databases offer rich relational queries and transaction/invariant tools.","Redis: GET catalog:v1:42\nSQL: SELECT ... JOIN ... WHERE ...","Model Redis access paths deliberately instead of reproducing every relational join with round trips. Use database constraints for durable business rules when appropriate. The choice depends on query patterns, correctness and operational needs.","Redis MULTI is not equivalent to all SQL ACID behavior.","WHICH INVARIANT WOULD YOU KEEP IN SQL?","Keep rules such as unique payment reference, nonnegative inventory or balanced ledger postings in a transactional database. Cache a projection in Redis; do not make cache expiry the only enforcement mechanism."],["Q005",0,"What is the difference between local and distributed caching?","A local cache lives in one process; Redis can serve many application instances with shared state.","Pod A Caffeine entry != Pod B Caffeine entry\nBoth pods can read the same Redis key","Local hits avoid network latency but need separate invalidation and memory management. Shared Redis reduces duplicate storage while adding network and service availability dependencies. A two-level cache inherits both sets of tradeoffs.","Shared storage alone does not make cached values always fresh.","WHEN WOULD YOU COMBINE CAFFEINE AND REDIS?","Use Caffeine for extremely frequent, short-lived in-process reads and Redis for a shared cross-pod cache. Define L1 invalidation or very short TTLs, since local entries can remain stale after Redis changes."],["Q006",1,"When should you use a string value?","Use strings for simple values, serialized objects and operations such as counters.","SET product:42 '{\"name\":\"Pen\"}' EX 60\nGET product:42\nINCR page:view:42","Redis strings are byte sequences, not automatically JSON documents. A JSON value usually needs whole-value serialization unless a separately supported JSON feature is used. Use compact DTOs and explicit schemas.","GET does not query fields inside ordinary JSON strings.","WHEN WOULD A HASH BE BETTER?","A hash fits when callers frequently update or fetch individual fields, such as HSET profile:42 city Chennai. Use a string for a single serialized value that is usually replaced as a whole."],["Q007",1,"When should you use a hash?","Use a hash for a map of fields that can be read or updated separately.","HSET profile:42 name Sai city Chennai\nHGET profile:42 city","Field operations reduce whole-object rewriting. Key expiry affects the hash key; newer Redis versions may offer field-expiration features, but support must be checked against server/ client versions. A partial read requires clear missing-field semantics.","Do not assume every Redis deployment supports hash-field TTL.","HOW WOULD YOU EVOLVE FIELDS SAFELY?","Add optional fields with sensible reader defaults, retain old names during migration, and version or dual-read incompatible formats. Verify old and new applications against existing keys before rolling out."],["Q008",1,"When should you use lists and sets?","Lists preserve element order and allow duplicates; sets represent unique membership without insertion-order guarantees.","LPUSH recent:42 order-1 order-2\nSADD user:42:roles viewer editor","Lists fit bounded recent history or queue-like patterns. Sets fit membership and set algebra. Neither implies a durable acknowledgment workflow for work processing. Bound growth and evaluate command complexity for large collections.","A plain list pop can lose work if the worker dies.","WHAT WOULD YOU USE FOR RECOVERABLE WORK DELIVERY?","Use Redis Streams with consumer groups and pending-entry recovery, or a durable messaging service such as Kafka. A plain list pop or Pub/Sub notification lacks the same acknowledgment and replay semantics."],["Q009",1,"What is a sorted set useful for?","A sorted set stores unique members ordered by score, useful for ranking and time-based selection.","ZADD leaderboard 120 user-42 95 user-7\nZREVRANGE leaderboard 0 9 WITHSCORES","Scores are numeric, with tie ordering determined by Redis rules. Leaderboards need explicit tie semantics and score-update policies. Avoid treating floating-point scores as a universally exact monetary representation.","Sorted-set rank is not an authorization decision.","HOW WOULD YOU REMOVE OLD ENTRIES FROM A SLIDING WINDOW?","Use ZREMRANGEBYSCORE to remove scores older than the window, then count or rank the remaining entries. Perform cleanup and admission atomically in a bounded Lua script when the outcome must be consistent."],["Q010",1,"When do bitmaps and HyperLogLog help?","Bitmaps represent compact positional flags; HyperLogLog estimates distinct cardinality with bounded memory.","SETBIT active:2026-10-08 42 1\nPFADD visitors user-42 user-7\nPFCOUNT visitors","Bitmaps need stable numeric positions and can become large if offsets are sparse. HyperLogLog is approximate and cannot enumerate individual members. Choose them when the operation fits these limitations.","An approximate visitor count cannot replace exact billing counts.","WHAT DATA WOULD REQUIRE A NORMAL SET INSTEAD?","Use a regular Set when you must know whether a particular user exists, enumerate exact members, or calculate an exact small membership count. HyperLogLog cannot list members or provide exact cardinality."],["Q011",2,"How should Redis keys be designed?","Use a stable namespace that includes the application, purpose and required identity boundaries.","shop:prod:product:v1:tenant-7:42","Include tenant and representation versions when needed. Keep sensitive identifiers out of exposed key names where possible. A consistent namespace supports inspection and targeted cleanup, but is not access control by itself.","Two services using the same unqualified key can overwrite each other.","HOW DO YOU MIGRATE A KEY FORMAT?","Introduce a v2 namespace, deploy readers that can read v2 and v1, backfill or lazily populate v2, then switch writes. Monitor misses and preserve old keys until rollback is no longer needed."],["Q012",2,"How do TTL and PTTL behave?","They report remaining lifetime in seconds or milliseconds; special results identify missing keys and keys without expiration.","TTL key -> -2: key absent\nTTL key -> -1: key exists without expiry\nPTTL key -> positive milliseconds remaining","Expiration is a logical access boundary managed through passive and active expiry. A key may expire between two commands, so do not assume a positive TTL from an earlier read proves later existence.","Redis TTL is not a precise business scheduler.","HOW WOULD YOU ENFORCE A RESERVATION DEADLINE DURABLY?","Store reservation expiry and status in the authoritative database and use a scheduled or event-driven expiry worker with idempotent transitions. A Redis TTL can assist cleanup but is not proof that the reservation was durably canceled."],["Q013",2,"Why set value and expiry in one command?","A combined command avoids the crash gap between creating a value and separately setting its TTL.","SET otp:42 123456 EX 120\n// Instead of SET followed later by EXPIRE.","A process dying between separate commands can leave an immortal key. StringRedisTemplate offers set with Duration. Other structures may need a script or a reviewed transaction to combine creation and expiry.","Pipelining separate commands is not atomic.","HOW WOULD YOU CREATE AN EXPIRING COUNTER SAFELY?","Use a Lua script that performs INCR and sets PEXPIRE only when the count is first created, or another single atomic protocol. Test concurrent first increments and retries after unknown outcomes."],["Q014",2,"What happens to TTL when a value is overwritten?","A normal SET replaces the value and clears its previous expiry unless an expiry or supported preservation option is specified.","SET k one EX 60\nSET k two\nTTL k -> -1","In-place operations such as INCR or HSET ordinarily preserve the key expiry, unlike SET replacement. Verify the precise command semantics. KEEPTTL is a server-version- dependent option for retaining an existing deadline.","A refresh write can accidentally create a permanent cache key.","WHICH TEMPLATE OPERATION ARE YOU USING TO UPDATE VALUES?","Inspect the actual Spring Redis API: opsForValue().set(key,value) normally removes an existing TTL, while set(key,value,Duration) specifies a new deadline. For TTL preservation, use explicitly supported Redis options and test the wire behavior."],["Q015",2,"Why is INCR safer than GET plus SET for a counter?","INCR performs one atomic counter update, while a read-modify-write sequence can lose concurrent increments.","Two callers: GET 10; both SET 11 -> one increment lost\nTwo INCR calls: 10 -> 11 -> 12","Atomic increment does not atomically establish a TTL unless the complete policy is combined. Redis expects a supported integer representation and can reject wrong types or overflow. Define timeout/retry behavior for increments.","Retrying after an unknown outcome can increment twice.","WHEN WOULD YOU NEED AN OPERATION IDENTITY?","An operation ID is essential when a request may be retried after an uncertain INCR response, especially for billing or quotas. Store/deduplicate request identity and its result under an atomic, sufficiently durable policy."],["Q016",3,"Which dependency enables Redis access in Spring Boot?","Use spring-boot-starter-data-redis for imperative access and the reactive starter for reactive integration.","<artifactId>spring-boot-starter-data-redis</artifactId>\n// Versions managed by the Boot parent/BOM.","The starter integrates Spring Data Redis and defaults to Lettuce in the baseline. Redis server is deployed separately. Boot 3.5 and Spring Data Redis 3.5 APIs are the teaching baseline; inspect resolved versions before mixing examples.","Adding a starter does not start a production Redis service.","HOW DO YOU INSPECT THE MANAGED DRIVER VERSION?","Run mvn dependency:tree or mvn help:effective-pom and inspect the Boot BOM- managed Lettuce/Jedis versions. Check the selected runtime classpath, not only the dependency typed into pom.xml."],["Q017",3,"What properties configure a standalone Redis connection?","In Boot 3.5, use the spring.data.redis property namespace for host, port, credentials and timeout settings.","spring.data.redis.host=localhost\nspring.data.redis.port=6379\nspring.data.redis.connect-timeout=2s\nspring.data.redis.timeout=1s","Connection establishment and command wait budgets are different. Supply authenticated TLS configuration for the intended environment and avoid storing credentials in source. Old property namespaces can be misleading after migration.","A longer timeout can turn an outage into thread exhaustion.","WHAT BUDGET SHOULD AN API ALLOCATE TO A CACHE LOOKUP?","Reserve a small, measured fraction of the end-to-end request deadline for Redis, including connection and command time. For a noncritical cache, fail fast to a bounded fallback rather than consuming the entire request budget."],["Q018",3,"How do Lettuce and Jedis differ?","Lettuce supports asynchronous/reactive operations with a Netty-based model; Jedis has a different client and connection usage model.","Default Boot starter -> Lettuce\nDriver selection -> connection and pooling review","Choose by required features, topology and operational behavior, not an outdated universal performance claim. Drivers evolve, so verify supported versions. Spring Data's abstraction does not erase all driver-specific cluster or scan behavior.","Client choice does not remove the need for deadlines.","WHICH FEATURE WOULD DETERMINE YOUR DRIVER CHOICE?","Check whether the workload needs true reactive operations, blocking commands, pipelining, Cluster/Sentinel, TLS, or pooling. Choose a supported driver version after a behavior test, not a universal speed claim."],["Q019",3,"What does RedisConnectionFactory do?","It supplies Spring Redis connections and translates driver integration into Spring Data's connection abstraction.","RedisConnectionFactory -> RedisTemplate -> opsForValue()","Boot can auto-configure the factory from properties. Custom factories can replace defaults and require explicit lifecycle/configuration. Individual Spring RedisConnection instances should not be treated as generally thread-safe application singletons.","Reusing RedisTemplate is different from sharing a raw connection.","WHO CLOSES A MANUALLY OBTAINED CONNECTION?","A caller that obtains a native connection directly owns releasing/closing it according to the factory API, usually with try/finally. Spring-managed templates handle their own connection lifecycle; do not cache a raw connection as a singleton."],["Q020",3,"Does Lettuce always need a connection pool?","No. Ordinary operations can share a native connection; blocking and transactional use cases need separate consideration.","Simple GET/SET -> shared native connection by default\nBlocking/transactional usage -> reviewed dedicated connection handling","Pooling support needs the appropriate pool dependency/configuration. Multiplexing reduces connection counts but does not remove head-of-line or server capacity limits. Inspect actual connection use before increasing pool size.","A pool of 100 does not create 100 Redis command execution cores.","WHEN WOULD BLOCKING OPERATIONS REQUIRE ISOLATION?","Blocking reads, long-lived Pub/Sub subscriptions, or transactions can monopolize a connection and may need isolated dedicated connections. Ordinary nonblocking GET/ SET through Lettuce can often share a connection safely."],["Q021",4,"How do Redis T emplate and StringRedis T emplate differ?","RedisTemplate is configurable for typed key/value serialization; StringRedisTemplate uses string serialization for its normal operations.","strings.opsForValue().set(\"greeting\", \"hello\", Duration.ofMinutes(1));","StringRedisTemplate makes CLI inspection and simple JSON strings straightforward. A typed RedisTemplate needs matching key, value and hash serializers. Java generic parameters do not automatically select the wire format.","RedisTemplate<String,Product> alone does not configure JSON.","HOW WOULD YOU INSPECT THE ACTUAL STORED BYTES?","Read a known key with redis-cli --raw or inspect its hexadecimal bytes; compare with the configured key/value serializers. Check hash field serializers separately if using hashes."],["Q022",4,"Why can Redis keys look unreadable in redis-cli?","The template may use binary Java serialization rather than plain string serialization.","CLI key: binary prefix + encoded text\nStringRedisSerializer -> human-readable key bytes","A default RedisTemplate and the Redis cache manager can have different serialization settings. Inspect each actual path. Changing serializers affects compatibility with existing data and requires migration or a versioned namespace.","Switching a serializer does not rewrite old keys.","HOW DO YOU MIGRATE WITHOUT BREAKING ROLLBACK?","Use a versioned namespace and dual-compatible readers; write new values without rewriting all old keys in place. Keep old-format data or a backfill/rollback strategy until the old release can be safely retired."],["Q023",4,"How should cached JSON objects evolve?","Use an explicit DTO schema, tolerant reading where appropriate and a versioned namespace for incompatible changes.","product:v1:42 -> old DTO\nproduct:v2:42 -> new DTO","Avoid caching JPA entities with lazy proxies or every internal field. Class metadata can couple values to Java implementation names; restrict accepted types. Test old stored values against the new application during a rolling upgrade.","Deserializing successfully does not ensure semantic compatibility.","WHICH CHANGE REQUIRES A NEW CACHE NAMESPACE?","Change namespaces when a schema breaks existing readers, changes meaning, or changes the serialized type/codec. For compatible optional fields, tolerant readers may allow the same namespace after tested rollouts."],["Q024",4,"How do hash serializers differ from value serializers?","A hash uses separate serializers for its field names and field values, in addition to the key serializer.","keySerializer; valueSerializer\nhashKeySerializer; hashValueSerializer","Correct string values do not prove hash fields are encoded correctly. Configure the full template consistently and validate CLI reads. Hash mapping is a separate application concern when storing object fields.","Updating only valueSerializer does not fix a broken hash encoding.","WHAT BYTES WOULD HGET EXPECT FOR THE FIELD NAME?","HGET sends the serializer-produced bytes for the hash field name, which must match the bytes used by HSET. A UTF-8 string field serializer expects readable field-name bytes; Java-serialized names will not match them."],["Q025",4,"What do Redis repositories provide?","They map supported domain objects to Redis structures and maintain repository-specific indexes and metadata.","@RedisHash(\"people\")\nclass Person { @Id String id; String name; }","Repositories are a separate model from cache annotations. Indexes, TTL and keyspace- event behavior require review. They do not provide relational joins or general Redis transaction support. Select them only when their object lifecycle fits the use case.","A repository entity is not automatically a cached SQL entity.","HOW ARE SECONDARY INDEXES CLEANED AFTER EXPIRATION?","Redis repository index cleanup relies on its keyspace-event and shadow-copy behavior, and expiry events are not perfectly durable. For correctness, test cleanup and use reconciliation or explicit index maintenance rather than trusting notifications alone."],["Q026",5,"What does @Cacheable do?","It returns a cached value for a hit and invokes the method on a miss under the selected cache provider's behavior.","@Cacheable(cacheNames=\"products\", key=\"#id\")\npublic Product find(String id) { return database.load(id); }","Enable caching and select a Redis cache manager deliberately. The annotation expresses cache behavior, not a data consistency contract. Default concurrency can allow several callers to load the same missed key.","@Cacheable is not a distributed mutex.","WHAT HAPPENS WHEN TWO PODS MISS AT THE SAME TIME?","Both pods may see a miss and load the database at once. Ordinary @Cacheable does not provide distributed single-flight: use bounded loader concurrency, accept some duplication or choose a provider-specific coordination protocol."],["Q027",5,"How is the default Spring cache key chosen?","No arguments use an empty key; one argument generally uses that argument; multiple arguments use a composite SimpleKey.","find(\"42\") -> key based on \"42\"\nfind(\"tenant-7\", \"42\") -> composite identity","Make important identity dimensions explicit, especially tenant, locale and representation. A custom key or KeyGenerator can standardize identity. Redis serialization/prefixing then produces the stored key bytes.","Omitting tenant can leak another tenant's cached result.","WHICH ARGUMENTS TRULY INFLUENCE THE RETURNED VALUE?","Include every dimension that affects the response: tenant, product ID, locale, price tier, representation version and permission scope when relevant. Never key a private response only by a public entity ID."],["Q028",5,"How do @CachePut and @CacheEvict differ?","CachePut invokes the method and stores its result; CacheEvict removes selected cached data.","@CachePut(cacheNames=\"products\", key=\"#result.id\")\npublic Product update(...) { ... }\n@CacheEvict(cacheNames=\"products\", key=\"#id\")\npublic void delete(String id) { ... }","Eviction normally occurs after successful method completion unless beforeInvocation is configured. Method completion is not necessarily outer transaction commit. Review advice ordering and transaction-aware cache behavior for writes.","A DB rollback can leave an incorrectly updated cache.","HOW DO YOU ALIGN INVALIDATION WITH COMMIT?","Evict after successful DB commit via transaction-aware cache management or a transaction synchronization/outbox event. Then test rollback and a late reader, because post-commit eviction still allows a stale-load race."],["Q029",5,"How do condition and unless differ?","Condition decides whether caching applies based on allowed context; unless can veto storing the returned result after invocation.","@Cacheable(cacheNames=\"products\", key=\"#id\",\ncondition=\"#id != null\", unless=\"#result == null\")","The result is available after invocation for supported expressions such as unless. A cache hit does not invoke the method to recompute a result. Null policy and provider configuration should match the annotation.","Not every annotation option combines with sync=true.","WHEN WOULD SHORT-LIVED NEGATIVE CACHING BE PREFERABLE?","Cache a brief 'not found' result when repeated searches for nonexistent IDs overload the database and the cost of short staleness is acceptable. Invalidate promptly when a record is created."],["Q030",5,"Why does a self-call bypass @Cacheable?","Default Spring caching uses proxies, and an internal this.method() call bypasses the proxy advice.","Outer bean -> cached service proxy -> interception\nthis.find(id) -> direct method call -> no default cache advice","Put the cached operation on a separate injected service when needed. Ensure the caller receives the Spring-managed proxy and the method is interceptable. The same general boundary applies to default transaction advice.","Calling new ProductService() also bypasses Spring caching.","HOW WOULD AN INTEGRATION TEST REVEAL PROXY BYPASS?","Inject the cached service into another Spring bean and call it twice; the source should run once. Contrast with this.find(...) inside the bean and assert that the source runs again, showing bypass of the proxy."],["Q031",6,"What does RedisCacheManager manage?","It supplies named Spring Cache instances backed by Redis with shared or per-cache configuration.","RedisCacheConfiguration.defaultCacheConfig()\n.entryTtl(Duration.ofMinutes(5))\n.disableCachingNullValues();","Configure namespaces, serializers and TTL by data behavior. Default Redis cache settings include no expiry unless changed and can use Java value serialization. A template's serializer settings do not automatically alter this cache manager.","Configuring StringRedisTemplate does not configure @Cacheable values.","WHICH BEAN CONTROLS ANNOTATED CACHE SERIALIZATION?","The RedisCacheManager bean and each RedisCacheConfiguration control annotated cache value codecs and TTLs. A separately configured StringRedisTemplate does not automatically change @Cacheable serialization."],["Q032",6,"Can different caches have different TTLs?","Yes. Configure named caches separately instead of treating every data class as equally fresh.","products: 5 minutes\nexchange-rates: 30 seconds\nfeature-config: reviewed policy","Per-entry TTL computation is also available through version-specific cache writer APIs, introduced in Spring Data Redis 3.2. Match TTL to tolerated staleness and load, with jitter where the implementation permits it.","A five-minute TTL is not a promise of five-minute fresh data.","HOW CAN A LATE STALE WRITE EXTEND STALENESS?","A reader may load old DB content before a write, then SET it after the writer commits and evicts. The late SET resets the key's TTL, extending the time during which an old value remains visible."],["Q033",6,"How do TTL and time-to-idle differ?","TTL ends a fixed lifetime; time-to-idle extends a lifetime on qualifying access.","SET k value EX 60 -> ordinary GET does not refresh deadline\nGETEX k EX 60 -> read and set a new deadline","Spring Redis cache can emulate TTI using GETEX on cache reads, requiring Redis 6.2+ support. All relevant access paths must refresh consistently; a direct GET does not follow that policy. TTI can retain popular stale data indefinitely without invalidation.","Turning on TTI does not make every Redis client read refresh expiry.","WHAT PREVENTS A HOT STALE VALUE LIVING FOREVER?","Use explicit invalidation/version checks or an absolute maximum age that reads cannot extend. GETEX-based TTI alone can keep a frequently accessed stale entry alive indefinitely."],["Q034",6,"What does @Cacheable(sync=true) guarantee?","It requests provider-supported synchronized loading, not a universal cross-pod single-flight guarantee.","@Cacheable(cacheNames=\"products\", key=\"#id\", sync=true)\npublic Product find(String id) { ... }","The abstraction imposes limitations, such as no unless with sync=true and a single cache. The exact Redis loader synchronization depends on the selected writer and framework version. Default nonlocking behavior should not be assumed to serialize misses across instances.","Verify concurrent cold misses on two pods rather than infer distributed safety.","HOW WOULD YOU MEASURE DUPLICATE LOADS?","Instrument database loader calls by cache key and run simultaneous cold requests on two pods. Count actual loads, cache misses, duration and peak concurrent loads; do not infer cross-pod locking from the annotation."],["Q035",6,"What does a locking RedisCacheWriter lock?","In the 3.5 baseline, it coordinates selected multi-command cache operations at the cache level, not simply one entry-level business lock.","Nonlocking writer -> fewer requests\nLocking writer -> extra lock checks and possible waiting","Writer locking can prevent command overlap but trades throughput for coordination. Its lifetime and scope need review. It is not proof that a database loader, cache entry or remote payment is protected by a robust business lock.","Cache-writer locking is not a replacement for a business invariant.","WHAT CONTENTION COULD A CACHE-WIDE LOCK CREATE?","A cache-wide writer lock can delay unrelated product keys while one operation clears or mutates the same named cache. That raises tail latency and limits throughput compared with narrowly scoped coordination."],["Q036",7,"What is cache-aside?","The application checks cache, loads the source on a miss, then populates cache.","GET product:42 -> miss -> DB read -> SET with TTL","On writes, update the authoritative store and use a documented invalidation or update policy. Cache-aside allows miss races and temporary staleness. Define whether stale reads are acceptable and how they are repaired.","Redis does not automatically notice a SQL update.","WHICH WRITES BYPASS YOUR INVALIDATION PATH?","Admin scripts, batch jobs, SQL migrations, direct repository writes and other services can bypass application invalidation. List every writer to the authoritative data and define a shared notification or reconciliation path."],["Q037",7,"Why prefer DB commit before cache eviction?","It avoids readers immediately repopulating cache from an uncommitted old database state, but it does not remove every race.","DB update -> commit -> evict product:42","A reader that loaded old data before commit can still write that data after eviction. Transaction-aware eviction helps align with commit, while version checks, bounded TTL or durable invalidation/reconciliation address remaining races.","Delete-after-commit alone is not strict consistency.","DRAW THE LATE STALE-LOADER INTERLEAVING.","Reader reads old DB value; writer updates DB and commits; writer evicts cache; reader finally SETs the old value with a fresh TTL. A version guard, source read or invalidation repair is needed to reject or bound it."],["Q038",7,"What are read-through, write-through and write- behind?","They describe who loads values and when writes reach the authoritative backing store.","Read-through: cache layer loads miss\nWrite-through: write also reaches backing store synchronously\nWrite-behind: backing write delayed","These are architecture patterns, not all automatic RedisCacheManager capabilities. Write- behind needs durable buffering, ordering and failure recovery. A plain SET in Redis plus future database work is not automatically safe.","Delayed writes can disappear if the buffer is lost.","WHEN IS WRITE-BEHIND UNACCEPTABLE?","Write-behind is unacceptable when acknowledging an order, payment or ledger update before its only durable copy is committed. A process crash can lose queued writes, so use a durable queue/outbox or synchronous commit."],["Q039",7,"What is negative caching?","It briefly caches a known absence or rejection to avoid repeated expensive source lookups.","product:missing:42 -> ABSENT marker, TTL=10 seconds","Distinguish absent data from a timeout or database outage. Keep a short lifetime and evict when the item is created. A null-caching strategy must match provider behavior and distinguish a miss from a stored negative value.","Caching infrastructure failures as absence can hide real data.","HOW WOULD YOU INVALIDATE A PREVIOUSLY ABSENT PRODUCT?","When creating a product, evict the previous negative entry for its ID or publish a reliable invalidation. Otherwise callers may keep receiving 'not found' until the short negative TTL expires."],["Q040",7,"Can TTL guarantee fresh reads?","No. TTL bounds the age of an entry from its expiry-setting operation, not freshness relative to every concurrent source update.","Old DB result loaded at T0\nWritten into cache at T2 with TTL 60 seconds","A delayed write can start a fresh TTL for old data. Exact consistency may require bypassing cache for critical reads or enforcing a versioned protocol with the authoritative store. Use TTL as one recovery bound, not a universal invariant.","Adding expiry does not solve all stale-write races.","WHICH ENDPOINT SHOULD READ DIRECTLY FROM THE SOURCE?","Read directly from the authoritative source for strict balances, authorization checks, scarce inventory decisions and other invariants that cannot tolerate stale data. Cache only a permitted projection or strictly versioned result."],["Q041",8,"What is a cache stampede?","Many requests miss the same key together and all load the backing service.","Hot key expires -> 1000 requests -> 1000 DB loads","Use bounded single-flight, carefully designed distributed loading coordination, refresh- ahead or stale-while-revalidate where valid. Add deadlines and cap concurrent loaders. Failure handling must not create endless waiting on a lost loader.","An unbounded lock wait just converts DB overload into request pileup.","HOW DOES THE SECOND CALLER BEHAVE WHEN THE LOADER FAILS?","If the shared loader fails, the second caller should receive a controlled failure or stale fallback after a bounded wait, not block forever. Clear an in-flight marker reliably and allow retry under a concurrency budget."],["Q042",8,"What is a cache avalanche?","Many keys or an entire cache layer become unavailable together, creating a broad source-load surge.","All product entries written with identical 300-second expiry","Use expiry jitter, staged warming and admission limits. A Redis outage also requires a fallback policy that respects database capacity. Independent key failures and broad dependency failure need different mitigation.","Blind fallback for every request can take down the database.","WHAT IS YOUR MAXIMUM PERMITTED FALLBACK CONCURRENCY?","Size fallback concurrency from database connection capacity and measured per-query latency, reserving headroom for normal traffic. Enforce the limit with a semaphore/ bulkhead and return overload responses once it is reached."],["Q043",8,"What is cache penetration?","Repeated requests for nonexistent data bypass useful cache hits and repeatedly reach the source.","Requests for random invalid productIds -> repeated DB misses","Validate identifiers, rate-limit abuse and consider negative caching. A Bloom filter can reject definite nonmembers, but false positives and update lifecycle must be managed; Bloom support may require server features/modules.","A probabilistic filter must not falsely reject valid new items through stale updates.","HOW DO YOU POPULATE IT BEFORE ENABLING IT?","Warm trusted keys via a bounded batch from authoritative data, or use a Bloom filter with a safe misses policy. Refresh the structure and handle false positives; never treat a filter as an authorization control."],["Q044",8,"What is a hot key and why is Cluster not enough?","A key receiving disproportionate traffic still maps to one slot/primary, so sharding other keys does not split its command work.","90% of GETs -> sale:top-product -> one shard","Reduce requests with local caching where staleness permits, replicate read-only derived data carefully, or redesign the aggregate. Read replicas introduce consistency tradeoffs. Measure key distribution without generating excessive metric labels.","Adding shards does not automatically distribute one key.","WHAT CORRECTNESS CHANGES IF A COUNTER IS SPLIT?","Splitting one logical counter can remove atomic admission and permit an overshoot until partial counts are merged. Use sharding only when approximate totals or a deliberate coordination protocol are acceptable."],["Q045",8,"When is stale-while-revalidate useful?","It serves a permitted stale value temporarily while a bounded refresh updates it asynchronously.","Soft deadline passed -> serve old catalog + trigger one refresh\nHard deadline passed -> reviewed miss/failure behavior","Keep soft and hard expiry explicit and ensure refresh coordination. This is application logic, not automatic behavior of plain @Cacheable. It fits read data with an accepted staleness budget and is unsuitable for arbitrary authorization or money decisions.","Stale data needs an agreed maximum age.","WHAT HAPPENS IF REFRESH KEEPS FAILING?","Serve only a bounded stale period; record refresh failures, retry with backoff and stop using data past maximum age. For sensitive data, fail closed or read the source instead of using stale content."],["Q046",9,"What does Redis pipelining do?","It batches command transmission and response handling to reduce network round trips; it does not make commands atomic.","Pipeline: GET a, GET b, GET c -> batched round trip","Use bounded batches to avoid excessive response memory and latency. Other clients can interleave commands. Spring executePipelined collects results; serialization and connection usage need review. A timeout can leave uncertain command outcomes.","A pipeline is not a transaction.","HOW WOULD YOU PROVE INTERLEAVING CAN STILL HAPPEN?","Run another client's SET while the pipeline issues multiple reads; the replies can reflect different instants. Use tracing/barriers or a controlled concurrent test; pipelining reduces round trips, not isolation."],["Q047",9,"What do MULTI and EXEC guarantee?","They queue commands and execute the queued sequence without other clients interleaving, but do not provide general rollback of runtime errors.","SET wrongType not-an-integer\nMULTI\nSET a 1\nINCR wrongType\nEXEC","Errors detected during queuing can abort the transaction. A runtime error in one queued command does not undo successfully executed commands. Reads inside the queue cannot drive immediate conditional Java logic using their eventual values.","Redis transactions are not SQL rollback semantics.","HOW WOULD YOU AVOID PARTIAL LOGICAL UPDATES FROM BAD TYPES?","Validate types and values before writing, preferably within a short Lua script that checks all preconditions first. MULTI/EXEC executes queued commands in order but a runtime command error does not roll back earlier commands."],["Q048",9,"What is WATCH used for?","WATCH provides optimistic conflict detection: EXEC aborts if watched keys changed before execution.","WATCH stock:42\nGET stock:42\nMULTI; SET stock:42 9; EXEC","Use one connection for the sequence and bounded retries after conflicts. Expiration behavior and supported commands should be checked for the server version. Avoid an unbounded spin loop under contention.","WATCH does not lock the key against other writers.","WHEN WOULD LUA BE SIMPLER?","Lua is simpler for a small atomic check-and-update such as increment + first-expiry or compare-token + delete. WATCH works for optimistic, client-side read/compute/update transactions that can retry on conflicts."],["Q049",9,"Why use Lua scripts for Redis operations?","A script can combine read/check/write logic atomically on Redis without application round trips between steps.","if GET lock equals token then DEL lock end","Scripts must be short, bounded and declare accessed keys appropriately. They block competing command execution while running and do not roll back all prior writes after a runtime error. Validate inputs/types before mutation. In Cluster, required keys normally share a slot.","Atomic execution is not unlimited safe computation.","WHAT HAPPENS WHEN A SCRIPT LOOPS FOR TOO LONG?","A long-running script blocks other server commands and increases latency. Keep scripts bounded by data size, monitor slowlog/latency, and never scan an unbounded keyspace inside one script."],["Q050",9,"How does Spring Data support Redis transactions?","Use a same-connection SessionCallback for explicit MULTI/EXEC; optional template transaction support can bind connections to Spring transactions.","template.execute(new SessionCallback<>() { /* MULTI, queued ops, EXEC */ });","Ordinary template calls may not share the required connection unless coordinated. Enabling transaction support is a configuration choice. Redis and SQL still do not become one general atomic distributed transaction merely because Spring synchronizes them.","@Transactional does not automatically make every template call transactional.","HOW WOULD YOU RECOVER SQL COMMIT FOLLOWED BY REDIS FAILURE?","Treat the SQL commit as authoritative and use a durable outbox/change event to retry Redis invalidation or rebuild. This is reconciliation across two systems; @Transactional alone cannot atomically commit SQL and Redis."],["Q051",10,"How do you acquire a basic Redis lease safely?","Use one conditional SET with a unique ownership token and an expiry.","SET lock:job:42 unique-token NX PX 10000","NX makes acquisition conditional and PX sets the lease in the same operation. The token distinguishes owners. This is a basic single-Redis lease with assumptions, not a proof of mutual exclusion through every failover or pause.","SETNX followed later by EXPIRE has a crash gap.","WHAT IF THE HOLDER PAUSES LONGER THAN TEN SECONDS?","After the TTL expires, another worker may obtain the lease while the paused holder resumes. The old holder must not be allowed to perform an external protected effect; use fencing/version checks at that resource."],["Q052",10,"Why must release compare the ownership token?","A previous holder must not delete a lease now owned by a different caller.","A's lease expires -> B acquires\nA resumes -> unconditional DEL would remove B's lease","Use an atomic compare-and-delete script or a server-version-supported equivalent. GET followed by DEL has its own race. The token helps safe release but does not stop a paused holder from modifying an external resource.","Token-safe unlock is not fencing.","HOW WOULD YOU PROTECT THE DATABASE FROM STALE A?","Give each lease acquisition a monotonic fencing number and have the database reject a write with an older number. Compare-and-delete protects B's Redis key; only resource-side enforcement blocks stale A's business write."],["Q053",10,"What is a fencing token?","It is an increasing generation attached to work that the protected resource uses to reject stale holders.","A token=10 pauses; B token=11 writes\nDB rejects later write carrying token=10","The downstream resource must enforce token order atomically. Token allocation and survival through failover must meet the required guarantee; an asynchronously replicated INCR is not automatically a failover-proof fencing service.","Generating a number without checking it at the resource does nothing.","WHAT IF THE TOKEN ALLOCATOR LOSES ITS LATEST VALUE?","If the allocator can reset to a previous value after failover, stale holders may appear new. Allocate tokens using a durable monotonic authority or enforce an equivalent authoritative row/version constraint."],["Q054",10,"Does automatic lease renewal solve every lock problem?","No. Renewal reduces accidental expiry during active work but cannot eliminate long pauses, lost connectivity or stale external effects.","Heartbeat renew fails -> lease can expire\nWorker must stop or have its writes fenced","Renew only if the ownership token still matches. Bound work duration and detect ownership loss, while acknowledging a paused process may resume too late to stop safely. Robust business invariants remain necessary.","A watchdog is not a proof of exactly-once processing.","HOW WOULD YOU TEST A LONG GC PAUSE?","Pause a worker beyond its lease TTL using a test barrier, then let a second worker acquire and write. Resume the old worker; assert the downstream resource rejects its stale token even if auto-renew was configured."],["Q055",10,"What is the failover risk with a single replicated Redis lock?","An acknowledged lock may not reach the replica before failover, allowing another client to acquire it on the new primary.","A acquires on primary -> primary fails before replication\nReplica promoted -> B sees no lease and acquires","Redis replication is normally asynchronous. Alternatives require explicit safety assumptions, resource fencing or a stronger coordination system. Do not claim Sentinel or Redis Cluster alone makes this lease linearizable.","High availability and lock safety are different properties.","WHICH INVARIANT CAN A DATABASE CONSTRAINT ENFORCE INSTEAD?","A database unique constraint or conditional row update can enforce one reservation per item or nonnegative stock. Redis lease ownership alone cannot guarantee those invariants across failover and pauses."],["Q056",11,"How does a fixed-window rate limiter work?","It counts requests in a time bucket and permits requests up to a threshold.","Key: limit:user-42:minute-123\nINCR; allow if count <= 100","Counter creation and expiry should follow one atomic policy. Fixed windows allow a burst around boundaries, such as 100 requests at the end and 100 at the start. Decide which events count and return retry information.","Separate INCR/EXPIRE can create immortal counters.","WHEN IS A BOUNDARY BURST UNACCEPTABLE?","A two-window boundary burst may admit nearly twice the nominal rate in a short real interval. Use a sliding window or token bucket when that burst would overwhelm the protected service or break a policy."],["Q057",11,"How does a sliding-window limiter differ?","It evaluates recent activity across a moving interval rather than resetting at one bucket boundary.","Sorted set: requestId -> timestamp\nRemove older than window; count; conditionally add","Combine prune/count/admission in one script. Unique members prevent requests sharing a timestamp from overwriting each other. Bound key growth and expiry. More precise algorithms require more work and state than fixed windows.","Millisecond timestamp alone may not be a unique member.","HOW WOULD YOU LIMIT SCRIPT COST?","Limit tracked events per identity, remove obsolete members each call, and cap Lua work/time. For very high volume, consider a bounded-memory approximation or token bucket instead of unbounded sorted sets."],["Q058",11,"What is a token bucket?","It refills a bounded token balance over time and consumes tokens for admitted work, allowing a controlled burst.","Capacity=20 tokens; refill=5 tokens/second\nRequest cost=1 token","Store balance and last-refill time consistently, and define time source and precision. An atomic script avoids concurrent overspending. Distinguish per-user limits from per-tenant and global resource admission.","A user-supplied identity can be rotated to evade the limit.","WHAT KEY PROTECTS A SHARED DOWNSTREAM CAPACITY?","Use a key scoped to the actual shared resource, such as provider:payment-api or tenant+provider if isolation is required. A per-pod key does not protect aggregate downstream capacity."],["Q059",11,"Should a rate limiter fail open or fail closed?","Choose explicitly from abuse risk, availability and business impact; there is no universally correct policy.","Catalog reads: bounded local fallback may be acceptable\nPayment attempts: reviewed stricter admission policy","A Redis error must not silently become a cache miss or a fresh zero counter without analysis. Local emergency limits may preserve partial protection but differ across pods. Monitor degraded-mode entry and exit.","Fail-open can amplify the very overload Redis was controlling.","WHICH ENDPOINT NEEDS A DIFFERENT POLICY?","Reject or tightly limit calls when Redis fails for login attempts, payment protection or abuse-sensitive endpoints; permit bounded fallback for noncritical browsing. Define different policies per endpoint and measure failure impact."],["Q060",11,"Can SET NX with a TTL guarantee one business effect?","No. A deduplication marker and a separate business effect leave a crash gap, and expiry permits future repeats.","Set marker -> crash before effect: skipped work\nEffect -> crash before marker: duplicate work","Use a durable unique constraint and effect transaction for local DB work, or the external provider's idempotency contract. Redis can assist coordination but should not promise atomicity with an unrelated store.","A cache-only dedup flag is weak protection for payments.","HOW LONG MUST AN IDEMPOTENCY RECORD SURVIVE REPLAY?","Keep the request ID/result at least as long as any possible client retry, queue replay and delayed duplicate. Make the authoritative business effect idempotent too, since Redis TTL expiry may outlive in-flight work."],["Q061",12,"How does Redis Cluster distribute keys?","Redis Cluster maps keys to 16384 hash slots distributed among primaries.","slot = CRC16(relevant key bytes) modulo 16384","Cluster-aware clients discover topology and route commands. Slots are not separate physical databases or a count of nodes. Adding nodes requires slot movement; replicas support availability rather than independent primary write shards.","Six nodes do not automatically mean six write primaries.","HOW WOULD THREE PRIMARIES AND THREE REPLICAS BE ARRANGED?","Use three primary nodes covering the 16,384 hash slots and one replica per primary, placed on different failure domains where possible. Each replica follows one primary; plan promotion and capacity during failures."],["Q062",12,"What do hash tags do?","A valid {...} substring controls slot hashing so related keys can be colocated.","order:{42}:state\norder:{42}:lock","These keys share a slot, enabling suitable multi-key operations. Key-tag syntax follows Redis rules, so empty or multiple brace patterns need care. Putting every key under one common tag defeats distribution.","Tenant-wide colocation can create a hot slot.","WHICH KEYS TRULY NEED ATOMIC MULTI-KEY ACCESS?","Only keys that must be modified atomically in one multi-key command/script should share a hash tag, such as wallet:{account42}:balance and wallet:{account42}:holds. Do not force unrelated tenants into one hot slot."],["Q063",12,"Why do CROSSSLOT errors occur?","The operation requires keys to share a slot but the supplied keys map to different slots.","MULTI/script with order:42 and balance:7 -> possible CROSSSLOT","Use deliberate hash tags or redesign the operation. Some client APIs decompose operations into separate node commands, but that does not preserve server-side cross-key atomicity. Check the chosen command and client implementation.","A client-side multiGet convenience does not imply a global transaction.","HOW WOULD YOU PRESERVE A CROSS-AGGREGATE INVARIANT?","Keep cross-aggregate invariants in a transactional authoritative store or use an explicit saga/reservation protocol. Cluster key colocation alone cannot create atomicity across independent owners or failure domains."],["Q064",12,"How do MOVED and ASK differ?","MOVED indicates the slot's routing owner; ASK is a temporary redirection used during migration with special handling.","MOVED -> update routing knowledge\nASK -> redirected operation with ASKING as required","A cluster-aware driver handles redirects. Topology refresh helps after resharding/failover, but network reachability to advertised nodes remains essential. A standalone client pointed at one cluster node is insufficient.","Retrying only against the original node can loop or fail.","WHAT ADDRESSES MUST AN APPLICATION POD REACH?","Pods must reach every advertised Cluster node address/port returned by MOVED or ASK, not only the initial bootstrap endpoint. Test DNS, TLS and routing during resharding and failover."],["Q065",12,"How do you configure Boot for a Redis Cluster?","Configure cluster nodes and driver refresh policy appropriate to the deployment instead of standalone-only host assumptions.","spring.data.redis.cluster.nodes=node1:6379,node2:6379,node3:6379\nspring.data.redis.lettuce.cluster.refresh.adaptive=true","Seed nodes bootstrap discovery; the client then reaches relevant advertised nodes. Review redirect limits, TLS names, credentials and periodic/adaptive refresh. Cluster supports database zero rather than SELECT-based numbered DB isolation.","A reachable seed does not prove every slot owner is reachable.","HOW WOULD YOU TEST A RESHARDING ROLLOUT?","Run a controlled slot migration during traffic while tracking MOVED/ASK handling, error rates and latency. Verify that keys, scripts and client topology refresh recover without duplicate business effects."],["Q066",13,"What does Redis replication provide?","It copies a primary's data to replicas, normally asynchronously, for availability and optional read scaling.","Primary acknowledges write -> replica may catch up afterward","A replica read can be stale. Failover can lose recent acknowledged writes that never reached the promoted replica. Choose read routes and acceptable loss explicitly for sessions, counters and authoritative state.","Replication is not automatically synchronous durability.","WHICH DATA MUST NEVER BE SERVED FROM A STALE REPLICA?","Do not serve balances, payment status or authorization changes from a replica when staleness is unacceptable. Replica reads are eventually consistent and need an explicit permitted-staleness policy."],["Q067",13,"What does Sentinel do?","Sentinel monitors a nonclustered primary/replica deployment and coordinates discovery and automatic failover.","Sentinel quorum -> detect failure -> promote replica\nApplication client -> discover current primary","Sentinel does not shard the keyspace. Configure the logical master name, Sentinel addresses and credentials correctly. Quorum and failover authorization involve different requirements; multiple independent failure domains matter.","One Sentinel is not a robust high-availability design.","HOW WOULD CLIENTS RECOVER AFTER PROMOTION?","The Sentinel-aware client discovers the new master and reconnects/retries within deadlines. Test writes during promotion and reconcile uncertain outcomes; in-flight commands are not magically atomic across failover."],["Q068",13,"How do Sentinel and Cluster differ?","Sentinel provides failover for a primary-replica topology; Cluster combines sharding with its own failover mechanisms.","Need more total write/memory capacity -> evaluate Cluster\nNeed HA for one primary dataset -> evaluate Sentinel","The choice also depends on managed-service capabilities and consistency needs. Cluster adds multi-key restrictions and topology-aware routing. Neither removes asynchronous replication loss windows automatically.","Sentinel is not the coordinator Redis Cluster requires.","WHICH APPLICATION COMMANDS COMPLICATE A CLUSTER MIGRATION?","Cross-slot Lua/MULTI operations, broad multi-key commands, key scanning, server-side moves and connection routing need review for Cluster. Sentinel provides failover for a nonsharded primary, not distributed hash slots."],["Q069",13,"How do RDB and AOF persistence differ?","RDB stores snapshots; AOF records write operations for replay under its configured persistence policy.","RDB -> snapshot recovery point\nAOF appendfsync everysec -> typical small recent-loss window","Snapshot intervals, fsync behavior, rewrite and recovery configuration determine durability and resource cost. An every-second setting is not an absolute no-loss guarantee under all failures. Test backup restore, not only file creation.","Persistence on one disk is not a backup strategy.","WHAT IS YOUR RECOVERY-POINT OBJECTIVE?","Set an RPO based on the worst business loss you can tolerate and test snapshots, AOF policy, replication and restore time against it. State that acknowledged writes may still be lost under some crash/failover patterns."],["Q070",13,"Does WAIT guarantee strong consistency or no data loss?","No. WAIT can request acknowledgment from replicas for prior writes, but does not turn Redis into a strongly consistent system.","Write -> WAIT 1 1000 -> inspect returned replica count","The returned count indicates observed replication acknowledgments, not a universal persistence or failover guarantee. It must apply to the relevant connection/write sequence. Review persistence acknowledgment options separately for supported server versions.","Waiting for one replica is not a proof every failure preserves the write.","WHAT HAPPENS IF WAIT TIMES OUT AFTER THE WRITE SUCCEEDED?","The write may already exist even if WAIT times out. Do not blindly resend a non- idempotent increment; read back state or retry with a stable operation ID and an authoritative deduplication protocol."],["Q071",14,"How do expiration and eviction differ?","Expiration removes logically expired keys; eviction removes keys under configured memory pressure policy.","TTL remaining=60 seconds\nmaxmemory pressure -> key can still be evicted","Use memory policies consistent with the dataset. A cache can tolerate eviction; a lock, session or authoritative record may not. Separate workloads when policy conflict matters.","TTL is not a minimum guaranteed residency period.","SHOULD LOCK KEYS SHARE AN ALLKEYS-LRU CACHE?","No. Critical lease/lock state should not share a memory pool using allkeys eviction, because the lock could disappear before TTL. Separate instances or use a policy/ capacity model that does not evict live coordination keys."],["Q072",14,"How do allkeys, volatile and noeviction policies differ?","Allkeys policies can choose any eligible key; volatile policies restrict candidates to expiring keys; noeviction rejects applicable writes when memory is exhausted.","allkeys-lru; volatile-lru; allkeys-lfu; noeviction","LRU/LFU selection is approximate rather than a perfect global ranking. A volatile policy with no suitable candidates cannot simply free arbitrary permanent keys. Monitor write errors as well as eviction counts.","noeviction does not mean Redis has unlimited memory.","WHAT HAPPENS TO A NEW SET AT THE LIMIT?","Under noeviction, a memory-increasing SET can fail with an OOM error; with eviction policies, eligible keys may be removed. Test application handling and never rely on eviction to preserve a critical invariant."],["Q073",14,"Why are big keys dangerous?","Large values or collections can increase network cost, command latency, memory use and deletion/recovery work.","One hash with millions of fields -> HGETALL returns a huge response","Prefer bounded access and pagination-like iteration where appropriate. Measure payload size and collection cardinality. UNLINK can move memory freeing away from the immediate delete path, but it does not make huge reads inexpensive.","One key can be too large even with a low total key count.","HOW DO YOU IDENTIFY IT SAFELY?","Use SCAN to find candidate keys gradually and MEMORY USAGE or sampled size tools with strict rate limits. Avoid dumping huge values or running KEYS in production; correlate with slow commands and bandwidth."],["Q074",14,"Why prefer SCAN to KEYS for production inspection?","KEYS traverses the keyspace in one blocking operation; SCAN incrementally iterates it.","SCAN 0 MATCH shop:prod:* COUNT 1000\nRepeat using returned cursor until cursor=0","COUNT is a hint, not an exact result size. A live scan can return duplicates and is not a snapshot. In Cluster, scan the required node scope with a cluster-aware strategy. Bound cleanup batches and tolerate changing data.","One SCAN call does not enumerate the entire database.","HOW WOULD YOU MAKE CLEANUP SAFE UNDER CONCURRENT WRITES?","Use cursor-based SCAN with throttling and narrow prefixes, verify each key's expected version before deletion, and tolerate duplicates/new writes. For business data, prefer a versioned namespace switch over live broad deletion."],["Q075",14,"How do you diagnose Redis latency?","Correlate command cost, server CPU/memory, network, payloads, connection waits, persistence and client timeouts.","Slow command duration != entire client round-trip latency","SLOWLOG measures command execution time rather than all network wait. Use command statistics and approved latency tooling alongside application metrics. A long script or large response can affect many callers.","Increasing timeouts hides symptoms without fixing the bottleneck.","WHICH EVIDENCE DISTINGUISHES NETWORK FROM COMMAND COST?","Compare server SLOWLOG/LATENCY data with client timers for connect, acquire, encode, send and response. Low server execution time with high client round-trip time points to network, queueing or client-side contention."],["Q076",15,"How does Spring Session use Redis?","It can store HTTP session state centrally so multiple application instances can access a user's session.","spring-session-data-redis dependency\nsession cookie -> shared server-side session state","Choose the appropriate Session repository and configuration for the Boot version. Session expiration, events, serialization and security are separate from product caching. Redis failure can affect login continuity directly.","Shared sessions do not justify caching arbitrary sensitive objects.","HOW DO YOU ROTATE SESSIONS AFTER AUTHENTICATION?","After successful login, rotate the session ID through the supported session-fixation protection and persist context correctly. Apply suitable timeout, cookie flags and logout/ revocation behavior for the actual Spring Session deployment."],["Q077",15,"What delivery guarantee does Redis Pub/Sub provide?","Redis Pub/Sub is at-most-once delivery to currently connected subscribers, without retained replay history.","Subscriber disconnected during PUBLISH -> message missed","It fits best-effort notifications when loss is acceptable or a separate repair path exists. A listener reconnect does not recover missed messages. Do not use it as the only durable business event transport.","Pub/Sub is not a persistent queue.","HOW WOULD AN L1 CACHE REPAIR A MISSED INVALIDATION?","Use short local TTLs, version checks on reads, periodic reconciliation or invalidation fanout with recovery. Pub/Sub messages can be missed while an app is disconnected, so a missed notice needs an independent repair path."],["Q078",15,"How do Redis Streams differ from Pub/Sub?","Streams retain entries and support consumer groups, progress acknowledgment and pending-entry recovery.","XADD orders * eventId e-42\nXREADGROUP GROUP workers c1 STREAMS orders >","Retention/trimming and persistence policy still matter. Consumer groups distribute work and maintain pending entries. Business effects can repeat when unacknowledged entries are recovered, so idempotency is required.","A stored stream is not infinite history.","WHAT HAPPENS WHEN PENDING ENTRIES ARE TRIMMED AWAY?","If trimming removes pending stream entries, consumers can retain delivery metadata without a recoverable payload. Monitor retention against processing lag, claim pending items safely and define poison/dead-letter recovery."],["Q079",15,"What is the pending entries list in Streams?","It tracks entries delivered to a group consumer that have not yet been acknowledged.","XPENDING orders workers\nXACK orders workers <entry-id>","A failed consumer's entries need a claim/recovery policy, such as XAUTOCLAIM on supported versions. Acknowledge after the required durable effect. Examine idle time, delivery count and poison records during recovery.","Reading only new entries does not automatically finish all old pending work.","HOW DO YOU DETECT AN ABANDONED CONSUMER?","Inspect XPENDING and idle duration/delivery attempts by consumer, then use XAUTOCLAIM on supported versions to transfer eligible abandoned work. Acknowledge only after the durable effect succeeds."],["Q080",15,"When should you choose Kafka instead of Redis Streams?","Choose from required retention, throughput, ecosystem, ordering, persistence and operational isolation rather than a universal winner.","Large durable event platform -> evaluate Kafka\nRedis-centric bounded work stream -> evaluate Streams","Kafka and Redis Streams have different replication, storage and consumer mechanics. Benchmark realistic workloads and failure recovery. Shared Redis caching and stream state can compete for memory unless isolated deliberately.","API similarity does not imply equivalent durability.","WHAT RECOVERY EVIDENCE WOULD DETERMINE YOUR CHOICE?","Choose by measured history retention, replay/rebuild needs, consumer scaling, throughput and operational guarantees. Test a crash/replay and confirm the oldest required event is still available before choosing either technology."],["Q081",16,"What does ReactiveRedis T emplate provide?","It exposes Redis operations through Reactor types with reactive driver support.","Mono<String> value = reactiveStrings.opsForValue().get(\"product:42\");","Operations generally occur on subscription; compose the result into the application response. Configure serialization in the reactive context explicitly. Reactive access is a client execution model, not a faster Redis command algorithm.","Constructing a Mono alone does not prove a write occurred.","WHO SUBSCRIBES IN A WEBFLUX CONTROLLER?","The WebFlux framework subscribes to a controller-returned Mono/Flux to drive request processing. Application code should compose publishers rather than manually calling subscribe inside the endpoint."],["Q082",16,"Why avoid block() on a reactive request path?","Blocking waits can stall an event-loop thread and undermine nonblocking throughput.","return redis.opsForValue().get(key)\n.switchIfEmpty(loadFromReactiveSource());","Keep the source truly nonblocking or isolate unavoidable blocking work on a reviewed scheduler with bounded resources. Also make loading lazy when constructing the fallback would perform work eagerly.","A method returning Mono can still block internally.","HOW WOULD YOU IDENTIFY A BLOCKING DATABASE CALL?","Use BlockHound where suitable, thread/CPU profiling, traces and bounded load tests to find JDBC or other blocking work on event-loop threads. Replace with reactive I/O or explicitly isolate unavoidable blocking calls."],["Q083",16,"How should a reactive cache-aside miss be handled?","Compose a lazy source lookup, then cache only a valid returned value under an explicit write-failure policy.","GET Mono -> switchIfEmpty(Mono.defer(loadAndCache))","An empty Mono and a Redis error are different outcomes. Decide whether a cache-write error should fail a source-backed read or return valid source data. Guard concurrent miss load and cancellation behavior.","onErrorResume(ignored -> empty()) can hide a real dependency failure.","WHICH EXCEPTIONS ARE SAFE TO TREAT AS CACHE UNAVAILABLE?","Treat only classified connection/availability failures as optional for a noncritical cache. Do not turn deserialization, authorization, programming or data-integrity failures into silent cache misses."],["Q084",16,"Are retries always safe for Redis writes?","No. A timeout can occur after the server applied the command; repeating nonidempotent operations can duplicate effects.","INCR applied -> response lost -> retry INCR -> count increased twice","GET is naturally repeatable; SET with the same value may still alter TTL; INCR and append operations have effect ambiguity. Use stable request identity and an atomic dedup/effect design when required. Bound backoff and avoid retry storms.","Transport failure is not proof the command did nothing.","HOW WOULD YOU MAKE A COUNTER REQUEST IDEMPOTENT?","Deduplicate the operation ID and apply the increment in one atomic step, with enough deduplication retention for retries. A blind retry after an uncertain response can count the same request twice."],["Q085",16,"How should timeouts and cancellation be interpreted?","They bound caller waiting, but do not necessarily roll back or cancel a command already accepted by Redis.","Client times out at 100 ms\nServer may finish SET at 120 ms","Distinguish connection failure, enqueue delay and unknown response outcome where the client exposes them. Maintain operation identity for correctness-critical writes. Cancellation of a subscriber is not a general compensating operation on Redis.","Timeout does not mean absent effect.","WHAT SHOULD AN API REPORT FOR AN UNCERTAIN WRITE?","Report that the outcome is unknown or accepted-for-reconciliation, with a stable request ID for lookup. A timeout does not prove the write failed; avoid a false success or unconditional repeat."],["Q086",17,"What should a Redis unit test cover?","Test key construction, policies and business decisions without pretending mocked Redis proves server behavior.","Tenant included in key; TTL policy chosen; invalid input rejected","Integration tests should cover serialization, expiry, Lua, transactions and the configured cache proxy. A mocked get/set cannot validate atomicity, replication or Cluster routing. Select a server fixture matching the tested feature.","A mock counter does not prove concurrent increments are safe.","WHICH TEST NEEDS AN ACTUAL REDIS INSTANCE?","An actual Redis integration test is needed to verify TTL, serialization bytes, Lua atomic behavior, pipelining and Cluster routing. A mocked unit test can check key construction and app-level fallback logic only."],["Q087",17,"How do you test TTL without brittle sleeps?","Use a short test expiry and bounded polling for the expected state transition, checking the initial TTL as well.","Set with TTL -> assert PTTL positive\nAwait until GET absent within a bounded timeout","Use unique keys or isolated fixtures. Test overwrite behavior and absence/no-expiry sentinel values. Expiration timing should be asserted with reasonable tolerance rather than millisecond equality. Cluster/failover behavior needs additional fixtures.","A passing timeout-only test may miss a key created without expiry.","WHAT SHOULD FAILURE DIAGNOSTICS INCLUDE?","Use a short explicit TTL and poll with bounded await until the key is absent instead of sleeping an exact number of milliseconds. On failure, include observed TTL, clock budget, key namespace and Redis endpoint details without secrets."],["Q088",17,"Which metrics show whether caching helps?","Measure hits, misses, load latency, source load, Redis errors, evictions, memory and end-to-end latency together.","Hit ratio high + stale data complaints -> correctness issue\nHit ratio low + DB saturation -> load issue","Statistics can be local to a cache manager and must be enabled/configured where supported. Add business freshness evidence. Keep metric labels bounded; individual customer IDs belong in protected logs, not metric tag sets.","Hit ratio alone is not a success criterion.","WHAT FRESHNESS SLO WOULD YOU TRACK?","Track an upper-bound age of cached data or percentage of reads meeting the approved freshness budget, alongside hit rate. A 99% hit rate with stale prices can be worse than a lower hit rate with correct values."],["Q089",17,"How should Redis access be secured?","Use appropriate TLS, authentication, ACLs, network isolation and controlled administration privileges.","Application principal -> permitted key namespace + commands\nAdmin principal -> separate controlled operations","Redis ACL users support finer privileges than one shared unrestricted credential. Store secrets safely, test rotation and preserve hostname verification. Restrict scripts, destructive commands and diagnostic data exposure according to the actual role.","Key prefixes do not enforce permissions without ACL policy.","WHICH COMMANDS DOES YOUR CACHE CLIENT REALLY NEED?","Grant only the needed command categories/keys, for example GET/SET/DEL on a namespaced cache; avoid dangerous administrative commands. Use Redis ACLs, TLS, secret rotation and private network isolation."],["Q090",17,"How should Redis health affect readiness and liveness?","Readiness reflects the service's ability to fulfill its role; liveness should avoid restarting a recoverable process for every remote outage.","Optional cache outage -> bounded source fallback\nMandatory session store outage -> reviewed readiness failure","Define dependency timeouts and degraded-mode capacity. Cache, lock, rate-limiter and session roles need different policies. A restart storm can worsen reconnection pressure without repairing Redis.","A healthy connection does not prove every slot or command is usable.","WHAT OPERATION WOULD YOUR HEALTH EVIDENCE REPRESENT?","Liveness should test whether the process can make progress; readiness should reflect whether it can safely serve its promised endpoints. For optional caching, Redis down may not justify marking the entire app unready if bounded source fallback works."],["Q091",18,"@Cacheable runs every time. What do you inspect?","Check caching enablement, proxy path, cache manager, keys, expiry and write failures.","this.find(id) -> bypass\nnew Service() -> unmanaged instance\nDifferent tenant/argument key -> different entry","Inspect the actual cache key and serializer, not a guessed CLI key. Verify the configured manager is Redis rather than a local provider. A method's invocation counter across calls can demonstrate hits without relying on timing.","Seeing Redis configured does not prove that annotation uses it.","HOW WOULD YOU PROVE THE MANAGER AND PROXY ARE CORRECT?","Invoke the service through a Spring-managed proxy, check @EnableCaching, bean type and the effective RedisCacheManager. Assert the second call skips the source and inspect the exact cache key/TTL in Redis."],["Q092",18,"A cached update is stale after eviction. What could have happened?","An earlier reader may have loaded old state and populated it after the writer evicted the key.","Reader DB old -> writer commits + evicts -> reader SET old","Reproduce this interleaving with test barriers. Consider versioned values/conditional updates, authoritative critical reads and durable invalidation with reconciliation. Do not call this proof Redis lost the delete.","Repeating deletion once more is not a universal race-free protocol.","HOW DO YOU BOUND OR REJECT A LATE STALE WRITE?","Use versioned values with compare-before-write, source version checks, or authoritative reads for strict fields. Otherwise shorten TTL and reconcile. A delayed loader must not overwrite an entry representing a newer DB version."],["Q093",18,"The app gets WRONGTYPE errors. What is likely?","The operation targets a key holding a different Redis data type than expected.","SET profile:42 JSON\nHGET profile:42 name -> WRONGTYPE","Check namespace collisions, old deployments and data migrations using TYPE and safe inspection. Serialization mistakes can coexist with type mistakes but are distinct. Repair only the intended keyspace and rollout contract.","FLUSHALL is not a diagnostic fix.","HOW DO YOU MIGRATE THE STRUCTURE WITHOUT DELETING UNRELATED DATA?","Write a new key namespace/type, adapt readers to both versions and migrate incrementally. Delete only owned, verified v1 keys after rollback expires; do not flush unrelated Redis databases."],["Q094",18,"CROSSSLOT appears after moving to Cluster. What changed?","A multi-key operation or script now spans different slots, even if it worked on standalone Redis.","Two independent keys -> standalone allowed\nCluster multi-key atomic operation -> colocation required","Audit scripts, transactions, multi-key commands and cache-clearing strategies. Hash tags can help specific related keys, but broad tags can create skew. Client decomposition can change atomicity, so verify semantics.","Making every key share one tag defeats sharding.","WHICH INVARIANT TRULY REQUIRES COLOCATION?","Only state that must change together in one Redis multi-key command requires key colocation. Business invariants that cross independent aggregates should be handled at their transactional owner, not forced into a single hash slot."],["Q095",18,"Redis goes down and the database also overloads. Why?","Unbounded cache fallback or synchronized retries redirected too much traffic to the source.","Cache miss/error -> every request calls DB -> pool exhausted","Introduce bounded admission, circuit policy, controlled retries and graceful responses. Warm or refresh gradually after recovery. Test outage behavior under load rather than assuming the source can absorb full cache traffic.","Fail-open is not free availability.","HOW WOULD YOU CHOOSE THE FALLBACK CONCURRENCY LIMIT?","Measure spare DB capacity and the acceptable error rate; reserve most connections for normal traffic and enforce a semaphore/bulkhead for cache misses. Add circuit breaking and return fast overload responses when that budget is exhausted."],["Q096",19,"How would you design a two-level product cache?","Use bounded local caching plus Redis with an explicit version/invalidation and maximum-staleness policy.","L1 Caffeine -> L2 Redis -> authoritative DB\nInvalidation event -> both layers; missed event -> expiry/repair","Pub/Sub invalidation can be missed while a pod is disconnected. TTL or version validation provides a repair bound. Ensure cold-start load and serializer changes are handled. For strict freshness, some reads must consult the authoritative path.","L1 can remain stale even after the Redis key was evicted.","HOW WOULD YOU TEST A MISSED INVALIDATION?","Disable the invalidation subscription for one node or drop an event, update the product, then check how quickly it converges. Verify L1 maximum TTL/version reads and ensure unauthorized data is never exposed during delay."],["Q097",19,"Can Redis locks prevent inventory overselling by themselves?","Not reliably across every failure. Enforce the inventory invariant at the authoritative mutation boundary.","UPDATE stock SET available=available-1\nWHERE item_id=:id AND available>0;","A conditional SQL update or appropriately designed authoritative atomic Redis operation can enforce the actual invariant. A separate expiring lease is only coordination and may fail during pause/failover. Define reservation expiry, release and reconciliation.","Mutual exclusion assumptions are weaker than a resource-enforced invariant.","WHAT IF THE SAME RESERVATION REQUEST IS DELIVERED TWICE?","Use a stable reservation ID and an authoritative unique constraint or conditional inventory update so repeated delivery returns the existing outcome. Redis lease acquisition is an optimization, not the only oversell protection."],["Q098",19,"How do you prevent cross-tenant cache leakage?","Include tenant and all authorization-relevant dimensions in identity, and authorize the source/read path correctly.","product-summary:v1:tenant-7:user-scope:42","A cached value must not bypass permissions. If access depends on changing roles or ownership, choose invalidation, short lifetime or fresh authorization checks. Avoid caching one user's private response under an entity-only public key.","Adding tenantId alone does not cover user-specific permissions.","WHAT HAPPENS WHEN ACCESS IS REVOKED?","Recheck current authorization at the correct boundary and invalidate/version user- specific cached responses after revocation. A previously cached response must not grant rights that the live policy denies."],["Q099",19,"How do you roll out a new cache serialization format?","Use a compatible reader or versioned namespace, then deploy and warm gradually with a rollback plan.","v1 readers + writers -> coexist\nv2 namespace -> gradual warm -> retire v1 after safe window","Versioned keys reduce decoding conflicts but temporarily increase memory and source load. Do not delete old state before the rollback window if it is required. Session serialization changes can log users out or break reads and need stricter planning.","A rolling deployment means old and new code share data concurrently.","WHAT WOULD YOU MONITOR DURING THE ROLLOUT?","Monitor deserialization errors, old/new namespace hit rates, data size, latency, fallback load and rollback-read compatibility. Keep v1 readers working until all mixed-version instances are retired."],["Q100",19,"What makes an architect-level Redis interview answer strong?","State the business invariant, selected structure/protocol, failure ambiguity, recovery policy and verification evidence.","Invariant: one payment effect per paymentId\nRedis: optional acceleration; DB/provider enforce identity\nEvidence: timeout, duplicate, failover and concurrent-request tests","Discuss memory, TTL, topology, consistency and ownership. Distinguish cache availability from critical-state safety. Use measured load and explain the limits of locks or asynchronous replicas rather than claiming universal exactly-once behavior.","Listing Redis commands without a failure model is not a design.","WHICH ASSUMPTION WOULD YOU CHALLENGE FIRST?","Challenge the claimed guarantee first: Is Redis the source of truth or only an accelerator? Then ask what must remain correct after timeouts, failover, stale cache writes and duplicate requests; propose tests that prove it."]],"labs":[["C01 — Atomic value and expiry","Store a string with a deadline in one operation. Setup: StringRedisTemplate; Boot Redis starter","public void store(String id, String json) {\nstrings.opsForValue().set(\"demo:product:v1:\" + id,\njson, Duration.ofSeconds(60));\n}\npublic String read(String id) {\nreturn strings.opsForValue().get(\"demo:product:v1:\" + id);\n}"],["C02 — An explicit Redis cache manager","Configure named caches with string keys and a fixed JSON DTO format. Setup: Boot Redis/ cache starters; Jackson; @EnableCaching","@Bean\nRedisCacheManager cacheManager(RedisConnectionFactory factory) {\nvar base = RedisCacheConfiguration.defaultCacheConfig()\n.entryTtl(Duration.ofMinutes(5))\n.disableCachingNullValues()\n.serializeKeysWith(RedisSerializationContext.SerializationPair\n.fromSerializer(new StringRedisSerializer()))\n.serializeValuesWith(RedisSerializationContext.SerializationPair\n.fromSerializer(new Jackson2JsonRedisSerializer<>(Product.class)));\nvar writer = RedisCacheWriter.nonLockingRedisCacheWriter(\nfactory, BatchStrategies.scan(1000));\nreturn RedisCacheManager.builder(writer)\n.cacheDefaults(base)\n.withInitialCacheConfigurations(Map.of(\n\"products\", base,\n\"shortProducts\", base.entryTtl(Duration.ofSeconds(30))))\n.transactionAware().build();\n}"],["C03 — Verify the proxy and tenant-safe cache key","Cache a read with all required tenant identity dimensions. Setup: @EnableCaching; RedisCacheManager; Spring-managed service","@Cacheable(cacheNames=\"products\",\nkey=\"#p0 + ':' + #p1\")\npublic Product find(String tenantId, String productId) {\nreturn repository.loadAuthorized(tenantId, productId);\n}\n// External caller receives this service through Spring injection.\n// Same tenant/id -> hit; different tenant -> separate key."],["C04 — Commit-aware invalidation and its remaining race","Evict after a successful data update and reproduce a delayed stale loader. Setup: SQL transaction; transaction-aware cache manager; separate proxied services","@Transactional\n@CacheEvict(cacheNames=\"products\", key=\"#p0 + ':' + #p1\")\npublic void update(String tenantId, String id, ProductChange change) {\nrepository.update(tenantId, id, change);\n}\n// Configure transaction-aware cache behavior and verify advice path.\n// Race to reproduce:\n// reader loads old DB data -> writer commits/evicts -> reader caches old"],["C05 — Atomic fixed-window limiter","Create/increment a per-window counter with an expiry in a short script. Setup: StringRedisTemplate; Lua; key includes trusted identity and fixed time bucket","String lua = \"local n=redis.call('INCR',KEYS[1]); \"\n+ \"if n==1 then redis.call('PEXPIRE',KEYS[1],ARGV[1]); end; \"\n+ \"return n\";\nRedisScript<Long> script = new DefaultRedisScript<>(lua, Long.class);\nLong count = strings.execute(script,\nList.of(\"limit:user-42:minute-123\"), \"120000\");\nboolean allowed = count != null && count <= 100;"],["C06 — Basic lease acquisition and ownership-safe release","Use conditional SET with TTL and compare-and-delete; state the safety limits. Setup: StringRedisTemplate; unique random token per acquisition","String key = \"lease:job:42\";\nString token = UUID.randomUUID().toString();\nboolean acquired = Boolean.TRUE.equals(strings.opsForValue()\n.setIfAbsent(key, token, Duration.ofSeconds(10)));\nString releaseLua = \"if redis.call('GET',KEYS[1]) == ARGV[1] then \"\n+ \"return redis.call('DEL',KEYS[1]) else return 0 end\";\nRedisScript<Long> release = new DefaultRedisScript<>(releaseLua, Long.class);\n// Run only for the token owned by this attempt:\nstrings.execute(release, List.of(key), token);"],["C07 — Cluster-compatible atomic transfer sketch","Colocate required keys and validate before mutating them. Setup: StringRedisTemplate; integer values; two keys in one hash slot","String lua = \"local a=tonumber(redis.call('GET',KEYS[1])); \"\n+ \"local b=tonumber(redis.call('GET',KEYS[2])); \"\n+ \"local n=tonumber(ARGV[1]); \"\n+ \"if not a or not b or not n or n<=0 then return -1 end; \"\n+ \"if a<n then return 0 end; \"\n+ \"redis.call('SET',KEYS[1],a-n); \"\n+ \"redis.call('SET',KEYS[2],b+n); return 1\";\nvar script = new DefaultRedisScript<Long>(lua, Long.class);\nLong result = strings.execute(script,\nList.of(\"wallet:{tenant7}:a\", \"wallet:{tenant7}:b\"), \"10\");"],["C08 — Bounded pipelining with clear semantics","Send independent reads together without claiming atomicity. Setup: StringRedisTemplate; Spring Redis callback API","List<Object> results = strings.executePipelined(\n(RedisCallback<Object>) connection -> {\nconnection.stringCommands().get(\n\"product:42\".getBytes(StandardCharsets.UTF_8));\nconnection.stringCommands().get(\n\"product:43\".getBytes(StandardCharsets.UTF_8));\nreturn null;\n});"],["C09 — Reactive cache-aside with an explicit failure policy","Compose a lazy source read and propagate Redis errors unless a reviewed fallback is added. Setup: ReactiveStringRedisTemplate; nonblocking source; Reactor","Mono<String> find(String key) {\nreturn redis.opsForValue().get(key)\n.switchIfEmpty(Mono.defer(() -> source.loadJson(key)\n.flatMap(value -> redis.opsForValue()\n.set(key, value, Duration.ofSeconds(30))\n.flatMap(saved -> saved\n? Mono.just(value)\n: Mono.error(new IllegalStateException(\"Not cached\"))))));\n}"],["C10 — Integration and failure-test exercise","Prove key lifecycle, cached invocation and failure behavior with a real Redis fixture. Setup: Testcontainers or isolated Redis; actual Spring proxy; bounded await","// Fixture supplies strings and proxied ProductService.\nservice.find(\"tenant-7\", \"42\");\nservice.find(\"tenant-7\", \"42\");\nassertThat(repositoryLoadCount()).isEqualTo(1);\nassertThat(strings.getExpire(\"products::tenant-7:42\", TimeUnit.MILLISECONDS))\n.isPositive();\nawait().atMost(Duration.ofSeconds(10)).untilAsserted(() ->\nassertThat(strings.hasKey(testExpiringKey())).isFalse());"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

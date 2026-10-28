@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Design Patterns (GoF &amp; SOLID) — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #db2777;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Java Design Patterns (GoF &amp; SOLID)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              28 Chapters · 100 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Clean Premium Notes · 23 GoF Patterns · SOLID · Hexagonal
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (28)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Architecture &amp; Design</span>
+              <span>•</span>
+              <span>150 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Java Design Patterns (GoF &amp; SOLID) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Clean Premium Notes (23 GoF Patterns · SOLID · Hexagonal). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (28)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 28 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Java Design Patterns (GoF &amp; SOLID)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Java Design Patterns (GoF &amp; SOLID) — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Java Design Patterns (GoF &amp; SOLID).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Java Design Patterns (GoF &amp; SOLID) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"design-patterns","title":"Java Design Patterns (GoF & SOLID)","subtitle":"Zero to Hero Clean Premium Notes","category":"Architecture & Design","badge":"23 GoF Patterns · SOLID · Hexagonal","color":"#db2777","pages":150,"chapters":["Design-Pattern Foundations","Solid And Design Judgment","Singleton","Factory Method","Abstract Factory","Builder","Prototype","Adapter","Bridge","Composite","Decorator","Facade","Flyweight","Proxy","Chain Of Responsibility","Command","Interpreter","Iterator","Mediator","Memento","Observer","State","Strategy","Template Method","Visitor","Patterns That Interviewers Compare","Patterns In Java And Spring","Senior Interview Scenarios And Anti-Patterns"],"questions":[["Q001",0,"What is a design pattern?","A design pattern describes a reusable collaboration of objects for a recurring design problem in a context.","Problem: several payment algorithms vary independently.\nDesign: checkout delegates to a PaymentStrategy.","A pattern is not a library or a copy-paste class diagram. Adapt its roles to the actual requirements and explain the change it makes easier. The implementation can be small, including a Java function.","More pattern classes do not automatically improve design.","What requirement justifies the extra abstraction?","Add an abstraction when a second real behavior must be substituted, tested separately, or changed independently. If no change axis exists, keep the simpler method."],["Q002",0,"What are the three GoF pattern categories?","Creational patterns organize object creation; structural patterns organize composition; behavioral patterns organize responsibilities and interactions.","Creation: Builder\nStructure: Adapter\nBehavior: Strategy","The GoF catalog contains 23 patterns. Categories describe intent, not which Java keyword is used. Factory Method uses inheritance, while Abstract Factory commonly uses composition to create a family.","Similar class shapes can express different intents.","Why can a wrapper be either Adapter or Decorator?","A wrapper is an Adapter when it converts one contract to another. It is a Decorator when it preserves the contract but adds behavior such as tracing or compression."],["Q003",0,"How do design patterns differ from architectural patterns?","Design patterns usually describe object-level collaboration; architectural patterns describe broader system organization and constraints.","Strategy: choose a discount algorithm\nHexagonal architecture: isolate domain from delivery and persistence","Layered architecture, event-driven architecture and ports/adapters operate at different scales from GoF patterns. A system may use several together. Explain their boundaries instead of calling every useful arrangement a GoF pattern.","Repository and outbox are useful patterns but are not among the 23 GoF entries.","Where would an Adapter sit in hexagonal architecture?","An Adapter sits on the infrastructure side of a port. Domain code calls the port; the adapter translates that call into a database, HTTP, or vendor API."],["Q004",0,"What does favor composition over inheritance mean?","Prefer delegation when behavior should vary without coupling it to one fixed class hierarchy.","class Checkout {\nprivate final DiscountPolicy discount;\n}","Composition can swap independently varying behavior and reduce fragile superclass dependencies. Inheritance remains useful for genuine substitutable abstractions and stable algorithm skeletons. Do not turn the principle into an absolute ban.","Delegation still needs a coherent contract and lifecycle.","When is Template Method a reasonable choice?","Template Method fits a stable sequence with limited, well-defined steps subclasses must implement. Use composition when steps need independent runtime selection."],["Q005",0,"What does program to an interface mean?","Depend on the smallest useful abstraction or contract rather than unnecessary implementation details.","class OrderService {\nprivate final PaymentPort payments;\n}","An interface can be a Java interface or a stable abstraction. It should reflect the consumer's needs and permit meaningful substitution. Creating an interface for every class without variation or boundary value can add noise.","An interface does not automatically eliminate coupling to concrete semantics.","What error/outcome contract should PaymentPort expose?","Return a documented success, rejection, or unknown outcome, with stable IDs and error codes. A timeout must not automatically mean a payment definitely failed."],["Q006",0,"When should you avoid introducing a pattern?","Avoid it when it solves no current variation, makes the simple path harder, or hides an important invariant.","Two stable branches in one small method\nMay be clearer than a registry + factories + reflection","Use the simplest structure that keeps the relevant change safe. Introduce a pattern when duplication, variation or dependency boundaries provide evidence. Measure readability, testing and change impact rather than pattern count.","Speculative extension points can become maintenance obligations.","What concrete change would trigger refactoring?","Refactor when a third distinct algorithm arrives, branches have different owners, or a new dependency needs its own test boundary. Show this with change history."],["Q007",1,"What is the Single Responsibility Principle?","A module should group behavior that changes for the same reason and separate behavior driven by different responsibilities.","Invoice calculation != PDF rendering != payment persistence","Separate pricing rules from presentation and storage so one policy change need not disturb the others. SRP is not one method per class; related operations can share one coherent responsibility.","A class named Manager can still hide unrelated reasons to change.","Who owns each change in this example?","Pricing owns amounts and discounts, rendering owns PDF layout, and persistence owns database writes. Each responsibility should change for its own business reason."],["Q008",1,"What is the Open/Closed Principle?","Keep stable policy intact while allowing a required axis of variation through extension.","Checkout uses DiscountPolicy\nAdd SeasonalDiscount without editing checkout algorithm","The composition/configuration point may still change to select the new implementation. OCP does not mean source files are never edited. Preserve a verified stable contract and avoid extensibility for every imagined future need.","Moving a switch into a factory does not remove all change points.","Which variation should remain closed?","Keep the checkout calculation and its invariants stable. Allow discount implementations to vary behind a validated DiscountPolicy contract."],["Q009",1,"What is the Liskov Substitution Principle?","A replacement implementation must preserve the behavioral contract clients rely on, including valid inputs and promised outcomes.","ReadableStore contract accepts all supported IDs\nCachedStore must not reject IDs merely because they are uncached","Avoid stronger preconditions, weaker guarantees and broken invariants. Java type compatibility is not sufficient. Exception and side-effect expectations matter, especially when an adapter fronts a remote service.","A subclass that throws UnsupportedOperationException for promised behavior can violate substitution.","How would a contract test detect the violation?","Run the same contract suite against every ReadableStore implementation, including missing IDs, failures, ordering, and accepted inputs; a subtype must not silently narrow the contract."],["Q010",1,"What is the Interface Segregation Principle?","Clients should depend on contracts containing the operations they need rather than a broad unrelated interface.","ReadableStore.find(id)\nWritableStore.save(value)","Split read-only and mutation capabilities when clients genuinely differ. Keep cohesive methods together instead of fragmenting every operation. This prevents read-only implementations from faking unsupported writes.","Many tiny interfaces can also obscure an understandable contract.","Which client benefits from the split?","Read-only clients, such as reporting screens, depend only on ReadableStore, so they cannot accidentally call writes or implement meaningless save methods."],["Q011",1,"What is the Dependency Inversion Principle?","High-level policy and low-level implementation should depend on suitable abstractions rather than high-level code depending directly on low-level details.","Domain PaymentPort <- HttpPaymentAdapter\nOrderService depends on PaymentPort","The business layer can own the port, and infrastructure implements it. Dependency injection supplies an implementation; DIP is about dependency direction and contracts. A container can inject tightly coupled concrete classes without achieving DIP.","DI and DIP are related but not identical.","Which package should own the interface?","Put PaymentPort in the domain or application-core module that needs it. Keep HttpPaymentAdapter in infrastructure so dependencies point inward."],["Q012",1,"How should SOLID be balanced with simplicity?","Apply it to real sources of change and verify the design remains understandable and efficient.","One payment provider today, several required next quarter\nA small PaymentPort boundary is justified","Explain a tradeoff: extra interfaces help replace external infrastructure, while excessive abstractions slow navigation. Patterns should preserve business invariants and make tests meaningful. Prefer explicit contracts over slogan-based redesign.","SOLID is not a score calculated from interface counts.","What evidence shows the abstraction paid off?","Compare change size, number of impacted classes, test isolation, and defect rate before and after. An abstraction earns its cost when real changes become safer."],["Q013",2,"What is Singleton and when is it useful?","Singleton controls access to one instance within a defined runtime scope.","enum AppSettings {\nINSTANCE;\npublic String region() { return \"local\"; }\n}","An enum is a concise Java singleton with well-defined construction/serialization behavior. Define the scope: class-loader identity matters, and multiple processes still have multiple instances. Dependency-injected lifecycle control often avoids static global access.","One instance does not imply safe mutable state.","What happens with two class loaders?","Each class loader may define its own AppSettings class and therefore its own enum singleton instance. It is not one universal object across a JVM."],["Q014",2,"How do you implement lazy initialization safely?","The initialization-on-demand holder idiom uses Java class initialization to publish a lazy instance safely.","final class Registry {\nprivate Registry() {}\nprivate static class Holder { static final Registry R = new Registry(); }\nstatic Registry instance() { return Holder.R; }\n}","Initialization occurs when the holder is first used. For double-checked locking, the instance reference must be volatile and the algorithm must be correct. The holder controls construction but not thread safety of later mutations.","Lazy construction cannot repair unsafe shared maps inside the instance.","When would you choose eager creation instead?","Choose eager creation if the object is cheap, always required, or startup should detect initialization problems immediately; lazy creation is useful for costly optional work."],["Q015",2,"Why can Singleton make testing and design harder?","Static global access hides dependencies and can leak mutable state between tests or consumers.","Bad: OrderService calls GlobalGateway.instance()\nBetter boundary: constructor accepts PaymentPort","Injecting a scoped instance makes replacement and lifetime explicit. A singleton-scoped stateless service is often practical; a globally accessed mutable singleton is a separate design choice. Tests should isolate unavoidable shared state.","Private constructor alone does not solve reflection, serialization and lifecycle concerns.","How would you replace this gateway in a test?","Inject PaymentPort through the constructor and pass a fake or Mockito double in tests. Avoid tests that edit global static singleton state."],["Q016",3,"What is Factory Method?","A creator exposes an overridable creation method so subclasses can supply the concrete product used by its workflow.","abstract class Job {\nabstract Parser createParser();\nResult run(String input) { return createParser().parse(input); }\n}","The workflow depends on Parser while specialized Jobs choose the parser. This is different from any static method named of or create. The extension point should serve a stable workflow rather than add inheritance for one constructor.","A static switch factory is not automatically the GoF Factory Method.","Which method does the subclass override?","The subclass overrides createParser(), not run(). The base run() retains the workflow and calls the chosen Parser."],["Q017",3,"When is Factory Method worth using?","Use it when an existing creator workflow needs a creation variation point aligned with its subclasses.","CsvImportJob creates CsvParser\nJsonImportJob creates JsonParser","Each job can retain the shared run algorithm while choosing a product. If parser choice varies independently from job type, injecting a Parser or Supplier may be simpler. Avoid multiplying subclasses for unrelated combinations.","An inheritance hierarchy can become the wrong axis of variation.","How would constructor injection change this design?","Inject Parser into Job's constructor and remove the subclasses if parser choice is the only variation; the shared run algorithm stays in one class."],["Q018",3,"How can a Factory Method preserve substitutability?","Every returned product must satisfy the product contract the creator's workflow uses.","Parser.parse -> Result or documented ParseFailure\nBoth CsvParser and JsonParser preserve this contract","The caller should not require downcasts to concrete parsers. Specify ownership and reuse: a factory may create a new object or provide a suitable existing one. Tests should exercise the shared workflow for every product.","Returning a cached non-thread-safe parser changes concurrency assumptions.","Which product contract would you test?","Test parsing success, malformed input, null policy, exception shape, side effects, and thread-safety expectations using the same cases for every Parser."],["Q019",4,"What is Abstract Factory?","It supplies related products through one family-level creation contract while hiding concrete family classes.","interface UiFactory {\nButton button();\nMenu menu();\n}","A DesktopFactory and TouchFactory can provide compatible button/menu pairs. The client chooses a family once and uses its abstractions. Compatibility constraints, not the word Factory in the name, justify the pattern.","Independently mixing family products may violate assumptions.","What makes two products belong to one family?","Products form a family if they must share compatible versions, configuration, style, credentials, or protocols and should be selected together."],["Q020",4,"What is the main extension tradeoff?","Adding a family is easy, while adding a new product kind can require changing the abstract factory and every family implementation.","New family: HighContrastFactory\nNew product kind: Tooltip -> update all UiFactory implementations","This tradeoff differs from Factory Method's single-product variation. If product kinds grow constantly, consider a simpler composition model or a carefully designed registry. Avoid weakening types merely to avoid every interface change.","A string-to-Object factory sacrifices useful compile-time checks.","Which dimension grows more often here?","If you add more deployment families often, Abstract Factory helps. If you continually add product types, every family must be updated; consider simpler ports."],["Q021",4,"How would you use Abstract Factory in backend code?","Group mutually compatible infrastructure products when a real compatibility requirement exists.","StorageFamily -> BlobWriter + SignedUrlProvider\nCloudAFamily keeps endpoint and credential policy aligned","A Spring configuration can assemble the family through DI, but a collection of unrelated bean methods is not proof of Abstract Factory intent. Separate configuration and secrets from business policy. Test family compatibility and failure outcomes.","A family contract should not expose vendor SDK types unnecessarily.","When are two separately injected ports sufficient?","Two injected ports are sufficient when writer and URL signer do not need a coordinated family choice or cross-product compatibility guarantee."],["Q022",5,"What is Builder?","Builder separates stepwise construction from the final representation so complex objects can be assembled clearly.","Request r = new Request.Builder(\"/orders\")\n.timeout(Duration.ofSeconds(2)).header(\"Accept\", \"json\").build();","Fluent Java builders often replace telescoping constructors; the GoF form can also use a director to control steps for different representations. Clearly distinguish required fields from optional settings and reject invalid combinations.","A fluent setter chain alone does not guarantee a valid object.","Where should cross-field validation run?","Run validation in build() or the constructed type's constructor, after all fields are available. Reject inconsistent combinations before returning an object."],["Q023",5,"How do you make a built object immutable?","Validate and copy mutable inputs into the result rather than sharing the builder's internal containers.","this.headers = Map.copyOf(builder.headers);","Final fields prevent reference reassignment, but not mutation of referenced objects. Deep immutability needs immutable elements or defensive copies at the necessary depth. Decide whether builders are reusable; they are usually not shared across threads.","Unmodifiable view can still reflect changes in its backing collection.","What if a header value is itself mutable?","Copy that value too, or use an immutable representation. Map.copyOf only copies the map structure; it does not deep-copy mutable values."],["Q024",5,"When should you avoid a builder?","Avoid it for a tiny value whose constructor or record clearly expresses all valid required inputs.","record Coordinates(double latitude, double longitude) {}","A builder improves readability when options grow or construction involves constraints. It costs code and can obscure which fields are mandatory. Staged builders can enforce construction steps but increase generic/interface complexity.","A builder for every two-field DTO is often needless ceremony.","Would a named static factory communicate intent better?","Yes. For a small object, a method such as Coordinates.ofDegrees(lat, lon) can validate and explain meaning better than a builder."],["Q025",6,"What is Prototype?","Prototype creates a new object by copying a configured example rather than reconstructing it through the usual creation path.","Document draft = template.copy();\ndraft.setTitle(\"Interview Notes\");","Use it when copying a configured graph is the useful operation. Java clone is one mechanism, not the pattern definition. Copy constructors or explicit copy methods often make ownership and validation clearer.","Copying an identifier can accidentally duplicate business identity.","Which fields must change in the copied object?","Generate a fresh business ID, reset timestamps/status where needed, and avoid copying secrets or active handles. Preserve only template configuration intended for reuse."],["Q026",6,"How do shallow and deep copying differ?","A shallow copy duplicates the outer object but shares nested references; a deep copy duplicates the required mutable graph.","Original and shallowCopy share the same mutable List<Section>\nDeep policy copies sections and their mutable state as needed","Copy only the state that must be independent. Cycles, shared subgraphs, resources and immutable objects require explicit policy. Blind recursive duplication can lose intended sharing or fail on cycles.","A new ArrayList containing the same mutable elements is not a full deep copy.","How would you test aliasing?","Copy, then mutate the original nested object; the deep copy must remain unchanged. Also mutate the copy to prove independence in both directions."],["Q027",6,"Why is Object.clone not always a good domain API?","Its default behavior is field copying and its Cloneable contract does not express domain validation or resource ownership.","Document(Document source) {\nthis.sections = source.sections.stream().map(Section::copy).toList();\n}","Explicit copying can reset IDs, exclude secrets and validate invariants. Never duplicate active sockets, database sessions or locks as ordinary values. If cloning is used, document its depth and subclass behavior.","Cloneable does not itself declare a public clone method.","How do you copy an object holding a resource handle?","Do not copy live sockets or database sessions. Reopen or inject a separate handle in the new object and define which object owns closing it."],["Q028",7,"What is Adapter?","Adapter presents the interface a client needs while translating calls to a different existing interface.","final class PaymentAdapter implements PaymentPort {\nprivate final VendorClient client;\npublic Receipt pay(Money m) { return map(client.charge(toRequest(m))); }\n}","The adapter isolates vendor request/response types and error mapping. Its purpose is compatibility rather than simply adding features. Contract conversion includes units, identity and failure semantics, not only method names.","Mapping vendor timeout to definite failure can trigger unsafe repeated charges.","Which outcomes are uncertain?","Vendor timeout or connection loss after submission may leave the payment outcome unknown. Query by stable idempotency ID before retrying the charge."],["Q029",7,"How do object and class adapters differ?","Object adapters delegate to a wrapped instance; class adapters use inheritance to adapt behavior.","Object adapter: has VendorClient\nClass adapter: extends a suitable adaptee and implements target","Java's single class inheritance makes object composition broadly useful. Composition lets the adapter wrap supplied implementations and avoids inheriting unrelated behavior. A class adapter can fit a constrained inheritance situation.","Java cannot extend two concrete classes to copy a multiple-inheritance diagram.","What dependency would you inject for testing?","Inject a small VendorClient interface or fake adaptee into the object adapter. Assert translated requests, errors, and responses without real network calls."],["Q030",7,"How do you test an adapter well?","Use target-contract tests plus translation tests for successful, rejected and ambiguous upstream outcomes.","Vendor amount in paise -> Money in agreed currency\nVendor timeout -> documented unknown-payment outcome","Mock the vendor boundary for precise translation cases, then add integration evidence for serialization/protocol behavior. The application should depend on PaymentPort rather than downcast to access the client.","Matching signatures does not prove semantic compatibility.","How do you preserve vendor error context safely?","Capture only safe vendor error category and correlation ID; redact secrets, payment data, and tokens. Map raw vendor failures to a stable domain error."],["Q031",8,"What is Bridge?","Bridge separates an abstraction from its implementation hierarchy so both can evolve independently.","abstract class Notification {\nprotected final Channel channel;\n}\n// Alert/Receipt notifications x Email/Sms channels","The notification abstraction delegates delivery to Channel implementations. New notification behavior and new delivery channels need not create a subclass for every combination. Both sides still need a coherent contract.","Ordinary composition alone is not enough to establish Bridge intent.","Which two dimensions vary independently?","Notification type (Alert/Receipt) and transport (Email/SMS) vary independently. Compose one of each rather than creating every combined subclass."],["Q032",8,"How does Bridge avoid a class explosion?","It composes two varying dimensions instead of encoding their Cartesian product in one inheritance hierarchy.","Without bridge: AlertEmail, AlertSms, ReceiptEmail, ReceiptSms\nWith bridge: Alert, Receipt + EmailChannel, SmsChannel","This saves duplication when the dimensions are real. It does not mean every combination is valid; validate constraints at assembly. If only one small dimension varies, a Strategy may be the simpler explanation.","Allowing invalid combinations is not useful flexibility.","Where should channel compatibility be checked?","Check supported combinations at the assembly/configuration boundary, where both the notification type and Channel implementation are selected."],["Q033",8,"How is Bridge different from Adapter?","Bridge is designed to separate variation dimensions; Adapter makes an existing interface usable through a different expected interface.","Bridge: choose notification kind and channel independently\nAdapter: wrap a vendor SMS client as Channel","The patterns can coexist: a Channel implementation may itself be an adapter. Describe intent and timing of the design rather than judging solely from a reference field and delegation method.","Both may wrap an object, but solve different problems.","Can you identify both boundaries in one diagram?","Bridge separates Notification from Channel choice. An Adapter may sit beneath Channel to translate one vendor SMS SDK into the Channel contract."],["Q034",9,"What is Composite?","Composite represents a part-whole tree where leaves and groups support a common operation.","interface CostItem { int cents(); }\n// Product is a leaf; Bundle sums child CostItems.","Clients can price a Product or Bundle through CostItem. Use a tree or explicitly define shared-node graph semantics. A group recursively delegates the operation to its children.","Recursion is unsafe if cycles are allowed accidentally.","How would you prevent a bundle containing itself?","Reject insertion if a child is this bundle or already reaches it through descendants. An immutable tree and visited-node checks can enforce acyclicity."],["Q035",9,"Should leaf objects expose add/remove operations?","Choose between a uniform but partly unsupported interface and a safer split where only composites expose child management.","CostItem -> cents()\nBundle -> add(CostItem), remove(CostItem)","Keeping add/remove out of leaves avoids unsupported operations and can better preserve substitution. Uniform management APIs can simplify some clients but need a deliberate contract. Immutable trees are another useful choice.","Returning fake success from leaf.add breaks expectations.","Which clients actually need tree editing?","Only editors, builders, and admin tools that change bundle structure need add/remove operations; ordinary pricing clients need cents() only."],["Q036",9,"How do you handle performance and ownership in Composite?","Bound depth, define child ownership and cache derived totals only with a valid invalidation policy.","Bundle(List<CostItem> children) uses List.copyOf(children)","Immutable children make aggregate computation easier to reason about. Large/deep trees may require iterative traversal or incremental summaries. Shared mutable children can change several parents unexpectedly.","A cached total becomes stale if a child changes without notification.","How do you test a shared child update?","Update one shared child and assert each parent reflects the agreed ownership model; if parents are immutable, confirm shared mutable children are rejected."],["Q037",10,"What is Decorator?","Decorator adds behavior by wrapping an object behind the same component contract.","interface Sender { void send(Message m); }\n// LoggingSender wraps Sender; CompressionSender wraps Sender.","Decorators can be stacked at assembly time without multiplying subclasses for every feature combination. The wrapper must preserve required semantics and deliberately choose behavior before/after delegation.","A wrapper that changes the expected interface is more likely an Adapter.","Which order should the wrappers use?","Choose order from the required behavior: authorize before send, log appropriate data, then compress before encryption. Test the actual nested call path."],["Q038",10,"Why does decorator order matter?","Each wrapper sees the call and data at its position, so changing nesting can change effects, timing and errors.","Retry(Tracing(Sender)) -> each retry can get a trace\nTracing(Retry(Sender)) -> one outer logical operation span","Choose the intended observability, authorization and failure boundary. Compression then encryption differs from encryption then compression. Tests should assert operation order and failure behavior, not only final success.","Retry wrappers can duplicate nonidempotent effects.","What should happen when logging itself fails?","A noncritical logging failure should usually be isolated and reported without changing successful delivery. Never silently ignore an audit failure when audit is mandatory."],["Q039",10,"What are common Decorator costs?","Additional wrappers complicate identity, debugging and lifecycle while potentially hiding semantic changes.","wrappedSender != originalSender by reference","Avoid downcasts or identity checks that assume the wrapper is the concrete component. Define resource closing and ownership to prevent double-close or leaked resources. Prefer explicit assembly for a small known stack.","Same interface does not justify violating the original contract.","Who closes the wrapped connection?","The owner that creates the wrapping stack must define shutdown. Close once, usually from the outermost owner, with decorators following an agreed contract."],["Q040",11,"What is Facade?","Facade supplies a simpler cohesive interface over a set of subsystem operations.","CheckoutFacade.placeOrder(request)\n// Coordinates pricing, stock and payment collaborators.","The client need not know every subsystem step. A facade should delegate rather than absorb all domain policy into a giant service. Its purpose is usability and coupling reduction.","One method call does not mean one atomic distributed operation.","What happens if payment succeeds and shipment fails?","Do not call the whole operation atomic. Track order state and use a compensating or recovery workflow to retry shipment or refund when business policy requires."],["Q041",11,"How is Facade different from Mediator?","Facade simplifies external access; Mediator organizes interaction among peer collaborators.","Facade: caller uses one checkout API\nMediator: form controls communicate through a coordinator","A facade's subsystems need not know it exists. Mediated colleagues intentionally route coordination through the mediator. One component can play both roles, but explaining separate responsibilities keeps the design clear.","Every orchestration class is not automatically both patterns.","Which objects know the coordinator?","The client knows the Facade, but subsystems need not. In Mediator, collaborating controls know or communicate through the coordinator."],["Q042",11,"How do you prevent a facade becoming a god object?","Keep the public use case coherent and move independent domain rules and infrastructure translation to collaborators.","Facade coordinates PaymentPort, PricingPolicy and OrderRepository","Test the use-case outcome and failure sequence. Separate commands and reads when they differ materially. If several unrelated teams must edit the facade for every change, its responsibility is likely too broad.","Delegation can still become tangled if ordering rules are implicit.","Which responsibility would you extract first?","Move the most independent business policy, such as pricing rules, into its own tested collaborator and keep the facade as use-case orchestration."],["Q043",12,"What is Flyweight?","Flyweight shares common intrinsic state across many logical objects while callers supply differing extrinsic context.","GlyphStyle(font, size, color) shared\nGlyph position supplied when drawing","It reduces duplication when shared data is substantial and many instances repeat it. Separate intrinsic state from per-use position, owner or request identity. The shared value should normally be immutable.","A shared object containing mutable request state creates cross-call leakage.","Which fields are safe to share?","Share immutable fonts, styles, static metadata, and configuration. Keep position, request ID, tenant context, and mutable state outside the flyweight."],["Q044",12,"How is Flyweight different from a normal cache?","Flyweight models shared identity/state for many logical instances; a cache broadly retains previously computed or loaded results.","StylePool returns one immutable style for equivalent StyleKey\nProduct cache stores a source result with expiry","A flyweight pool may be implemented with a map/cache, but the design intent is state factoring. Lifetime and eviction depend on equality/identity assumptions and actual memory savings. Measure retained memory.","A map named pool is not automatically a Flyweight.","Does the client require reference identity?","Not necessarily. If clients only care about equivalent immutable values, equality is enough; reference identity should be part of the contract only when required."],["Q045",12,"What can go wrong with a Flyweight pool?","Unbounded unique keys can consume more memory than sharing saves, and mutable keys/state can corrupt reuse.","ConcurrentHashMap<StyleKey, GlyphStyle> with stable value keys","Use bounded domains or reviewed retention policies. computeIfAbsent can coordinate construction within the map's contract, but loaders should avoid inappropriate recursion/blocking. Correct equality and hash codes define which styles are shared.","Including unique requestId in StyleKey defeats sharing.","How would you prove memory savings?","Benchmark allocated objects and retained heap for realistic cardinality, plus hit ratio and pool overhead. An unbounded map may cost more than sharing saves."],["Q046",13,"What is Proxy?","Proxy stands in for a subject and controls access, such as authorization, lazy creation or remote invocation.","interface Report { Data load(); }\n// AuthorizedReportProxy checks permission then delegates.","The client uses the subject contract while the proxy manages an access concern. This differs from Decorator's primary intent of composable responsibility addition, although structures can look similar. Preserve documented exceptions and results.","A remote proxy cannot make a network call behave like a guaranteed local call.","What timeout semantics should it expose?","Expose deadlines and timeout exceptions clearly. A timeout says the remote result may be unknown, not that the action was never performed."],["Q047",13,"How do JDK dynamic proxies and subclass proxies differ?","JDK dynamic proxies implement interfaces; subclass proxies derive from a concrete class and inherit its overridability constraints.","Proxy.newProxyInstance(loader, interfaces, invocationHandler)","JDK proxy invocation routes through an InvocationHandler. A subclass cannot override final methods; private methods are not normal override join points. Framework defaults depend on configuration. Handle Object methods and exception translation appropriately.","Never assume every Spring bean uses the same proxy type.","Why can a final method escape advice?","Subclass proxies cannot override final methods, so proxy interception cannot apply advice to that call. JDK dynamic proxies advise interface methods through their proxy."],["Q048",13,"Why does a self-call bypass common Spring proxy advice?","An internal call executes on the target without passing through the external proxy interception boundary.","caller -> proxy -> target.outer()\ntarget.outer() -> this.inner() -> no external proxy crossing","This affects default AOP, cache and transactional arrangements. Extract the advised operation into a separate injected service when needed. Aspect weaving has different mechanics, so identify the actual mode.","Adding an annotation does not prove the call is intercepted.","How would you test the real bean's advice path?","Call the Spring-managed bean from another bean and assert a real transactional/cache/async effect. Compare with a self-call to demonstrate bypass."],["Q049",14,"What is Chain of Responsibility?","It gives multiple handlers a chance to process a request, reducing sender coupling to a specific receiver.","Request -> authentication handler -> quota handler -> endpoint","Classical chains may stop at a suitable handler; validation/filter variants can execute multiple steps before continuing. Specify what handled, rejected and passed-on mean. Order must be visible and testable.","A request should not silently vanish at the end.","What is the default terminal behavior?","Specify fail-closed terminal behavior, such as reject or explicit unhandled result. Never silently authorize a request when no handler accepts it."],["Q050",14,"How do you design a safe chain contract?","Represent continuation and rejection explicitly, and define who owns progression through the chain.","Decision = Continue | Reject(reason) | Handled(result)","A linked handler or coordinator-owned list can work. Prevent double continuation, unexpected cycles and exceptions interpreted as success. Security chains should deny unsupported paths deliberately rather than accidentally permit them.","Logging a rejection then continuing may undo the policy.","Which handler can terminate processing?","The first handler that returns a handled/terminal result may stop the chain. Define errors and fallback behavior explicitly rather than relying on null."],["Q051",14,"How does a chain differ from a fixed pipeline?","A chain emphasizes dynamic handling/propagation responsibility; a pipeline generally applies a defined sequence of transformations.","Handler may stop after processing\nPipeline stage transforms input for the next stage","Implementations can overlap, so explain the actual continuation semantics. A servlet filter chain is a useful chain-style example, but Spring Security chain selection has its own first-match configuration rules.","One chain does not imply all configured chains run.","How would you test handler order and short-circuiting?","Record handler invocations and assert the exact order. Add a case where handler two handles the request and confirm handler three never runs."],["Q052",15,"What is Command?","Command encapsulates a request, its receiver/context and execution behavior as an object.","interface Command { void execute(); }\nrecord RenameCommand(Document doc, String title) implements Command {\npublic void execute() { doc.setTitle(title); }\n}","It enables deferred invocation, queues, histories or audit metadata. A command object need not be remotely serializable or durable. Separate in-memory behavior from a persisted command envelope.","Capturing a live entity reference does not make a safe durable message.","What must be stored for execution after restart?","Persist a durable command ID, validated payload, type/version, execution state, and retry policy. In-memory Runnable objects cannot survive a restart."],["Q053",15,"How can Command support undo?","Store the information needed to reverse a local action or provide an explicit compensating operation.","Rename records previousTitle before changing it\nundo restores that title under reviewed ordering rules","Not every action is reversible. Undo after another edit may overwrite valid work unless version/history ownership is defined. A payment refund is a new business action, not erasure of the original payment.","Undo is not a generic rollback of external side effects.","What happens if compensation fails?","Escalate to reconciliation or a human recovery queue with the original operation ID. An undo command is not a guaranteed transaction rollback."],["Q054",15,"How do commands need to change for distributed delivery?","Use a stable command identity, serializable intent and a durable idempotent handling/recovery policy.","ChargePayment(commandId, paymentId, amount)","A queued command may execute more than once. Deduplicate at the durable effect boundary or use a provider-supported idempotency key. Record accepted, executing and completed states if the workflow needs them.","GoF Command alone does not guarantee exactly-once execution.","How do you handle an unknown payment outcome?","Store an idempotency key and query payment status before resubmitting. Treat unknown as pending until confirmed or reconciled, not as a definite failure."],["Q055",16,"What is Interpreter?","Interpreter represents grammar rules as objects that evaluate sentences in a supplied context.","Expr = Number | Add(Expr,Expr)\nAdd(Number(2),Number(3)).eval() -> 5","Terminal nodes represent basic values; nonterminals combine expressions. It suits a small stable language or expression grammar. Parsing the text into the structure is a separate concern from evaluation.","An if statement is not automatically an Interpreter.","Which part owns syntax errors?","The parser/grammar layer should identify malformed syntax with a useful position and safe message; execution handles valid syntax and its domain errors."],["Q056",16,"When should you choose a parser/library instead?","Choose a mature parser/evaluator when grammar, diagnostics, security or performance exceeds a small object-tree model.","Complex expression language -> grammar tool/library + controlled evaluation","The classical pattern can create many rule classes and expensive traversals. Do not expose arbitrary scripting capabilities merely to make business rules configurable. Bound nesting and evaluation cost for untrusted input.","A user expression can cause resource exhaustion even without code execution.","How do you validate and limit rule complexity?","Restrict allowed operators, recursion depth, input length, evaluation time, and data access. Prefer a proven parser when grammar and error handling grow."],["Q057",16,"How do you keep an interpreter deterministic and testable?","Make evaluation depend on an explicit context and pure rules where possible, with errors represented consistently.","boolean eval(Rule rule, Facts facts)\n// No hidden clock, network call or mutable global lookup.","Validate the grammar and supported operators. Define types, missing facts and comparison semantics. If time matters, inject a clock/fact rather than reading an invisible global time during traversal.","Different missing-value behavior can change policy outcomes.","How would you explain a failed rule to a user?","Return the failed rule's stable identifier, safe input facts, and a readable explanation without exposing sensitive values or internal implementation details."],["Q058",17,"What is Iterator?","Iterator exposes sequential traversal while hiding the underlying aggregate representation.","Iterator<Order> it = orders.iterator();\nwhile (it.hasNext()) { process(it.next()); }","The traversal contract defines exhaustion and supported mutation. Java Iterable allows obtaining an iterator; Iterator carries traversal state. A tree or paged data source can provide a suitable traversal abstraction.","Iteration does not automatically mean all data is loaded or stable.","What happens after exhaustion?","hasNext() becomes false; calling next() after exhaustion normally throws NoSuchElementException. Do not infer automatic restart."],["Q059",17,"Are fail-fast iterators a concurrency guarantee?","No. Fail-fast detection is generally best effort and must not be used as a correctness mechanism for concurrent access.","Concurrent modification may throw ConcurrentModificationException","Choose synchronization, immutable snapshots or a collection with documented concurrent iteration semantics. Weakly consistent and snapshot iterators behave differently. Do not catch the exception and assume the traversal became complete.","No exception does not prove no concurrent modification occurred.","Which semantics does CopyOnWriteArrayList provide?","CopyOnWriteArrayList iterators traverse a snapshot from iterator creation and do not reflect later writes; writes copy the array, making it suited to read-heavy cases."],["Q060",17,"How do Iterator and Stream differ?","Iterator gives explicit pull traversal; Stream describes a pipeline with its own consumption, laziness and resource semantics.","orders.stream().filter(Order::paid).map(Order::id).toList();","A stream can be backed by a collection, iterator-like source or I/O resource. Streams are generally single-use and can require closing when resource-backed. Parallel execution adds ordering and thread-safety considerations.","Using Stream does not automatically make mutable work thread-safe.","When is explicit iteration clearer?","Use an explicit loop when traversal needs early return, checked resource handling, mutation through Iterator.remove(), or step-by-step debugging."],["Q061",18,"What is Mediator?","Mediator coordinates interactions among colleagues so they need not depend directly on every peer.","FormMediator coordinates country, city and submit controls","A control reports a change to the mediator, which applies the agreed interaction rules. Domain work should remain with appropriate collaborators. This can reduce a dense dependency graph while making coordination more explicit.","A mediator that performs every task becomes a god object.","Which rules should stay inside the controls?","Keep local validation and display rules inside each control. Put cross-control coordination, navigation, and dependency decisions in the Mediator."],["Q062",18,"How does Mediator differ from Observer?","Mediator coordinates a specific interaction workflow; Observer distributes change notifications to subscribers.","Observer: country changed -> subscribers notified\nMediator: country changed -> reload cities + reset selection + revalidate","A mediator can receive observer-style events. The distinction is the responsibility for coordination, not whether callbacks exist. Avoid circular event flows and define reentrancy/order where state changes trigger more notifications.","Event notification alone does not define workflow consistency.","How would you prevent repeated update loops?","Use change detection, deduplication, or bounded propagation; do not let callbacks blindly publish the same update forever."],["Q063",18,"What are Mediator's main tradeoffs?","It reduces peer coupling but can concentrate complex coordination and become a bottleneck for changes.","Split checkout workflow and form workflow into coherent coordinators","Keep interaction rules cohesive, test transitions and outcomes, and avoid exposing every peer's internals. A mediator usually executes in-process; a distributed orchestrator needs durable state and recovery beyond this pattern.","An in-memory mediator cannot survive process failure by itself.","Which state needs persistence in a long-running workflow?","Persist workflow state, command IDs, completed steps, deadlines, and recovery data in durable storage. An in-memory mediator cannot resume after crash."],["Q064",19,"What is Memento?","Memento lets an originator capture and restore its state through an opaque snapshot managed by a caretaker.","Editor -> snapshot -> UndoHistory\nUndoHistory returns snapshot -> Editor restores","The originator understands the snapshot's internals; the caretaker stores it without rewriting state. Java access control and immutable snapshot types can support the boundary. Choose the required state depth.","Exposing a mutable live list is not a safe snapshot.","Which fields belong in the snapshot?","Save only state needed to restore the defined editor behavior: content, cursor, and selected options. Avoid copying unrelated services or credentials."],["Q065",19,"How is Memento different from Prototype?","Memento captures restoration state for an existing originator; Prototype creates a separate configured object by copying.","Memento: restore editor before last edit\nPrototype: create a new document from a template","Both involve copying, but identity and intent differ. A snapshot may exclude derived/transient fields, while a prototype may reset IDs and retain configuration. Avoid duplicating resources as plain data.","Returning the same mutable reference defeats both intents.","Which identity survives restoration?","The editor keeps its business identity; restoring a Memento changes its state. Prototype usually makes a new object with a new identity."],["Q066",19,"How do you manage snapshot cost and compatibility?","Bound history, use immutable/shared data safely, and version snapshots when restoring across deployments.","Keep last 50 editor states; discard older history","Large graphs make full snapshots expensive. Deltas reduce size but complicate replay and dependency ordering. Do not serialize secrets or resource handles casually. Domain restoration must still enforce valid current invariants.","A historical snapshot may no longer match the current schema.","When would an event log be more suitable?","Use event logs when you need durable audit, rebuilds, and a history of changes rather than only point-in-time editor undo. Replay and versioning must be designed."],["Q067",20,"What is Observer?","Observer lets subscribers receive notifications when a subject's state or events change.","subject.subscribe(auditListener)\nsubject.publish(new OrderPlaced(\"42\"))","The subject depends on a notification contract rather than concrete subscribers. Synchronous and asynchronous delivery are separate execution choices. Document callback order and errors if they matter.","Observer alone is not a durable message broker.","What happens when one subscriber throws?","A synchronous publisher may propagate the exception and stop later listeners unless it isolates them. Decide whether each subscriber failure is critical."],["Q068",20,"How do you avoid observer leaks and reentrancy problems?","Make subscription lifetime explicit and prevent uncontrolled modification/recursive notification during callbacks.","Subscription s = subject.subscribe(listener);\ns.close(); // remove when no longer needed","A subject holding strong references can retain subscribers indefinitely. Snapshotting the subscriber list can simplify iteration but does not make callback state thread-safe. Define whether callbacks can subscribe/unsubscribe or publish recursively.","Weak references are not a universal delivery/lifecycle solution.","How would you test nested notification?","Register a listener that publishes another event; assert bounded order, no duplicate loop, correct removal, and cleanup after exceptions."],["Q069",20,"Should you use java.util.Observable for new Java code?","Usually prefer an explicit event/listener contract or an appropriate reactive/framework API; Observable and Observer are deprecated.","interface OrderListener { void on(OrderPlaced event); }","The older APIs impose limitations and weak event typing. A custom contract makes ownership and failure behavior visible. Spring events provide application-context integration, but reliability and transaction timing remain configuration choices.","Deprecation of the class does not invalidate the Observer pattern.","When is a durable event transport required?","Use a durable broker/outbox when events must survive crashes, support independent consumers, and permit replay/retry. In-process Observer has none of those guarantees."],["Q070",21,"What is State?","State delegates behavior to an object representing the context's current state, allowing behavior to change with transitions.","OrderState current = PendingState;\ncurrent.cancel(order); // allowed only by its state contract","A state can reject invalid actions or transition to another state. The context and states divide transition ownership explicitly. State is useful when many operations have substantial state-specific behavior.","An enum label alone is not necessarily the State pattern.","Who decides the next state?","An explicit transition policy or current State implementation decides the next state; persisted workflows should validate and atomically store that transition."],["Q071",21,"When is a state table simpler than State classes?","Use a table or small switch when transitions are simple data and behavior variation is limited.","PENDING + PAY -> PAID\nPAID + SHIP -> SHIPPED\nSHIPPED + CANCEL -> reject","A table makes allowed transitions easy to audit. State classes help when several operations need rich behavior in each state. Neither automatically handles concurrent transitions or persistence.","Every status enum does not require one class per value.","How would you protect a transition against concurrent updates?","Use compare-and-set on a version field or an atomic SQL update guarded by current state to reject two conflicting approvals."],["Q072",21,"How do you implement State safely for persisted workflows?","Enforce transitions against durable version/current-state constraints and handle duplicate or out-of-order events.","UPDATE orders SET status='PAID', version=version+1\nWHERE id=:id AND status='PENDING' AND version=:expected;","State objects can express policy, while the database enforces the actual transition under concurrency. Record event identity when duplicate delivery matters. A transition that emits an event needs reliable publication such as an outbox.","An in-memory state change cannot guarantee the database committed.","What if payment succeeds before persistence fails?","Record payment intent/outcome with an idempotency key and reconcile after a crash. Never assume a failed DB commit undoes an external payment."],["Q073",22,"What is Strategy?","Strategy encapsulates interchangeable algorithms behind a contract used by a context.","interface Discount { long apply(long cents); }\nDiscount tenPercent = cents -> cents - cents / 10;","The context delegates without encoding every algorithm's rules. Lambdas fit single-method policies, while classes fit richer state/configuration. Define precision, valid inputs and output guarantees so strategies remain interchangeable.","Algorithm interchangeability does not excuse different business units or semantics.","How would you validate a new strategy?","Run shared contract tests, boundary values, invalid identifiers, and golden examples; confirm it obeys the same return and error policy as other strategies."],["Q074",22,"How should strategy selection be implemented?","Choose through an explicit policy/registry and reject unsupported identifiers deliberately.","Discount d = strategies.get(code);\nif (d == null) throw new IllegalArgumentException(\"Unknown discount\");","Selection and execution are distinct responsibilities. A small switch at the composition boundary can be perfectly reasonable. In Spring, injected strategies can be assembled into a validated map without reflection.","Silent fallback can apply the wrong price or authorization policy.","What if two strategies claim the same identifier?","Fail startup on duplicate IDs in the registry rather than choose by iteration order; explicit configuration should select the single intended strategy."],["Q075",22,"How do you test Strategies for substitutability?","Run shared contract tests across implementations, then test each algorithm's specific examples and boundaries.","For valid cents: result >= 0 and result <= original\nThen verify agreed rounding for each discount","The contract should reflect real business rules, not invented constraints that every policy cannot satisfy. Stateful strategies need lifecycle and concurrency review. Compare outputs using exact units appropriate to the domain.","A shared interface does not prove behavioral compatibility.","Which extreme inputs reveal overflow?","Test zero, negative (if forbidden), Long.MAX_VALUE, arithmetic overflow, tiny rounding amounts, nulls, and unsupported policies."],["Q076",23,"What is Template Method?","Template Method fixes an algorithm's sequence in a superclass and lets subclasses specialize selected steps.","abstract class ImportJob {\nfinal void run() { read(); validate(); save(); }\nabstract void read(); abstract void validate(); abstract void save();\n}","The template owns ordering, while steps provide variation. Making the template final can protect sequencing. This is suited to a stable shared workflow, not arbitrary independently combinable behaviors.","Subclasses can still violate step contracts even when run is final.","Which invariant depends on the step order?","The order may ensure validate before charge and cleanup after resources are opened. Tests must show reordered steps would violate a stated invariant."],["Q077",23,"How do hooks differ from abstract steps?","Abstract steps require implementation; hooks provide optional extension points with defined defaults.","protected void beforeSave() { } // optional no-op hook","Hooks should be few and have precise timing/side-effect contracts. Too many hooks create an implicit framework that is difficult to reason about. Template execution must define cleanup if a step fails.","A finally block should not hide an earlier failure with cleanup errors.","What resources must be released after read fails?","Close streams, files, and locks in finally or try-with-resources even when reading fails. Avoid leaving the resource alive after a subclass hook throws."],["Q078",23,"When should Template Method become Strategy composition?","Refactor when algorithm steps vary independently, runtime selection matters or inheritance causes many combinations.","Import workflow injects Parser, Validator and Writer","Composition makes independent dimensions explicit and easier to replace in tests. A template remains reasonable if the subclass is the meaningful unit of specialization. Keep sequencing policy in one place whichever mechanism you choose.","Replacing inheritance with arbitrary callbacks can obscure invariants.","Who owns the workflow after refactoring?","The composed workflow/orchestrator owns step order and lifecycle; injected Strategy objects own only their interchangeable algorithm behavior."],["Q079",24,"What is Visitor?","Visitor separates operations from elements by letting elements dispatch to type-specific visitor methods.","interface Expr { <R> R accept(Visitor<R> v); }\n// NumberExpr.accept -> v.visitNumber(this)\n// AddExpr.accept -> v.visitAdd(this)","The element call and overloaded visit method establish the classic double-dispatch structure. Evaluation, printing or analysis can be separate visitors over the same tree. The tree structure stays with elements.","Overloading alone does not dynamically select by runtime parameter type.","Why is accept needed?","accept(this) allows a node's runtime class to select the correct visit(NodeType) method, achieving double dispatch without repeated instanceof chains."],["Q080",24,"What is Visitor's extension tradeoff?","Adding an operation is relatively easy; adding an element type can require updating every visitor.","New operation: PrettyPrinter visitor\nNew element: MultiplyExpr -> update Visitor and implementations","Visitor fits a stable hierarchy with frequently added operations. If element kinds grow often, polymorphic methods or a version-appropriate sealed-type dispatch may be simpler. Avoid default handlers that silently skip unsupported elements.","The visitor can become brittle as the element set expands.","Which dimension changes more often here?","If operations change frequently but node types stay stable, Visitor fits; if new node types arrive often, adding methods to each visitor becomes expensive."],["Q081",24,"How do Java's newer features affect Visitor choices?","Sealed hierarchies and version-supported pattern matching can make some closed-type dispatch concise, but they do not erase Visitor's design intent.","Java 17: sealed types can model a closed element set\nPattern-switch examples require the relevant Java version/status","This guide's executable-style examples use ordinary Java 17 constructs without preview features. Choose Visitor when operation objects, traversal or APIs benefit from it. Choose simpler dispatch when the closed hierarchy and operation set stay small.","Do not present newer nonpreview syntax as portable Java 17.","Would an ordinary method on Expr be enough?","Yes, if an operation naturally belongs to Expr and does not need many independent traversals, a regular method can be simpler than Visitor."],["Q082",25,"How do Factory Method and Abstract Factory differ?","Factory Method varies product creation through a creator hook; Abstract Factory creates a family of related products through a factory contract.","Factory Method: ImportJob.createParser()\nAbstract Factory: UiFactory.button() + menu()","Abstract Factory can itself be implemented using factory methods. Compare family compatibility and which dimension changes, rather than claiming the patterns cannot coexist. Static factory methods are another distinct idiom.","The method name create is not enough to identify either GoF pattern.","What changes when a new product kind is introduced?","A new product kind normally requires updating the AbstractFactory interface and each family; Factory Method may add another creator variation separately."],["Q083",25,"How do Strategy and State differ?","Strategy models a selected algorithm; State models behavior tied to the context's state and transitions.","Strategy: choose pricing policy\nState: pending order can pay; shipped order rejects cancel","Both delegate through interfaces. Clients typically select strategies, while context/state logic governs transitions, though implementations vary. A state transition has lifecycle meaning beyond swapping any algorithm.","Similar delegation diagrams do not imply identical intent.","Would replacing a discount policy count as an order transition?","No. Choosing a DiscountPolicy is usually a Strategy selection; changing an order from PENDING to APPROVED is a state transition with legal-state rules."],["Q084",25,"How do Adapter, Decorator and Proxy differ?","Adapter translates an interface; Decorator adds composable responsibilities; Proxy controls subject access.","VendorClient -> PaymentPort: Adapter\nTracingSender wraps Sender: Decorator\nAuthorizedReport wraps Report: Proxy","The same wrapper class may serve more than one purpose, but describe the primary contract and effect. All require careful error, identity and lifecycle semantics. A class name alone is weak evidence.","Same-interface wrapping can still violate substitutability.","Which concern is visible to the client?","Adapter changes the interface, which clients may notice; Decorator and Proxy preserve a subject contract but expose added behavior or access rules."],["Q085",25,"How do Builder and Abstract Factory differ?","Builder assembles a complex representation through steps; Abstract Factory creates compatible members of a family.","ReportBuilder: header, sections, footer -> Report\nUiFactory: Button + Menu -> compatible family","A builder can use an abstract factory to create parts, and a director can drive construction. Compare construction sequencing versus family compatibility. A fluent API does not automatically need a director.","Not every class returning several objects is a Builder.","Which validation occurs at build time?","Builder validates final fields and combinations at build time. Abstract Factory chooses related product implementations; each product may validate itself."],["Q086",25,"How do Chain, Strategy and Command differ?","Chain routes processing among handlers; Strategy supplies an algorithm; Command represents a requested action.","Chain: auth -> quota -> endpoint\nStrategy: choose quota algorithm\nCommand: queued RebuildProjection request","The designs can coexist in one use case. A chain handler might invoke a selected strategy or execute a command. The important distinction is routing, algorithm variation or request identity/lifecycle.","Queueing a Strategy does not by itself define a durable Command protocol.","Which object should carry the requestId?","Put requestId or idempotency ID on the Command payload that represents the logical request; the selected handler/strategy uses it consistently."],["Q087",25,"How do Decorator and inheritance compare for feature combinations?","Decorator composes behaviors at assembly time; inheritance encodes combinations in class relationships.","Retry(Trace(Sender)) instead of RetryTraceSender subclass","Composition avoids many subclasses but makes order and lifecycle visible obligations. Inheritance can be clearer for a few stable specializations with a genuine subtype contract. Prefer the structure matching actual variation and testing needs.","A stack of wrappers can be harder to debug than one coherent class.","How many combinations truly exist?","Count actual combinations of independent features (for example, 3 channels x 4 behaviors). Decorators are useful when valid combinations are numerous."],["Q088",26,"Is Spring singleton scope the GoF Singleton?","No. Spring singleton scope is normally one bean instance per bean definition per container, rather than a globally enforced unique Java instance.","Two application contexts -> two singleton-scoped instances\nManual new -> another instance outside the container","A stateless singleton-scoped service is a useful lifecycle choice. Mutable fields still need concurrency design. The container makes dependency replacement easier than static global lookup.","Singleton scope does not make request-specific fields safe.","How would you store per-request data instead?","Store per-request data in local variables, request-scoped beans, or explicit immutable request context; never put mutable user data on a shared singleton service."],["Q089",26,"How do Spring factories relate to GoF creation patterns?","BeanFactory, FactoryBean and @Bean methods manage creation/lifecycle, but their GoF classification depends on the actual intent and collaboration.","FactoryBean<T>.getObject() -> exposes a managed product\n@Bean method -> composition/configuration point","A FactoryBean is itself a bean, with a distinct product-access convention. Do not claim every @Bean method is the inheritance-based Factory Method. Framework names and pattern names are not interchangeable definitions.","Retrieving a FactoryBean product differs from retrieving the factory itself.","What does the & bean-name prefix mean?","In Spring, getBean(\"&name\") fetches the FactoryBean itself; getBean(\"name\") usually fetches its produced object."],["Q090",26,"Where do Strategy and Template Method appear in Spring-style code?","Injected policies often use Strategy; skeletal frameworks may use template workflows and callbacks for controlled variation.","OrderService injects PaymentPort implementations\nJdbcTemplate centralizes JDBC resource/error workflow","JdbcTemplate's public callback API demonstrates template/callback organization; avoid forcing a pure subclass-only GoF classification onto every method. Name the stable skeleton and variation point. Application strategy selection should remain explicit and validated.","A class ending Template does not mean users must subclass it.","Which work does JdbcTemplate own?","JdbcTemplate owns connection/resource handling, execution skeleton, and cleanup; the callback supplies SQL-specific value extraction or binding behavior."],["Q091",26,"Where do Proxy and Adapter appear in Spring MVC and AOP?","AOP proxies intercept access to advised beans; MVC HandlerAdapter adapts supported handler forms to the dispatcher's invocation needs.","Caller -> AOP proxy -> advised service\nDispatcherServlet -> HandlerAdapter -> supported handler","Both examples have concrete framework contracts. Proxy type and advice behavior depend on configuration; MVC adapters decide support and invocation. These are framework mechanisms, not automatic guarantees of business atomicity.","A controller invoking itself does not gain an external proxy crossing.","Which boundary does a handler adapter translate?","A Spring MVC HandlerAdapter translates a chosen handler contract into an invocation that DispatcherServlet can use; an AOP proxy controls advised method calls."],["Q092",26,"Are Spring application events durable Observer delivery?","No. Application events integrate publishers/listeners inside the application context; execution and transaction timing depend on configuration.","publisher.publishEvent(new OrderPlaced(\"42\"));","A default event multicaster commonly invokes synchronously, while asynchronous setup changes propagation and failure behavior. A transactional event listener can align handling with a transaction phase, but is not a durable cross-service outbox.","Process failure can lose work held only in memory.","How would you publish the order outcome reliably?","Persist an outbox row in the same DB transaction as the order, then publish asynchronously with retries and idempotent consumers. Plain in-process events are not durable."],["Q093",26,"How do repository and hexagonal ports complement GoF patterns?","They isolate domain access and dependency direction at architectural boundaries; adapters and strategies can implement those boundaries.","Domain OrderRepository port <- JpaOrderAdapter\nDomain PaymentPort <- VendorPaymentAdapter","Repository is not one of the 23 GoF entries. A domain-facing contract should avoid leaking infrastructure types when isolation matters. Choose the boundary from business requirements rather than wrapping every API mechanically.","A new interface that exposes EntityManager does not isolate JPA.","What should remain in the domain package?","Keep business rules, domain models, and ports in the domain/application core. Put concrete Spring Data repositories and HTTP adapters outside."],["Q094",27,"A service has a huge payment switch. How would you refactor it?","Separate provider selection from payment policy and translate each provider through a stable port where variation is real.","Registry selects PaymentPort by provider code\nVendor adapters map requests and outcomes","Keep common orchestration in one coherent use case; use Strategy-like selection and Adapter boundaries as needed. Reject unknown providers and validate duplicate registrations. Preserve idempotency and uncertain-outcome handling through the refactor.","Removing a switch is not enough if each implementation changes the contract.","How would you prove behavior stayed compatible?","Run characterization/contract tests on old and new implementations for all payment types, including timeout, amount rounding, duplicate requests, and decline handling."],["Q095",27,"How would you design configurable notification channels?","Use a small channel contract with explicit routing and adapters; add wrappers only for required cross-cutting behavior.","NotificationService selects Channel\nEmail/Sms adapters implement Channel\nTracing decorator records each logical attempt","If notification kinds and channel implementations vary independently, Bridge can organize those dimensions. Define retries, duplicate protection and recipient validation separately. A send interface should expose actual failure semantics.","A wrapper named Retry does not make sending safe to repeat.","What identity would deduplicate a notification?","Use an immutable notificationId representing one logical send. Store a per-channel delivery result to suppress duplicate work across retries."],["Q096",27,"How would you design a loan approval workflow?","Make durable states and allowed transitions explicit, then use replaceable policies for eligibility and handlers for ordered checks when justified.","Application state: RECEIVED -> VERIFIED -> APPROVED or REJECTED\nEligibilityPolicy selected by product","State governs workflow lifecycle; Strategy governs decision algorithm variation. Persist versioned transitions and record decisions for audit. An in-memory mediator or command object alone cannot recover a long-running process.","A design pattern does not replace durable orchestration requirements.","How do you recover after a provider callback arrives twice?","Store callback/event IDs and a versioned loan state transition in durable storage. On duplicate callback, return the prior result without approving twice."],["Q097",27,"How do you refactor inheritance that has too many combinations?","Identify independently varying dimensions, then extract stable contracts and compose them incrementally.","EncryptedEmailAlert / PlainSmsReceipt -> content + channel + wrappers","Use characterization/contract tests around meaningful behavior before changing structure. Bridge can split axes and Decorator can compose optional concerns, but only if those roles match requirements. Migrate callers without changing outcomes unnecessarily.","Extracting dozens of tiny interfaces can preserve the original complexity.","Which axis would you separate first?","Separate whichever axis changes independently most often - for example transport from notification content - while preserving current public behavior."],["Q098",27,"How should patterns handle concurrency and resource ownership?","Define immutability, thread-safety and close/lifecycle rules explicitly; the pattern name provides none of them automatically.","Shared Strategy: stateless or safely synchronized\nDecorator: owns or borrows wrapped resource by contract","Singletons, pools, observers and mutable commands need especially careful review. Prefer immutable values and per-operation state where feasible. Test realistic concurrent use and failure cleanup rather than only a happy-path class diagram.","Composition does not prevent data races or double-close.","Which object is responsible for shutdown?","The object or application scope that creates executors, connections, and wrapper stacks owns shutdown; define close order and ensure it runs even after failure."],["Q099",27,"What anti-patterns should you recognize in interviews?","Look for god objects, global mutable state, speculative abstraction, service locators and designs that hide business invariants.","Service calls GlobalContext.get(\"gateway\") everywhere\nDependency and lifetime become implicit","Explain the observable cost and a focused repair: constructor injection for hidden dependencies, cohesive services for mixed responsibilities, or simpler code for unnecessary layers. Avoid naming smells without showing actual impact.","A long class is not automatically wrong; incoherent change responsibilities matter.","What concrete bug or change cost supports the refactor?","Show an observable defect: duplicate payment after a retry, leaked subscription, shared mutable state, or a new feature requiring edits to many unrelated classes."],["Q100",27,"What makes an architect-level pattern answer strong?","State the problem, required variation, chosen collaboration, tradeoff, failure boundary and verification.","Problem: interchangeable tax policy\nChoice: Strategy + explicit registry\nEvidence: shared contract and rounding/unknown-code tests","Use a short diagram and one realistic example. Explain a simpler alternative and why it fits or does not fit. Connect design structure to correctness and maintenance rather than reciting a catalog definition.","A pattern name without context is not a design decision.","What change would make you remove the pattern?","Remove it when the expected variation disappears, a plain function or record is clearer, or the abstraction hides invariants and increases defect or review cost."]],"labs":[["C01 — Strategy with a validated registry","GoF Design Pattern implementation in Java 17","import java.util.Map;\npublic class Lab01 {\ninterface Discount { long apply(long cents); }\nstatic long price(String code, long cents) {\nif (cents < 0) throw new IllegalArgumentException(\"Negative amount\");\nMap<String,Discount> policies = Map.of(\n\"NONE\", c -> c, \"TEN\", c -> c - c / 10);\nDiscount d = policies.get(code);\nif (d == null) throw new IllegalArgumentException(\"Unknown policy\");\nreturn d.apply(cents);\n}\npublic static void main(String[] args) {\nif (price(\"TEN\", 1000) != 900) throw new AssertionError();\nif (price(\"NONE\", 1000) != 1000) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nSave as Lab01.java. Compile/run with a Java 17+ JDK. The example uses integer cents and rounds the\ndiscount down by integer division. Add boundary checks for zero, small amounts, unknown code and\nnegative amounts. The registry is rebuilt per call only to keep this small example self-contained; a real\nimmutable registry can be assembled once. Explain when a two-branch switch would remain simpler."],["C02 — Factory Method in a creator workflow","GoF Design Pattern implementation in Java 17","public class Lab02 {\ninterface Parser { String parse(String input); }\nabstract static class Job {\nprotected abstract Parser createParser();\nfinal String run(String input) { return createParser().parse(input); }\n}\nstatic final class TrimJob extends Job {\nprotected Parser createParser() { return String::trim; }\n}\nstatic final class UpperJob extends Job {\nprotected Parser createParser() {\nreturn s -> s.toUpperCase(java.util.Locale.ROOT);\n}\n}\npublic static void main(String[] args) {\nif (!new TrimJob().run(\" x \").equals(\"x\")) throw new AssertionError();\nif (!new UpperJob().run(\"x\").equals(\"X\")) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThe overridable createParser method is the creation variation point; run is the stable template. The\nparser contract here is deliberately tiny and does not accept null. Add contract cases for both\nproducts, then refactor the creator to accept a Parser or Supplier and discuss whether inheritance is\njustified. Do not call a static switch alone the same GoF collaboration."],["C03 — Builder with defensive copying","GoF Design Pattern implementation in Java 17","import java.util.ArrayList;\nimport java.util.List;\npublic class Lab03 {\nrecord Report(String title, List<String> sections) {\nReport {\nif (title == null || title.isBlank())\nthrow new IllegalArgumentException(\"Title required\");\nsections = List.copyOf(sections);\n}\n}\nstatic final class Builder {\nprivate final String title;\nprivate final List<String> sections = new ArrayList<>();\nBuilder(String title) { this.title = title; }\nBuilder section(String s) { sections.add(s); return this; }\nReport build() { return new Report(title, sections); }\n}\npublic static void main(String[] args) {\nBuilder b = new Builder(\"Interview\").section(\"Strategy\");\nReport r = b.build(); b.section(\"State\");\nif (r.sections().size() != 1) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThe record canonical constructor reassigns its parameter to a copied immutable list. String elements\nare immutable; mutable section objects would need a deeper policy. Test missing title, null element\nand attempted list mutation. Explain why final references alone would not be enough and why the\nbuilder is not intended for concurrent sharing."],["C04 — Adapter and decorator order","GoF Design Pattern implementation in Java 17","import java.util.ArrayList;\nimport java.util.List;\npublic class Lab04 {\ninterface Sender { void send(String text); }\nstatic final class Vendor {\nfinal List<String> received = new ArrayList<>();\nvoid deliver(byte[] bytes) {\nreceived.add(new String(bytes, java.nio.charset.StandardCharsets.UTF_8));\n}\n}\nstatic Sender adapt(Vendor v) {\nreturn text -> v.deliver(text.getBytes(java.nio.charset.StandardCharsets.UTF_8));\n}\nstatic Sender upper(Sender next) {\nreturn text -> next.send(text.toUpperCase(java.util.Locale.ROOT));\n}\nstatic Sender prefix(Sender next) { return text -> next.send(\"tag:\" + text); }\npublic static void main(String[] args) {\nVendor v = new Vendor();\nupper(prefix(adapt(v))).send(\"x\");\nprefix(upper(adapt(v))).send(\"x\");\nif (!v.received.equals(List.of(\"tag:X\", \"TAG:X\")))\nthrow new AssertionError(v.received);\n}\n}\nVERIFY + DISCUSS\nadapt translates String to the vendor byte API. upper and prefix are same-contract wrappers; their\norder changes which text gets transformed. Explain the actual order from outermost to innermost.\nAdd a throwing vendor case and define propagation rather than swallowing failures. Real adapter\ncontracts may require unit, authentication and uncertain-outcome translation beyond encoding."],["C05 — Composite with immutable children","GoF Design Pattern implementation in Java 17","import java.util.List;\npublic class Lab05 {\ninterface Item { long cents(); }\nrecord Product(long cents) implements Item {\nProduct { if (cents < 0) throw new IllegalArgumentException(); }\n}\nrecord Bundle(List<Item> children) implements Item {\nBundle { children = List.copyOf(children); }\npublic long cents() {\nlong total = 0;\nfor (Item i : children) total = Math.addExact(total, i.cents());\nreturn total;\n}\n}\npublic static void main(String[] args) {\nItem basket = new Bundle(List.of(new Product(100),\nnew Bundle(List.of(new Product(50), new Product(25)))));\nif (basket.cents() != 175) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nBoth Product and Bundle satisfy Item. List copying and immutable record examples simplify ownership.\nMath.addExact detects overflow instead of silently corrupting totals. Test empty groups, nested\ngroups and overflow. Very deep trees can still exceed the stack. A mutable graph version would need a\ncycle/ownership policy that this fixed example avoids."],["C06 — State with explicit legal actions","GoF Design Pattern implementation in Java 17","public class Lab06 {\ninterface State { State pay(); State ship(); String name(); }\nrecord Pending() implements State {\npublic State pay() { return new Paid(); }\npublic State ship() { throw new IllegalStateException(\"Not paid\"); }\npublic String name() { return \"PENDING\"; }\n}\nrecord Paid() implements State {\npublic State pay() { return this; } // explicit idempotent local policy\npublic State ship() { return new Shipped(); }\npublic String name() { return \"PAID\"; }\n}\nrecord Shipped() implements State {\npublic State pay() { throw new IllegalStateException(\"Already shipped\"); }\npublic State ship() { return this; }\npublic String name() { return \"SHIPPED\"; }\n}\npublic static void main(String[] args) {\nState s = new Pending(); s = s.pay(); s = s.ship();\nif (!s.name().equals(\"SHIPPED\")) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThis is an in-memory state model: pay does not actually charge a provider. The context would own the\ncurrent State reference. Add invalid-action checks and compare a small transition table. For a\npersisted order, enforce expected state/version at the durable store and deduplicate event identity.\nReturning this for repeated pay is not a general guarantee of idempotent external payment."],["C07 — Template Method with cleanup","GoF Design Pattern implementation in Java 17","import java.util.ArrayList;\nimport java.util.List;\npublic class Lab07 {\nabstract static class ImportJob {\nfinal void run() {\nopen();\ntry { read(); validate(); save(); }\nfinally { close(); }\n}\nabstract void open(); abstract void read();\nabstract void validate(); abstract void save(); abstract void close();\n}\npublic static void main(String[] args) {\nList<String> calls = new ArrayList<>();\nImportJob j = new ImportJob() {\nvoid open() { calls.add(\"open\"); }\nvoid read() { calls.add(\"read\"); }\nvoid validate() { calls.add(\"validate\"); }\nvoid save() { calls.add(\"save\"); }\nvoid close() { calls.add(\"close\"); }\n};\nj.run();\nif (!calls.equals(List.of(\"open\",\"read\",\"validate\",\"save\",\"close\")))\nthrow new AssertionError(calls);\n}\n}\nVERIFY + DISCUSS\nIf read, validate or save throws, close still runs. open sits before try under the explicit assumption it\neither succeeds completely or cleans up its own partial acquisition. Test each failure point. In real\nresource code, try-with-resources can preserve suppressed cleanup exceptions more clearly; this\nsimple close contract must be reviewed so cleanup does not mask the original error."],["C08 — Observer with subscription lifetime","GoF Design Pattern implementation in Java 17","import java.util.ArrayList;\nimport java.util.List;\nimport java.util.function.Consumer;\npublic class Lab08 {\nstatic final class Events {\nprivate final List<Consumer<String>> listeners = new ArrayList<>();\nRunnable subscribe(Consumer<String> l) {\nlisteners.add(l); return () -> listeners.remove(l);\n}\nvoid publish(String e) {\nfor (Consumer<String> l : List.copyOf(listeners)) l.accept(e);\n}\n}\npublic static void main(String[] args) {\nEvents events = new Events(); List<String> seen = new ArrayList<>();\nRunnable unsubscribe = events.subscribe(seen::add);\nevents.publish(\"placed\"); unsubscribe.run(); events.publish(\"paid\");\nif (!seen.equals(List.of(\"placed\"))) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThis single-threaded example uses fail-fast callback exception propagation: one throwing callback\nstops later callbacks for that publication. Snapshotting tolerates listener-list changes within a\ncallback, but does not make subscription/publishing thread-safe. Test unsubscribe, nested publication\nand a throwing listener. Durable notification requires more than this in-memory observer\narrangement."],["C09 — Command with a local undo contract","GoF Design Pattern implementation in Java 17","public class Lab09 {\nstatic final class Editor { String title = \"old\"; }\nstatic final class Rename {\nprivate final Editor editor; private final String next;\nprivate String previous; private boolean executed;\nRename(Editor e, String n) { editor = e; next = n; }\nvoid execute() {\nif (executed) throw new IllegalStateException(\"Already executed\");\nprevious = editor.title; editor.title = next; executed = true;\n}\nvoid undo() {\nif (!executed) throw new IllegalStateException(\"Nothing to undo\");\neditor.title = previous; executed = false;\n}\n}\npublic static void main(String[] args) {\nEditor e = new Editor(); Rename c = new Rename(e, \"new\");\nc.execute(); c.undo();\nif (!e.title.equals(\"old\")) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThis local command assumes a sequential owner-controlled edit history with no competing edits\nbetween execution and undo. Test undo-before-execute and double execution. Discuss how a version\ncheck/history manager would protect newer edits. Do not serialize the live Editor reference and call it\na durable distributed command; store intent and identity for that separate use case."],["C10 — Chain with deliberate rejection","GoF Design Pattern implementation in Java 17","import java.util.List;\nimport java.util.Optional;\npublic class Lab10 {\nrecord Request(boolean authenticated, int units) {}\ninterface Check { Optional<String> reject(Request r); }\nstatic Optional<String> check(Request r, List<Check> checks) {\nfor (Check c : checks) {\nOptional<String> rejection = c.reject(r);\nif (rejection.isPresent()) return rejection;\n}\nreturn Optional.empty();\n}\npublic static void main(String[] args) {\nCheck auth = r -> r.authenticated() ? Optional.empty()\n: Optional.of(\"unauthenticated\");\nCheck quota = r -> r.units() <= 10 ? Optional.empty()\n: Optional.of(\"quota\");\nif (!check(new Request(false,20), List.of(auth,quota))\n.equals(Optional.of(\"unauthenticated\"))) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThis validation-chain variant executes all checks until rejection, rather than the classic\nfirst-handler-wins request model. After no rejection, a separate terminal action processes the request.\nValidate nonnegative units at the input boundary. Test order, early termination and thrown\nexceptions. Define an explicit fail-closed policy where a check's infrastructure failure must not permit\naccess."],["C11 — Visitor with explicit double dispatch","GoF Design Pattern implementation in Java 17","public class Lab11 {\ninterface Expr { <R> R accept(Visitor<R> v); }\ninterface Visitor<R> { R number(Num n); R add(Add a); }\nrecord Num(int value) implements Expr {\npublic <R> R accept(Visitor<R> v) { return v.number(this); }\n}\nrecord Add(Expr left, Expr right) implements Expr {\npublic <R> R accept(Visitor<R> v) { return v.add(this); }\n}\nstatic final class Eval implements Visitor<Integer> {\npublic Integer number(Num n) { return n.value(); }\npublic Integer add(Add a) {\nreturn Math.addExact(a.left().accept(this), a.right().accept(this));\n}\n}\nstatic final class Print implements Visitor<String> {\npublic String number(Num n) { return Integer.toString(n.value()); }\npublic String add(Add a) {\nreturn \"(\" + a.left().accept(this) + \"+\" + a.right().accept(this) + \")\";\n}\n}\npublic static void main(String[] args) {\nExpr e = new Add(new Num(2), new Num(3));\nif (e.accept(new Eval()) != 5) throw new AssertionError();\nif (!e.accept(new Print()).equals(\"(2+3)\")) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\naccept chooses the type-specific visitor method from inside the concrete element, then the visitor\noperation dispatches dynamically. Add another visitor without changing Expr implementations. Then\nadd Multiply and observe how every visitor contract/implementation must evolve. Validate null\nchildren in production constructors and bound traversal depth for untrusted trees."],["C12 — Memento with opaque immutable state","GoF Design Pattern implementation in Java 17","public class Lab12 {\nstatic final class Editor {\nprivate String text = \"\";\nstatic final class Snapshot {\nprivate final String text;\nprivate Snapshot(String text) { this.text = text; }\n}\nvoid write(String value) { text = value; }\nString text() { return text; }\nSnapshot save() { return new Snapshot(text); }\nvoid restore(Snapshot s) { text = s.text; }\n}\npublic static void main(String[] args) {\nEditor e = new Editor(); e.write(\"first\");\nEditor.Snapshot before = e.save(); e.write(\"second\");\ne.restore(before);\nif (!e.text().equals(\"first\")) throw new AssertionError();\n}\n}\nVERIFY + DISCUSS\nThe caretaker can hold Snapshot but receives no accessor or mutation API in this example; Editor\nowns restoration semantics. String state is immutable. Test multiple snapshots and explain how richer\nmutable graphs require copying/shared-immutable structure. Java nestmate access means this\nteaching top-level class can technically access nested private members; the design boundary is\nintended as an external caretaker API, not a security boundary."]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>
