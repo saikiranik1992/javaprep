@@ -16,6 +16,20 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:test_key_sample}
+  key-secret: ${RAZORPAY_KEY_SECRET:test_secret_sample}
+  mock-enabled: ${RAZORPAY_MOCK_ENABLED:true}
+
+pricing:
+  topic-rupees: 49
+  bundle-rupees: 499
 
 management:
   endpoints:

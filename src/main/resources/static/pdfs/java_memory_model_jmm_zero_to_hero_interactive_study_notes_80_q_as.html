@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Memory Model (JMM) — Zero to Hero Interactive Study Notes (80 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #dc2626;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Java Memory Model (JMM)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              16 Chapters · 80 Q&amp;As · 8 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Handwritten Concurrency Proof Guide · Happens-Before · Volatile · VarHandles
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (16)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (80)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (8)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 80</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Concurrency &amp; Memory</span>
+              <span>•</span>
+              <span>126 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Java Memory Model (JMM) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Handwritten Concurrency Proof Guide (Happens-Before · Volatile · VarHandles). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 80 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">80</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (16)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 16 Chapters (80 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Java Memory Model (JMM)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 80</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Java Memory Model (JMM) — Hands-On Labs &amp; Reference Guides (8)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Java Memory Model (JMM).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Java Memory Model (JMM) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"jmm","title":"Java Memory Model (JMM)","subtitle":"Handwritten Concurrency Proof Guide","category":"Concurrency & Memory","badge":"Happens-Before · Volatile · VarHandles","color":"#dc2626","pages":126,"chapters":["Foundations: what the JMM guarantees","Happens-before rules and proof","Volatile: power and limitations","Locks, monitors and conditions","Safe publication and singleton patterns","Final fields and genuine immutability","Atomics, CAS and compound state","VarHandles, access modes and fences","Lifecycle, interruption and progress","Higher-level handoff guarantees","Collections, aggregates and application state","Litmus tests and legal outcomes","Common correctness traps","Performance, hardware and modern threads","Proof, stress testing and evidence","Senior design and production scenarios"],"questions":[["Q001",0,"What is the Java Memory Model?","The JMM is Java's rulebook for how threads see shared data and in what order.","Question: can thread B observe thread A's update?\nJMM answer: inspect actions and synchronization edges.\nMemory-area answer: where are objects and frames managed?","The JMM defines which reads and writes may be observed across threads and the ordering constraints imposed by synchronization. It lets implementations optimize execution while preserving specified behavior. It is a concurrency contract, distinct from a diagram of heap, stacks and metaspace. What happens: Visibility and legal observations need a synchronization argument.","Explaining only heap versus stack does not answer a JMM question.","Why do two machines sometimes show different outcomes for the same racy code?","Different CPU instructions, compiler optimizations and scheduling can expose different outcomes because a data race lacks a guaranteed ordering. Correctly synchronized code must not rely on one machine's behavior."],["Q002",0,"How do visibility, atomicity and ordering differ?","Visibility is seeing changes, atomicity is doing one indivisible step, and ordering says what may happen first.","volatile int count;\ncount++; // read, compute and write: not one atomic increment","Visibility concerns whether a read can observe another thread's writes. Atomicity concerns whether an operation is indivisible at the required level. Ordering constrains which observations and action sequences are permitted. One mechanism can provide some guarantees without providing every business invariant. What happens: Volatile access does not combine multiple actions into one transaction.","'Thread-safe' without naming the operation or invariant is imprecise.","Which mechanism would you choose for an exact concurrent counter?","Use AtomicInteger.incrementAndGet() for a single exact counter, or a lock if the count must change together with other state."],["Q003",0,"What is a data race?","A data race happens when threads access the same data without an ordering rule and at least one writes.","int balance; // shared ordinary field\nA: balance = 100;\nB: int seen = balance; // no connecting synchronization","Conflicting accesses to the same variable form a data race when at least one is a write and they are not ordered by happens-before. Data-race freedom is a property of the program's synchronization, not of whether a failure happened during a test. What happens: The accesses lack the required ordering even if the hardware usually shows 100.","A data race and a broader business race condition are related but not identical terms.","Can a program using only atomic accesses still violate a business rule?","Yes. Two separate atomic reads or updates can be individually safe while the combined check and business decision is wrong; protect the whole rule."],["Q004",0,"What is sequential consistency?","Sequential consistency means actions look like one shared timeline that keeps each thread's own order.","A: write x; read y\nB: write y; read x\nAsk whether one order can explain all observations.","Sequential consistency means observations can be explained by one interleaving that respects each thread's program order. Correctly synchronized, data-race-free Java programs receive this guarantee under the JMM's conditions. Racy ordinary code is not generally entitled to that simple interleaving model. What happens: Synchronization makes reasoning closer to interleaving source-level actions.","Sequential consistency does not make two separately synchronized fields one atomic snapshot.","Why can a data-race-free check-then-act workflow still be wrong?","Because another thread can change the state after a safe read but before a safe action. The check and action must form one atomic step."],["Q005",0,"Does happens-before mean an action happened earlier by the clock?","Happens-before is a Java ordering promise, not simply one event occurring earlier on a clock.","A writes data at 10:00:00\nB reads data at 10:00:01\nElapsed time alone supplies no publication guarantee.","No. Happens-before is a specified ordering relation used to constrain observations. Clock time alone does not create it. Nor does an edge necessarily mean every later read sees that exact write if other allowed writes intervene. What happens: Prove an edge through synchronization rather than through timing.","Sleeps, logs and elapsed delays are not substitutes for the required memory contract.","What would establish a reliable edge between those actions?","Use a matching volatile write/read, unlock/lock on the same monitor, a queue handoff or another documented synchronizing action."],["Q006",1,"What are the most useful happens-before rules?","Useful rules include program order, volatile handoff, lock release/acquisition and thread start or completion.","Write data -> publish -> acquire -> read data\nEvery arrow needs a rule or documented API contract.","Program order supplies within-thread edges. Monitor unlock precedes a subsequent lock of the same monitor. Volatile write precedes subsequent read of that variable in synchronization order. Thread start, termination detection and documented concurrent APIs supply additional edges. Transitivity connects them. What happens: A proof names the exact variable, monitor or handoff operation.","'There is a lock somewhere' does not prove an edge for this reader.","Which edge is missing in an unsynchronized getter?","The ordinary getter has no matching acquire action, so it lacks an edge connecting the writer's updates to its read."],["Q007",1,"How does transitivity make publication work?","If A happens-before B and B happens-before C, then A happens-before C too.","Writer: payload = 42; ready = true; // ready is volatile\nReader: if (ready) use(payload);\nChain: payload write -> ready write -> read -> payload read\nshot protocol.","If A happens-before B and B happens-before C, A happens-before C. Ordinary writes before a publication action can therefore become ordered before reads after a corresponding acquiring action. The handoff must actually participate in the protocol. What happens: The ordinary payload access is protected by the publication chain in this one-","Resetting the flag and reusing payload introduces lifecycle questions that this example does not solve.","How would you design a reusable message channel?","Use BlockingQueue, another documented channel or a versioned immutable message with an atomic publication step; define ownership and reuse."],["Q008",1,"What does the thread-start rule guarantee?","Writes made before Thread.start() are visible to the new thread through that start handoff.","int[] data = {42};\nThread worker = new Thread(() -> use(data[0]));\nworker.start();","Actions in the thread that precede starting another thread are ordered before actions in the started thread. Construct and configure the task before start. The rule does not publish arbitrary later mutations back and forth automatically. What happens: The prepared array value is handed to the worker through start ordering.","Creating a Thread object without starting it is not the same edge.","What if the parent changes data[0] after start?","Later changes are not covered by start; use a new synchronization mechanism or transfer immutable data rather than racing on the array."],["Q009",1,"What does join guarantee?","After a successful join detects completion, the parent may safely read the worker's completed writes.","worker.start();\nworker.join(); // completes after target termination\nuse(resultWrittenByWorker);","When a thread's termination is detected through a successful join, its completed actions are ordered before the joining thread continues with dependent reads. A timed join that returns while the target is still alive does not establish completion. What happens: The completion boundary permits reading results written by that worker.","A timeout return is not proof that the worker's result is ready.","How would you verify completion after a timed join?","After a timed join, check worker.isAlive(); if still alive, do not treat results as complete. Wait or use a Future with a clear completion contract."],["Q010",1,"Why does using the same monitor matter?","Both sides must use the same lock object for a monitor handoff to work.","A: synchronized (lockA) { state = 1; }\nB: synchronized (lockB) { use(state); }\n// Different monitor identities do not protect this handoff.","Unlock/lock ordering is associated with the same monitor identity. Two different lock objects do not create that synchronization edge. Instance synchronized methods use their receiver; static synchronized methods use the class's monitor. What happens: The shared-state policy must identify which lock guards every relevant access.","A static synchronized writer and instance synchronized reader use different monitors.","What documentation would make a locking policy reviewable?","State in code comments which lock guards each field, who may acquire it, and which reads/writes and invariant must occur under it."],["Q011",2,"What does volatile provide?","Volatile lets threads see a variable through Java's ordering and visibility rules, but does not lock a multi-step operation.","volatile boolean stopped;\nvoid requestStop() { stopped = true; }\nboolean stopRequested() { return stopped; }","Volatile reads and writes are atomic accesses with specified ordering and visibility semantics. They participate in synchronization order and can publish earlier ordinary writes through a correct protocol. They do not supply mutual exclusion for a sequence of operations. What happens: An eventual worker observation of the flag can coordinate a simple stop request.","Visibility is not a fairness or bounded-scheduling guarantee.","How would a blocked worker be woken promptly?","Call interrupt for interruptible waits, notify a guarded condition, or complete an explicit signaling primitive; a flag alone cannot wake blocked I/O."],["Q012",2,"Why is volatile count++ unsafe for exact counting?","count++ is read, add and write: two threads can both read 0 and both write 1.","Initial count = 0\nA reads 0; B reads 0\nA writes 1; B writes 1\nFinal count can be 1, not 2","Increment is a read-modify-write sequence. Two threads can both read the same value and then overwrite with the same next value. Each volatile access can be valid while the combined increment loses one logical update. What happens: Protect the compound operation with a suitable atomic update or lock.","Observing the expected total once does not prove the implementation correct.","Why does AtomicInteger.incrementAndGet solve this specific operation?","incrementAndGet() uses an atomic read-modify-write operation, so concurrent increments on that counter are not lost."],["Q013",2,"Does a volatile reference make the referenced object thread-safe?","Volatile safely publishes a reference but cannot protect changes made inside a mutable object.","volatile List<String> names;\nnames = new ArrayList<>();\nnames.add(\"A\"); // mutation is not made safe by reference volatility","No. It publishes and synchronizes accesses to the reference. Mutations inside the referenced object need their own discipline unless the object is immutable or safely confined. Replacing a complete immutable snapshot is a common appropriate pattern. What happens: Reference publication and collection mutation are different actions.","A volatile array reference does not turn every element into a volatile variable.","How would you publish a read-only replacement list?","Create a defensive List.copyOf version and publish it through a volatile reference or AtomicReference; readers keep that immutable snapshot."],["Q014",2,"What is safe one-shot publication with a volatile flag?","Write the data first, then set a volatile ready flag; the reader checks ready before reading data.","int payload;\nvolatile boolean ready;\nWriter: payload = 42; ready = true;\nReader: if (ready) assert payload == 42;","Write all required payload state before writing the volatile ready flag, then read payload only after the reader observes readiness. For a one-shot, single-publication protocol, the chain orders the payload initialization before those reads. What happens: The payload can remain ordinary because the protocol supplies ordering.","Reading payload before testing ready, or mutating it later without synchronization, breaks the stated argument.","Which outcomes are permitted when the reader sees ready as false?","If ready is false, it may skip reading and report not-ready, such as -1. It cannot claim that publication was observed."],["Q015",2,"Is volatile literally a flush to main RAM on every access?","Volatile promises ordering and visibility, not a literal RAM flush on every access.","Portable argument: volatile write/read synchronization\nImplementation question: inspect generated code and ISA\nNeither requires a universal RAM transaction story.","That is an unreliable implementation explanation. The portable contract is about legal observations and ordering. Compilers and CPUs use architecture-specific instructions, barriers and coherent caches to implement it; Java code should rely on the contract. What happens: Correctness must not depend on a particular cache layout.","A CPU-cache metaphor can hide the difference between a reference write and a compound invariant.","Why can the same volatile operation compile differently on x86 and ARM?","Different processors have different memory-ordering instructions. The JVM uses instructions needed on each platform to implement the same JMM rule."],["Q016",3,"What does synchronized guarantee?","Synchronized allows only one thread at a time to hold the same monitor and connects state changes across lock boundaries.","synchronized (lock) {\nbalance -= amount;\nledger.add(entry);\n}","It provides mutual exclusion on one monitor and release/acquire-style memory ordering through its specified unlock/lock relationship. Every relevant access must follow the same policy. Reentrancy lets the owning thread acquire the same monitor again. What happens: A reader using the same lock can observe a consistent guarded invariant.","An unsynchronized reader is not protected merely because the writer uses synchronized.","How would you return a safe balance-and-ledger summary?","Read the balance and ledger inside one synchronized block and return an immutable summary made while holding the lock."],["Q017",3,"When should you use ReentrantLock instead of synchronized?","Use ReentrantLock when timed or interruptible acquisition, conditions or other explicit-lock features are needed.","lock.lock();\ntry { updateState(); }\nfinally { lock.unlock(); }","Use an explicit lock when its supported features, such as interruptible acquisition, timed attempts, fairness options or multiple Conditions, fit the design. The memory contract of successful locking/ unlocking parallels monitor guarantees, while lifecycle management requires explicit finally cleanup. What happens: The lock must be released on exceptional control paths.","Fairness options do not promise a global scheduler or a maximum wait time.","When would lockInterruptibly be preferable?","Use lockInterruptibly() when cancellation should stop a thread waiting to acquire a lock, such as a request with a deadline."],["Q018",3,"Why must wait or await be used in a loop?","Always recheck a waiting condition in a loop because a wakeup is not proof the condition became true.","synchronized (lock) {\nwhile (!ready) lock.wait();\nconsume();\n}\nnotification.","A wait can return for reasons that do not make the predicate true, including spurious wakeups and another thread consuming the state first. Test the guarded predicate while holding its associated lock, wait, then recheck after reacquisition. What happens: Rechecking ties progress to state rather than to the mere occurrence of a","An if check can proceed with a false predicate after waking.","How would a timeout change the loop's result contract?","Compute a deadline and return a distinct timeout result if the predicate is still false after the remaining wait budget is exhausted."],["Q019",3,"Does notify release the monitor immediately?","Notify wakes a waiter, but the notifying thread still holds the monitor until it exits the synchronized block.","synchronized (lock) {\nready = true;\nlock.notifyAll();\n// This thread still owns the monitor here.\n}","No. A notified waiter cannot resume the guarded operation until it can reacquire the monitor. Publication is explained through monitor release and reacquisition, with the condition predicate rechecked. Notifications are not durable queued messages by themselves. What happens: The notifier's later unlock is part of the handoff.","A notification sent before a thread waits can be missed unless the predicate preserves the relevant state.","Why is the predicate more important than the notification count?","The boolean/state predicate records the truth; notifications can be missed or spurious. Wait until the predicate is true, not until a signal count matches."],["Q020",3,"Why is locking each getter insufficient for a multi-field snapshot?","Two locked getters can read values from two different moments, giving a broken combined snapshot.","int low = getLow();\n// Another thread replaces the range here.\nint high = getHigh();\n// Pair may not represent one committed range.","Individually synchronized accesses can be data-race-free yet combine values from different logical versions. Read the whole invariant in one critical section or publish one immutable snapshot. Decide the required atomic observation explicitly. What happens: Atomicity of separate accesses does not imply atomicity of their composition.","Adding volatile to both fields still does not make a pair-read a transaction.","What snapshot API would you expose instead?","Expose one synchronized getSnapshot() that copies all fields under one lock, or return a published immutable record."],["Q021",4,"What is safe publication?","Safe publication means an object is fully prepared before another thread gains access through a real synchronization handoff.","Construct complete state\nPublish through a specified handoff\nReader acquires through the matching protocol","Safe publication transfers access to an initialized object through an appropriate ordering mechanism, such as a volatile reference, a shared lock, class initialization or a documented concurrent handoff. Initialization safety and later mutation safety are separate requirements. What happens: The mechanism must cover all state the reader needs.","Merely assigning a reference to an ordinary shared field is not a general publication guarantee.","Which concurrent API could publish a work item safely?","A BlockingQueue.put followed by take safely hands off a prepared work item. Avoid mutating it after transfer without another protocol."],["Q022",4,"Why can an unsafely published mutable object appear incomplete?","A plain shared reference can be seen without a promise that all ordinary fields are initialized for that reader.","class State { int value; State() { value = 42; } }\nState shared; // ordinary shared reference\nWriter: shared = new State();\nReader: State s = shared; if (s != null) use(s.value);\nobserved.","Without suitable ordering, another thread that obtains the reference is not generally guaranteed to observe ordinary initialization writes. Source-order intuition alone does not establish the cross- thread relation. Correct final-field initialization has special rules, but is not a cure for arbitrary mutable state. What happens: A non-null reference is not a general proof that every ordinary field is safely","Do not describe this as requiring a literal partially allocated object or broken constructor execution.","Which change supplies publication ordering?","Make the shared reference volatile, or publish the instance through a synchronized block, concurrent collection or safe class initialization."],["Q023",4,"Why is double-checked locking correct with a volatile reference?","Double-checked locking works when the instance reference is volatile and construction is protected by a synchronized slow path.","Service s = instance; // instance is volatile\nif (s == null) synchronized (Service.class) {\ns = instance;\nif (s == null) instance = s = new Service();\n}\nreturn s;","The synchronized slow path serializes construction, and the volatile publication orders initialized state before a fast-path reader that acquires the reference. The second null check handles another thread's completed construction. A local variable reduces repeated volatile reads. What happens: Both publication and singleton construction are covered by distinct mechanisms.","Removing volatile leaves the unsynchronized fast path without the required ordinary-state publication guarantee.","What if the constructor throws before assignment?","The assignment never runs if construction throws; other callers can retry later. Handle failures explicitly rather than exposing a partial singleton."],["Q024",4,"Why does the initialization-on-demand holder idiom work?","The holder pattern is safe because Java class initialization publishes the static value correctly.","class Holder {\nstatic final Service INSTANCE = new Service();\n}\nService get() { return Holder.INSTANCE; }","Class initialization has synchronization and completion rules that safely initialize the static holder state before its valid use. A nested holder defers creation until the holder is initialized. Constructor work and initialization failures still need appropriate handling. What happens: The class-initialization contract supplies the publication boundary.","Static means one field per defining class identity, not necessarily one instance across every class loader.","How does this differ from an eagerly initialized static field?","An eager static field is created when its declaring class initializes; a nested holder delays construction until the nested holder is first used."],["Q025",4,"How do you safely publish configuration updates?","Publish one complete immutable configuration rather than updating several fields separately.","record Config(int timeout, int retries) {}\nvolatile Config current = new Config(1000, 2);\nConfig c = current; // capture one version\nuse(c.timeout(), c.retries());","Build and validate a complete immutable version, then publish one reference through a suitable mechanism. Each reader captures that reference once and uses one version throughout the operation. Coordinate concurrent writers if update composition matters. What happens: One reference avoids combining fields from separate updates.","Immutable reads do not prevent two writers from overwriting each other's logical modifications.","When would an AtomicReference CAS update be needed?","Use AtomicReference with CAS when several writers must base each change on the current version and must not silently overwrite a concurrent update."],["Q026",5,"What special guarantee do final fields provide?","Final fields of a correctly constructed object get special initialization guarantees, even without a full ordinary publication handoff.","class Pair {\nfinal int x;\nint y;\nPair() { x = 1; y = 2; }\n}\npublication.","A correctly constructed object that does not escape during construction receives final-field initialization guarantees. When a reader obtains the object, it can observe the properly initialized final values under the specified rules. This special protection is not a general happens-before edge for every ordinary field. What happens: Final x and ordinary y have different guarantees under otherwise unsafe","Do not claim final publishes every field in an arbitrary mutable object.","If a reader sees a non-null Pair, what can it rely on about x versus y?","For a correctly constructed non-escaping Pair, final x is guaranteed to be initialized as specified; ordinary y is not given the same broad promise by final-field rules."],["Q027",5,"Does a final reference make its object deeply immutable?","Final stops reassignment of the reference; it does not freeze the referenced list or object.","final List<String> values = new ArrayList<>();\nvalues.add(\"A\"); // reference remains unchanged","No. The final variable cannot be reassigned through ordinary assignment after construction, but the referenced object can still change. Special constructor-time final-field guarantees can include referenced initialization state under the rules; later mutations require separate synchronization. What happens: Finality constrains the reference binding, not every reachable object.","A record component referencing a mutable list is not automatically deeply immutable.","How would defensive copying change the guarantee?","Copy mutable inputs and avoid exposing a modifiable original, so external callers cannot mutate the snapshot behind your back."],["Q028",5,"Why is this-escape during construction dangerous?","Letting this escape during construction lets another thread call the object before setup is finished.","Constructor: registerListener(this);\n// Callback may execute before required fields are assigned.\n// Prefer a separate post-construction registration step.","Publishing this before the constructor finishes can expose incomplete state and defeat the assumptions behind final-field initialization safety. Callback registration, starting work or inserting this into a shared registry can create such escape paths. What happens: The publication timing becomes part of the object's correctness.","Assigning fields before one escape point does not justify every future constructor refactor.","How would a factory control the lifecycle safely?","Construct the object privately in a factory, finish its fields and validation, then register/publish it afterward."],["Q029",5,"What makes an object safely shareable as immutable?","An immutable object never changes observable state, including the objects it exposes.","record Snapshot(List<String> values) {\nSnapshot { values = List.copyOf(values); }\n}\nconsidered.","Its observable state must not change, including state exposed through reachable mutable components. Complete construction, defensive copies and appropriate APIs establish that property. Choose a publication mechanism whose scope is clear, even when final-field rules offer initialization safety. What happens: Copying the list protects its structure, while element immutability must still be","An unmodifiable view of a mutable original is different from an independent immutable copy.","What if each list element is itself mutable?","If list elements are mutable, List.copyOf only freezes list structure. Deep-copy elements or use immutable element types too."],["Q030",5,"Can final-field rules replace all synchronization?","Final-field rules help initial construction, but later changes and cross-thread coordination still need a plan.","Immutable object: safe read-only state\nShared reference discovery: publication protocol\nLater replacement: ordered update mechanism\nBusiness transition: define atomicity separately","No. They address specified initialization observations, not coordination, later updates, multi-object invariants or guaranteed reference discovery. Mutable collaboration still needs synchronization. Immutability can remove many data races but not every lifecycle requirement. What happens: A thread may still need a handoff to learn which immutable version to use.","Final does not make a polling loop over an ordinary shared reference a reliable communication channel.","Which responsibilities remain in an immutable snapshot service?","Choose a way to publish new snapshots, serialize or CAS concurrent writers, and specify how readers choose a version."],["Q031",6,"What is compare-and-set?","CAS changes one value only when it still equals the expected old value.","AtomicInteger n = new AtomicInteger(0);\nboolean changed = n.compareAndSet(0, 1);","CAS compares the current value with an expected value and atomically replaces it when the comparison matches. The boolean result reports success. Java atomic/VarHandle methods define the applicable access-mode memory effects; not every similarly named weak operation has identical ordering. What happens: A failed comparison leaves the requested update unapplied.","CAS is not an arbitrary multi-variable transaction.","What state transition can be represented by one atomic reference?","Store a complete immutable state object or enum in one AtomicReference and CAS that reference from one valid state to another."],["Q032",6,"Why should retrying atomic update functions avoid side effects?","An atomic update function may run more than once, so doing side effects inside it can duplicate them.","state.updateAndGet(old -> computeNext(old));\n// Avoid charging a customer inside this retry function.","An update function may be invoked repeatedly when contention forces retry. Keep it pure with respect to externally visible effects, and perform separately coordinated side effects after a successful transition where the design allows it. What happens: The successful state update does not imply the computation ran once.","Counting each function invocation as a committed business event can overcount.","How would you coordinate a durable event with an in-memory CAS result?","A local CAS cannot atomically commit an external event; use a durable database transaction and outbox or a coordinated idempotent workflow."],["Q033",6,"How do AtomicInteger and LongAdder differ?","AtomicInteger gives exact updates to one counter; LongAdder scales statistics but concurrent sum is not one atomic snapshot.","Exact permit decision -> atomic transition or lock\nHigh-write metric count -> consider LongAdder\nConcurrent sum -> aggregate observation, not exact snapshot","AtomicInteger supports exact atomic operations on one value. LongAdder spreads updates to reduce some contention but its sum is not an atomic snapshot during concurrent updates. It fits statistics better than a strict admission or sequence invariant. What happens: The required read semantics decide whether relaxed aggregation is acceptable.","A LongAdder total should not decide a strict capacity reservation without another invariant.","When is an exact post-completion total available?","Once all writers have finished and their completion is established (for example by join), the final sum may be read as the exact completed total."],["Q034",6,"What is the ABA problem?","ABA means a value changed from A to B and back to A, fooling a CAS that checks only the value.","Read A\nOther actor: A -> B -> A\nCAS expects A: value matches despite intervening history","A CAS that checks only the expected value can miss that state changed from A to B and back to A. Whether that matters depends on the algorithm. Version/stamp schemes help only when every relevant transition follows the protocol and wraparound/lifecycle are considered. What happens: Value equality does not necessarily encode state history.","Garbage collection reduces some pointer-reuse concerns but does not eliminate every logical ABA case.","How does AtomicStampedReference change the comparison?","AtomicStampedReference checks the expected reference and stamp together, detecting intervening transitions if every writer updates the stamp."],["Q035",6,"How do you update a multi-field invariant atomically?","Update related fields together under one lock or as one immutable object through AtomicReference.","record Range(int low, int high) {}\nAtomicReference<Range> range =\nnew AtomicReference<>(new Range(0, 10));\n// CAS a complete valid Range, not two unrelated fields.","Guard the complete invariant with one lock or represent it as one immutable object updated through an atomic reference. Validate each proposed state. Define how retries and stale expectations are handled rather than splitting related fields into separate atomics. What happens: A reader captures one coherent version of the invariant.","Atomic low and atomic high separately still allow a reader to combine different versions.","How would two concurrent range edits preserve low <= high?","Both writers build a whole candidate Range, validate low <= high and retry CAS against the latest range; never update low and high independently."],["Q036",7,"What is a VarHandle?","VarHandle gives explicit ways to read, write and atomically change a field with different memory-ordering strengths.","VarHandle READY = lookup.findVarHandle(\nState.class, \"ready\", boolean.class);\nREADY.setRelease(state, true);","A VarHandle provides typed access to a variable-like location with supported access modes, including ordinary, opaque, acquire/release, volatile and atomic operations. It is an API for explicit memory semantics; use simpler abstractions when they fit the design. What happens: The location type and access mode determine supported behavior.","A VarHandle does not automatically make every access to the underlying state synchronized.","Why is mixing plain and stronger accesses risky without a protocol?","A plain read can bypass the acquire half of a publication protocol. Document which modes every writer and reader must use."],["Q037",7,"How do plain, opaque, acquire/release and volatile modes differ?","Plain, opaque, acquire/release and volatile are increasingly different ordering contracts, not interchangeable performance switches.","Plain: ordinary access discipline\nOpaque: coherent location, weak surrounding order\nRelease/acquire: directed handoff ordering\nVolatile: stronger ordering among volatile actions\ncomplexity.","Plain accesses provide minimal ordering beyond applicable ordinary semantics. Opaque accesses add coherence for that location with weaker ordering than acquire/release. Acquire/release can constrain surrounding operations in a handoff; volatile provides stronger synchronization-order semantics. Exact method contracts matter. What happens: Choose the weakest mode only when its proof is understood and worth the","Opaque is not a drop-in replacement for a volatile publication flag.","Which mode is sufficient for your one-shot payload handoff?","A release write paired with an acquire read that sees it is sufficient for the described one-shot data handoff; volatile is simpler when unsure."],["Q038",7,"How does release/acquire publication work?","Release publishes earlier payload writes; acquire lets a reader safely consume them when it observes the released state.","Writer: state.payload = 42;\nREADY.setRelease(state, true);\nReader: if ((boolean) READY.getAcquire(state))\nuse(state.payload);","Write payload before a release store to the handoff variable; read payload only after an acquire load observes the published state under a correct protocol. This orders the earlier payload effects without requiring every payload field to be volatile. What happens: The handoff variable carries ordering for the surrounding accesses.","An acquire read returning the old false value does not mean publication was acquired.","Why does a reusable flag need a stronger lifecycle protocol?","A reused true/false flag may let a reader confuse old and new messages. Add sequence numbers, per-message ownership or a queue protocol."],["Q039",7,"Does adding fullFence make an ordinary shared flag safe?","One fence cannot turn an ordinary shared flag into a complete reliable communication protocol.","Write payload; fullFence(); write plain ready\nRead plain ready; fullFence(); read payload\n// Do not assume this equals a proven volatile protocol.\ndistinct proof obligations.","A fence constrains specified reorderings around that action, but it does not by itself create a complete communication protocol or the same-variable synchronization edge of a volatile flag. Reason about publication and observation together using documented access semantics. What happens: Local ordering constraints and inter-thread synchronization are related but","Scattering fences can make code harder to reason about without establishing the required handoff.","What simpler mechanism would you use first?","Start with a volatile flag or a BlockingQueue, which provides a documented and easier-to-review handoff."],["Q040",7,"What is the distinction between strong and weak CAS modes?","Weak CAS may fail even if the expected value still matches; strong CAS follows its specified comparison contract.","Strong CAS: comparison success/failure by contract\nWeak mode: may fail spuriously, retry as appropriate\nName suffix: inspect the specified access effects","Weak CAS operations can have spurious failure where documented, and VarHandle/atomic variants can have different plain/acquire/release/volatile memory effects. Retry only when the algorithm permits it and choose a mode matching the required read/write ordering. What happens: Failure does not always mean another thread changed the value.","The historical weakCompareAndSet naming in atomic APIs should not be interpreted as universally volatile-strength ordering.","How would a release-only successful update affect the following reader?","A release-only successful update publishes prior writes, but a reader needs a matching acquire (or stronger) read to safely consume them."],["Q041",8,"Do sleep, yield or onSpinWait provide publication?","Sleeping, yielding and spin hints do not publish ordinary shared updates.","while (!plainReady) Thread.onSpinWait();\n// Hint does not repair an ordinary-field data race.\ncommunication contract.","No. They do not supply a general synchronization edge for ordinary shared state. They influence scheduling or spin-loop execution. A waiting protocol still needs appropriately ordered access and a progress strategy. What happens: A spin hint can improve implementation behavior without changing the","A longer sleep cannot turn unsafe publication into a guaranteed handoff.","Which mechanism would avoid busy waiting here?","Use a CountDownLatch, BlockingQueue, Condition or Future instead of a polling loop, depending on the lifecycle."],["Q042",8,"Is interrupt a reliable replacement for a stop flag?","Interrupt is a cancellation request, not a force-stop; code must respond and clean up.","worker.interrupt();\n// Worker handles InterruptedException or detects status.\n// Preserve or propagate status according to API policy.\nautomatically stop.","Interruption is a cooperative cancellation signal with specified ordering when detected, but behavior depends on the operation and detection path. Blocking APIs may throw and clear interrupt status. A robust cancellation protocol defines state, wakeup and cleanup rather than treating interruption as forced termination. What happens: Detection participates in the interruption contract; arbitrary code does not","Swallowing InterruptedException can break the caller's cancellation expectations.","Why might you restore status before returning from a helper?","If a helper catches InterruptedException but cannot handle cancellation fully, call Thread.currentThread().interrupt() so its caller can detect the request."],["Q043",8,"Does a timed wait or timed get prove completion?","A timed wait tells you the wait ended; it does not prove the task completed.","try { result = future.get(100, MILLISECONDS); }\ncatch (TimeoutException timeout) { /* not completed */ }","No. Timeout signals that the requested completion was not obtained within the wait contract. Reads of mutable result state still need the documented completion/publication edge. Cancel or coordinate unfinished work according to policy. What happens: A timeout outcome must be represented separately from a completed result.","Proceeding to read ordinary task-written fields after timeout bypasses the intended completion contract.","What if the task completes just after the timeout?","Treat the timeout as a separate outcome. The task may complete later, so decide whether to cancel, ignore, or retrieve its result safely."],["Q044",8,"Do LockSupport park/unpark calls provide an entire condition protocol?","park/unpark can wake threads, but they do not replace a condition predicate and ordered state.","while (!orderedCondition()) LockSupport.park();\n// Publisher updates ordered state and unparks target.","They provide permit-based blocking/wakeup facilities, not an automatic complete guarded-state abstraction. Unpark can make a permit available before park, and returns can be spurious. Use correctly ordered state and recheck predicates in a loop. What happens: The application state determines whether progress is allowed.","A returned park call does not by itself mean the desired state is true.","Why are higher-level concurrent utilities often safer?","Higher-level tools handle queuing, wakeups, permits and failure paths, reducing the number of hand-written race conditions."],["Q045",8,"What is the difference between safety and liveness?","Safety says bad results never happen; liveness says useful work eventually progresses under stated conditions.","Safety: never publish an invalid range\nLiveness: waiting request eventually completes or times out\nResources: threads, queues and locks remain bounded","Safety means forbidden outcomes do not happen; liveness means required progress eventually occurs under stated assumptions. Correct visibility does not guarantee scheduling, fairness or successful dependency completion. State both properties in a concurrency design. What happens: A perfectly synchronized program can still deadlock or wait forever.","Volatile alone cannot guarantee a worker runs within a deadline.","What assumptions does your liveness argument require?","State fairness/scheduling assumptions, dependency availability, interruption handling, timeouts and resource bounds."],["Q046",9,"How does CountDownLatch publish results?","Writes before countDown are visible after a successful await that crosses the latch's completion.","Worker: result = 42; done.countDown();\nReader: done.await(); use(result);","Actions before countDown are ordered before actions after a corresponding successful await completion. Prepare the result before counting down. A latch is one-shot; timeout without completion is a different result path. What happens: An ordinary result field can be read through the documented handoff.","Decrementing the latch before writing the result reverses the required order.","Which abstraction would you choose for reusable phases?","Use CyclicBarrier or Phaser for multiple phases, or a fresh latch for each one- shot phase."],["Q047",9,"How do executor submission and Future.get publish data?","Executors publish prepared inputs to tasks, and a completed Future.get publishes task results to callers.","Prepare input -> submit task -> execute\nTask writes result -> completed get -> caller reads result","The executor contract orders pre-submission actions before task execution, and the completion contract orders task actions before following actions after the corresponding get. Use the appropriate successful result path and avoid guessing about unsynchronized completion polls. What happens: These APIs provide a two-direction handoff for work and results.","shutdown initiates lifecycle management; it is not a substitute for obtaining the task's result contract.","How would you coordinate several task results?","Submit several tasks, obtain each Future with bounded waits, or use CompletableFuture.allOf and then collect each result safely."],["Q048",9,"What publication does BlockingQueue provide?","BlockingQueue safely transfers a prepared element from producer to consumer under its documented handoff.","Message m = new Message(42);\nqueue.put(m);\nConsumer: Message received = queue.take();","Actions before placing an element are ordered before another thread's subsequent access/ removal of that element under the documented contract. Transfer ownership or use immutable items so later producer mutation does not race with the consumer. What happens: The queue safely publishes the prepared message.","Mutating the same mutable message after put is not covered as an immutable handoff.","How would you design a retryable work-item lifecycle?","Give work a stable identifier, define pending/processing/done states, make processing idempotent and retry failed jobs with bounded attempts."],["Q049",9,"What do CyclicBarrier and Semaphore guarantee?","Barriers coordinate phases; semaphores manage permits. Neither makes a whole business transaction atomic.","Semaphore: write state -> release -> successful acquire\nBarrier: pre-await work -> phase coordination -> post-await\nUse the exact API contract for the proof.","These APIs document memory-consistency effects for their successful coordination operations. A barrier coordinates phases and optionally a barrier action; a semaphore bounds permits and provides release/acquire ordering. Neither makes an arbitrary multi-step business workflow automatically atomic. What happens: The application must align state ownership with the permitted phase or permit.","Releasing permits for the wrong resource lifetime can violate the capacity invariant despite correct memory ordering.","How would exceptions affect permit cleanup?","Release a permit in finally after successful acquisition, and cover cancellation, rejection and thrown exceptions without double-release."],["Q050",9,"How should you reason about asynchronous completion chains?","An async chain is safe only when each stage has a defined state owner and documented handoff.","CompletionStage<Result> stage = load()\n.thenApply(input -> transform(input));\n// Keep transformation data in the stage result path.","Use documented completion and handoff contracts, and define who owns each stage's mutable state. CompletableFuture stages can run on different or completing threads depending on the method. Capture immutable inputs and return results instead of relying on unrelated shared side channels. What happens: The execution thread is not a reliable implicit synchronization policy.","Adding Async changes scheduling choice but does not repair all shared-state races inside callbacks.","What happens if two stages mutate the same shared list?","Two stages adding to a normal shared ArrayList can race or corrupt the result; use stage-local results and combine, or synchronize shared mutation."],["Q051",10,"What does ConcurrentHashMap safely publish?","ConcurrentHashMap safely coordinates map entries, not every mutable object stored as a value.","map.put(\"config\", preparedSnapshot);\nSnapshot s = map.get(\"config\");\n// A returned associated value has the per-key contract.","A successful retrieval that reports a particular updated value has a documented happens-before relationship with the associated update. This supports safely accessing prepared values. It does not establish a global atomic snapshot of all mappings or make later value mutations safe. What happens: The map coordinates its mapping, not every field lifecycle inside every value.","A concurrent map of mutable ArrayLists does not make add calls on those lists safe.","How would you handle changing values?","Store immutable replacement values and use compute or replace-based atomic map updates; do not mutate an ArrayList value concurrently."],["Q052",10,"Why is get-then-put unsafe for a single mapping decision?","A get followed by put is two steps; another thread may update the key between them.","if (map.get(key) == null) map.put(key, value);\n// Compare with an appropriate map.putIfAbsent(key, value).","Another thread can change the mapping between independent operations. Use an appropriate atomic map operation such as putIfAbsent or a documented computation operation. Define the desired behavior when values already exist or computation fails. What happens: Each map call can be thread-safe while the composition still races.","A concurrent collection does not eliminate every check-then-act bug.","What side-effect constraints should a mapping computation respect?","Keep mapping functions short and free of repeatable external side effects; use documented compute rules and avoid recursive updates to the same map."],["Q053",10,"Why is ConcurrentHashMap.size unsuitable for strict admission?","A map's size is an observation, not an atomic reservation of a future slot.","if (map.size() < LIMIT) map.put(key, value);\n// Multiple callers can pass the check concurrently.","Aggregate observations can reflect concurrent changes without being an atomic control boundary for a later insertion. A strict capacity limit requires a coordinated permit or invariant, not size followed by put. Decide how removals and failures release capacity. What happens: The observation and reservation are separate actions.","Replacing size with an atomic counter still needs correct coordination with mapping lifecycle.","How would a semaphore help, and what failure path must release a permit?","Acquire a semaphore permit before inserting; transfer ownership carefully and release exactly once on removal, rejection or failure."],["Q054",10,"What does CopyOnWriteArrayList snapshot iteration mean?","CopyOnWriteArrayList iterators see a fixed snapshot, even if the list changes later.","Iterator<Item> it = listeners.iterator();\nlisteners.add(newListener);\n// Existing iterator does not include that structural add.","An iterator observes the array snapshot associated with its creation and does not incorporate later structural changes. Writes copy the backing representation, which can be costly. Mutable elements can still change independently and need their own policy. What happens: Stable structure is useful for some read-heavy listener patterns.","Snapshot structure is not deep immutability of every referenced element.","When would frequent large-list writes make this unsuitable?","Every mutation copies the backing array, making large or frequently updated lists expensive in allocation and write time."],["Q055",10,"Why are Spring singleton beans not automatically thread-safe?","Spring singleton means one bean instance per application context, not one thread per request.","@Service class Tracker {\nint count;\nvoid record() { count++; }\n}","Singleton scope controls instance sharing, not atomic access to mutable fields. Multiple requests can use the same bean concurrently. Prefer immutable/stateless behavior or define a coherent synchronization policy for shared application state. What happens: A single instance makes the shared counter a concurrency concern.","Framework dependency injection is not a lock around every service call.","What changes when several application replicas each have their own instance?","Each replica has its own bean and memory; local locks do not coordinate stock, reservations or quotas across replicas. Use a shared authority."],["Q056",11,"What can happen in a plain message-passing litmus test?","With ordinary data and ready fields, a reader might see not-ready or see a stale payload after ready.","Initial: data = 0; ready = false\nA: data = 42; ready = true;\nB: if (ready) r = data; else r = -1;\nAllowed observations include r = -1, 0 or 42.","With ordinary data and flag fields and no other synchronization, observing the flag does not generally guarantee observing the payload initialization. Classify outcomes from the JMM rather than waiting for one CPU to reproduce them. What happens: The stale payload observation is a permitted unsafe-publication outcome.","Failing to observe r=0 during testing does not make it forbidden.","How does volatile ready change the classification?","A volatile ready flag creates the needed handoff when its true read observes the writer's true write; in this one-shot example zero then becomes forbidden."],["Q057",11,"What changes when the message-passing flag is volatile?","With a volatile ready flag, a true read safely publishes the earlier payload write in this one-shot example.","Initial: data = 0; volatile ready = false\nA: data = 42; ready = true;\nB: if (ready) r = data; else r = -1;\nAllowed: -1 or 42; forbidden here: 0.","For the one-shot protocol, a reader that observes ready=true acquires publication of the preceding data write. It must then read the initialized payload under these assumptions. Seeing false still permits the not-ready result. What happens: The proof is the transitive publication chain.","Reusing the fields or adding later payload writes changes the assumptions.","Which exact action creates the synchronizes-with edge?","The volatile write ready=true synchronizes-with the subsequent volatile read of ready that observes the publication in the protocol."],["Q058",11,"Can both reads be zero in ordinary store buffering?","Two ordinary threads can each write one variable and still read zero from the other, because there is no cross-thread order.","Initial x = y = 0\nA: x = 1; r1 = y;\nB: y = 1; r2 = x;\nOrdinary x/y: (r1,r2) = (0,0) is allowed.\nsource-level interleaving.","Yes, for the ordinary-field test without coordinating synchronization, (0,0) is a permitted result even though no simple source-order sequential interleaving explains it. Writes and reads lack the required cross-thread ordering. What happens: This illustrates why racy code cannot always be reasoned about as a single","join after the actors finish publishes results to the observer but does not retroactively order the actor accesses.","What changes if both x and y are volatile?","If both locations are volatile under the stated store-buffering test, the both-zero outcome becomes forbidden by volatile synchronization order."],["Q059",11,"Why is both-zero forbidden in volatile store buffering?","Both zero is forbidden when both variables are volatile because it would contradict one total volatile synchronization order.","Initial volatile x = y = 0\nA: x = 1; r1 = y;\nB: y = 1; r2 = x;\nAllowed: (0,1), (1,0), (1,1); forbidden: (0,0).","Volatile actions participate in a synchronization order consistent with program order. With both locations volatile, explaining two initial-value reads after each thread's own write would require an impossible cycle in that order. The other listed outcomes remain permitted. What happens: This is stronger than claiming only a simple payload visibility edge.","A particular machine's failure to produce both-zero with plain fields does not prove plain and volatile equivalent.","How would you document these outcomes in jcstress?","List accepted outcomes (0,1), (1,0), (1,1) and forbidden (0,0) in jcstress before running; record the exact actors and initial state."],["Q060",11,"Does racy Java allow arbitrary out-of-thin-air values?","Racy Java has weak ordering, but that does not mean every imaginable value may appear.","Ordinary race: do not promise sequential consistency\nCausality: not permission for arbitrary fabricated data\nTest-specific outcome table: justify each category","No. The JMM includes causality constraints beyond a simplistic 'anything can happen' explanation. Analyze the exact program, initialization and permitted writes. Avoid treating either one observed interleaving or arbitrary invented values as a complete model. What happens: Some formal cases are subtle and deserve specification-level analysis.","Using C/C++ undefined-behavior slogans as the whole explanation for Java races is misleading.","What extra assumptions must you state before declaring an outcome impossible?","State exact initial values, all possible writes, object construction and JMM causality assumptions before ruling out an outcome."],["Q061",12,"Are all Java field reads and writes atomic?","Ordinary reference and many field accesses are atomic, but that says nothing about safe publication of the object's fields.","Ordinary long/double: specification permits tearing\nVolatile long/double: atomic access\nAny count++: still a compound operation","Reference accesses and relevant primitive single-variable accesses have specified atomicity. The specification permits tearing of nonvolatile long/double accesses; volatile long/double accesses are atomic. Modern implementations may be stronger, but portable reasoning follows the contract. What happens: Single-variable atomic access and safe publication are different properties.","A 64-bit JVM observation does not prove a language-level universal guarantee.","Why does atomic reference assignment not safely publish all mutable fields by itself?","Reference assignment may be atomic while the referenced mutable object's ordinary initialization is not safely ordered; use volatile or another handoff."],["Q062",12,"Why do println-based experiments mislead?","println can add locking and timing that hide the race you wanted to observe.","Actor critical path: read/write only intended state\nObserver: report completed outcomes afterward\nAvoid: logging inside the handoff as a repair","Printing can add synchronization, timing changes and optimization effects unrelated to the intended test. It may mask a race or alter its frequency. Use a structured concurrency test and separate result reporting from the actor operations. What happens: Instrumentation can change the program being investigated.","Incidental synchronization is not a robust application protocol to depend on.","How would you collect results without logging in the actors?","Let actors only perform the tested accesses. The test harness gathers results after completion, classifies outcomes and prints outside actor code."],["Q063",12,"Why does ThreadLocal not solve shared-object concurrency?","ThreadLocal gives each thread its own value; it cannot make some separately shared object thread-safe.","ThreadLocal<List<String>> local = new ThreadLocal<>();\nlocal.set(sharedList);\n// sharedList remains shared if others hold it.","ThreadLocal associates values with a thread; it does not make the referenced object private if another thread can also access it. Request context and cleanup need explicit ownership. Asynchronous work can move execution to another thread with a different binding. What happens: A thread-specific reference is different from a thread-confined object graph.","Pool threads can retain request context unless scoped values are removed appropriately.","How would you transfer an immutable context to an async task?","Capture an immutable context and pass it explicitly as a task input, or use a documented context propagation facility with cleanup."],["Q064",12,"Why is publishing an array reference not enough for later element updates?","Publishing an array reference does not make later unsynchronized element writes safe.","volatile int[] values = new int[2];\nvalues[0] = 42; // ordinary element mutation\n// Replacing the whole immutable array is a different design.","Publication can order the elements prepared before the handoff. Subsequent concurrent changes to ordinary elements need separate synchronization. A volatile array reference changes accesses to that reference, not the element-access mode. What happens: The location being accessed determines the relevant contract.","Reading the volatile reference before every element access does not automatically order an uncoordinated later writer's element update.","When would AtomicIntegerArray be suitable?","Use AtomicIntegerArray when individual indices need atomic access and update; use a lock or immutable array snapshot for whole-array rules."],["Q065",12,"Why is a local cache of a shared reference useful but not magic?","Capture a shared immutable reference once when one operation must use one consistent version.","Config c = current; // current is safely published\nvalidate(c); executeUsing(c);\n// Both steps use the same captured version.","Capturing an appropriately published reference once can ensure an operation uses one snapshot and avoid repeated access cost. It cannot repair unsafe publication or make the referenced object immutable. Choose the state/version semantics first. What happens: Version consistency within one operation can be easier to defend.","A local variable copied from an ordinary racy field does not create an acquire edge.","What if a configuration must stay current throughout a long operation?","If the operation needs changing configuration mid-flight, define a deliberate refresh point, version check or restart rule; don't silently mix versions."],["Q066",13,"How do compiler and CPU reordering relate to the JMM?","JIT and CPU may reorder implementation steps as long as Java's permitted observations are preserved.","Source -> optimized intermediate form -> machine code\nArchitecture and access mode affect implementation\nCorrectness proof -> JMM and API contract\nidentical instructions.","The implementation can transform execution when resulting observations satisfy the applicable Java contract. Source code is not a literal assembly schedule. Data-race freedom and synchronization constrain what transformations can be observable to other threads. What happens: The JMM permits optimization without making every implementation use","'The compiler must execute every line in this order' is not a sound cross- thread proof.","Why can an x86-only test miss a portability issue?","x86 ordering may accidentally hide a missing Java synchronization edge; another architecture or compiler optimization can expose it."],["Q067",13,"What is false sharing?","False sharing occurs when independent hot variables occupy the same CPU cache line and interfere with cache traffic.","Thread A repeatedly updates its counter\nThread B repeatedly updates a different nearby counter\nCoherence traffic can create performance interference","Independent writable variables can share a hardware cache line and interfere through coherence traffic even when the Java program has no data race. It is a performance issue rather than a correctness requirement to add volatile everywhere. Verify with representative profiling and benchmarks. What happens: Logical independence does not imply physical cache-line independence.","False sharing and unsafe publication are different diagnoses.","What would you measure before introducing padding or layout-specific controls?","Measure throughput, hardware counters or profiler evidence and compare layout variants; avoid padding without a proven bottleneck."],["Q068",13,"Is lock-free always faster or wait-free?","Lock-free means some thread makes progress; it does not mean everyone is wait-free or faster.","Contention -> failed CAS -> retry cost\nLock-free system progress != every caller bounded latency\nChoose: measured workload and correctness requirements","No. Lock-free concerns system-wide progress under its algorithmic definition, while wait-free concerns bounded per-operation progress. CAS retries, allocation and contention can make an algorithm slower than a lock for a workload. Java API method names alone do not prove an algorithm's progress class. What happens: A progress property is not an unconditional speed claim.","A loop around CAS can starve an individual caller.","When might a simple lock improve tail latency?","A short, uncontended lock may reduce retries and CPU use, improving p99 under contention; test the same workload."],["Q069",13,"Do virtual threads change JMM synchronization rules?","Virtual threads share Java's memory rules with platform threads, even though scheduling is different.","Virtual thread A -> shared mutable bean\nVirtual thread B -> same shared mutable bean\nSame invariant and synchronization proof still required\nstate pressure.","No. Volatile, locks, atomics and safe-publication rules remain necessary. Virtual threads change execution and waiting economics, not shared-state semantics. Final virtual threads arrived in Java 21; monitor-related carrier pinning improved in Java 24, with runtime-specific caveats. What happens: Cheaper waiting can increase admitted concurrency and expose more shared-","Virtual threads do not make a non-atomic increment correct.","How would you bound downstream work while preserving concurrency safety?","Use a Semaphore, bounded executor or rate limiter around scarce downstream DB/HTTP capacity, and safely publish shared data as before."],["Q070",13,"How should you choose a synchronization mechanism for performance?","Choose the simplest mechanism that proves the required invariant, then measure cost and latency.","Correct baseline -> profile -> controlled alternative\nCompare successful outcomes, p99, CPU and memory\nRecord runtime, architecture and workload","Start with a clear invariant and the simplest correct mechanism. Measure contention, useful throughput, latency and allocation under representative resources. Use weaker memory modes only with a complete proof and a demonstrated benefit; retain a maintainable ownership model. What happens: A faster incorrect execution is not an optimization.","One uncontended microbenchmark cannot predict a high-contention service.","Which result would make you keep the simpler locked design?","Keep a lock if it meets throughput and p99 targets with lower complexity and fewer errors than the lock-free alternative."],["Q071",14,"What does jcstress provide?","jcstress checks whether tiny concurrent tests exhibit allowed, interesting or forbidden outcomes.","Actor A: publication actions\nActor B: observation actions\nOutcome table: acceptable, interesting or forbidden","jcstress is an OpenJDK concurrency stress harness for exploring outcomes of small shared-state tests across runtime and hardware conditions. Actors perform the intended concurrent actions and outcome annotations classify observations. It complements a specification-based proof rather than replacing it. What happens: The harness increases opportunities to observe challenging executions.","Passing a finite run is not proof that no legal bad outcome exists.","Why should the test's accepted outcomes be justified before execution?","Specify exact code, initial values and expected categories first; observations alone cannot tell you which result violates the JMM."],["Q072",14,"What is the difference between allowed, forbidden and observed outcomes?","Allowed means permitted by the contract; observed means actually seen in a finite run; forbidden should never occur under the model.","Allowed-but-unseen != forbidden\nObserved once != all possible executions\nForbidden classification -> explicit proof obligation","Allowed is a contract classification, forbidden conflicts with the stated contract and assumptions, and observed is a finite experiment result. An allowed outcome may be rare or absent on the tested platform. A forbidden observation demands investigation of code, harness, assumptions or implementation. What happens: Keep the theoretical table separate from the measured histogram.","'It never failed in a million runs' is an incomplete correctness argument.","How would you investigate an allegedly forbidden result?","First inspect test code, accidental synchronization, harness setup and the supposed proof. If reproducible, investigate compiler/JVM/platform bugs or a wrong classification."],["Q073",14,"Why can test coordination accidentally hide a race?","Test setup can accidentally add a synchronization edge that hides a real race.","Intended race: writer and reader access ordinary fields\nAccidental repair: writer countDown -> reader await -> read\nNow the test exercises a different synchronization graph.","A latch, volatile flag or join placed inside the intended actor interaction can create ordering the production protocol lacks. Use coordination to launch and collect carefully without adding unintended actor-to-actor handoff. State which edges the test introduces. What happens: The test's memory graph is part of its design.","A start gate and a completion observer must not be confused with publication between actor actions.","Which edges does joining actors add to the observer only?","Joining both actors orders their completed actions before the observer reads final results, but does not retroactively order the actors against each other."],["Q074",14,"Can JMH prove a concurrency protocol correct?","JMH measures performance; it is not a memory-model correctness test.","JMM/API reasoning -> correctness contract\njcstress -> outcome evidence\nJMH -> controlled performance measurement\nService load -> end-to-end operational impact","No. JMH measures performance of a configured benchmark. jcstress explores concurrency outcomes, and reasoning establishes permitted behavior. Use each for its purpose, including representative load tests for application impact. What happens: A benchmark can measure an incorrect protocol very precisely.","Throughput numbers are not a visibility or atomicity proof.","How would you combine these methods for a new lock-free component?","Prove the protocol and use jcstress for legal outcomes first, then use JMH for microperformance and realistic integration load tests."],["Q075",14,"What should a concurrency test report include?","A concurrency report should include code, shared state, allowed outcomes, platform and what was actually observed.","Report: code + initial state + actor actions\nClassify: outcomes and synchronization chain\nMeasure: runtime/platform, runs and actual histogram\nLimit: finite observations do not prove universality","Record source and assumptions, expected outcome categories, runtime/build, architecture, harness configuration and measured observations. Separate deterministic controlled demonstrations from unconstrained race exploration. Include limitations and the reasoning behind rejected outcomes. What happens: A reproducible report lets another engineer challenge the assumptions.","Hiding unexpected outcomes as noise weakens the evidence.","What changes would require rerunning tests after a JDK upgrade?","Rerun after changes in JVM compiler, runtime flags, architecture, collector, harness version or source because those can change observed interleavings."],["Q076",15,"Design a consistent runtime configuration service.","Build one validated immutable config and publish it as one version to every local reader.","record Settings(long version, int timeout, int retries) {}\nvolatile Settings current;\nReader: Settings s = current; executeUsing(s);\nWriter: validate new version; publish whole snapshot;","Design a consistent runtime configuration service. Build validated immutable snapshots and publish a single version through volatile or an atomic reference. Readers capture one version per operation. If concurrent updates must compose, use a CAS/lock protocol or one writer. Persistence and cross-process propagation are separate concerns. What happens: One reference controls the local publication boundary.","A JVM volatile field does not propagate changes to other service replicas.","How would you handle stale versions arriving from a remote event stream?","Keep a version number; reject stale remote events and use ordered replay/ reconciliation. A local volatile ref cannot agree across replicas."],["Q077",15,"Design a strict bounded in-memory reservation mechanism.","A strict local reservation limit needs one coordinated permit per admitted job and exactly one release.","synchronized (lock) {\nif (used == capacity) reject();\nelse { used++; reserve(); }\n}","Design a strict bounded in-memory reservation mechanism. Represent the invariant in one atomic transition or critical section. Validate available capacity, reserve it and define exactly when failure/ cancellation releases it. Use the matching release policy; for distributed reservations, choose a durable shared authority separately. What happens: The complete local admission decision is protected from concurrent callers.","Checking a LongAdder or map size before reserving is not a strict atomic capacity decision.","How would an exception during reserve affect used?","If reserve throws before ownership transfer, release the acquired permit. After transfer, the job completion/cancellation owner must release it once."],["Q078",15,"A cache stores thread-safe mappings but requests corrupt values. Why?","A concurrent map protects entries, but mutable lists or objects stored inside can still race.","ConcurrentHashMap<Key, ArrayList<Item>> cache;\nTwo callers -> same list -> uncoordinated mutation\nCandidate: immutable list replacement per update","The container may safely coordinate mappings while mutable values remain shared without a policy. Identify who owns and mutates the value graph. Use immutable replacement, guarded values or value-specific concurrency mechanisms with atomic business operations. What happens: Safety is compositional only when each layer's assumptions align.","Swapping one concurrent collection for another does not automatically fix every compound update.","How would two writers avoid overwriting each other's list additions?","Use compute for per-key atomic replacement of an immutable copied list, or a lock guarding mutation; do not overwrite another writer's update."],["Q079",15,"A stop request is visible but the worker never ends. What next?","A visible stop flag does not wake blocked I/O or guarantee the worker gets CPU time to finish.","Volatile stop flag becomes true\nWorker waits in blocking I/O without checking it\nNeed: supported wakeup/cancellation plus cleanup policy","Separate visibility from wakeup and progress. The worker may be blocked, hold a lock, ignore interruption or wait on a dependency. Define cancellation at those boundaries with cleanup and deadlines. Do not replace one memory keyword blindly. What happens: The visibility proof can be correct while the termination protocol is incomplete.","A synchronized stop flag cannot force arbitrary blocking work to return.","How would you distinguish a waiting worker from a CPU spin loop?","Capture thread dumps and CPU samples: WAITING/BLOCKED with stack frames suggests a wait, whereas repeated RUNNABLE samples with high CPU suggests a spin."],["Q080",15,"How do you review a concurrency change as a technical lead?","Review who owns shared data, every operation's invariant, synchronization edges and exceptional cleanup.","State -> owner -> synchronization -> invariant\nLifecycle -> cancellation -> failure cleanup\nEvidence -> stress outcomes -> performance -> rollout\nand future maintenance.","Identify shared state, ownership, the invariant and every read/write path. Draw publication and mutation edges, review progress/failure behavior, then combine proof with targeted tests and measurements. Check distributed boundaries separately from JVM guarantees. What happens: A review should explain why the design remains correct during exceptional paths","JMM guarantees do not make database, message or cross-service transactions atomic.","What documentation would keep future changes from bypassing the locking policy?","Write a short shared-state contract beside the API: guarded fields, lock identity, allowed access paths, lifecycle transitions and mandatory race tests for changes."]],"labs":[["HANDS-ON EXERCISE 01 / 08 — L01. One-shot volatile publication","The payload read happens before join; the volatile flag is the publication edge. COMMANDS javac --release 17 *.java java Publication","COMMANDS\njavac --release 17 *.java\njava Publication\nExpected console output:\npublication=42\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 02 / 08 — L02. Controlled volatile lost update","Both increments deliberately read the same old count before writing. COMMANDS javac --release 17 *.java java LostUpdate","COMMANDS\njavac --release 17 *.java\njava LostUpdate\nExpected console output:\ntwo increments, count=1\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 03 / 08 — L03. Exact atomic increments","Four threads each increment 10,000 times using AtomicInteger. COMMANDS javac --release 17 *.java java AtomicCounter","COMMANDS\njavac --release 17 *.java\njava AtomicCounter\nExpected console output:\natomic count=40000\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 04 / 08 — L04. Whole immutable configuration snapshot","A request captures one immutable configuration snapshot. COMMANDS javac --release 17 *.java java ConfigSnapshot","COMMANDS\njavac --release 17 *.java\njava ConfigSnapshot\nExpected console output:\nsnapshot invariant preserved\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 05 / 08 — L05. Executor input and completion result","Executor submission and successful Future.get create two handoffs. COMMANDS javac --release 17 *.java java FutureHandoff","COMMANDS\njavac --release 17 *.java\njava FutureHandoff\nExpected console output:\nfuture result=42\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 06 / 08 — L06. Ownership transfer through a queue","The producer finishes the message before transferring ownership through the queue. COMMANDS javac --release 17 *.java java QueueHandoff","COMMANDS\njavac --release 17 *.java\njava QueueHandoff\nExpected console output:\nqueue payload=42\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 07 / 08 — L07. Publish before countDown","The countDown comes after the result write; await reads only on success. COMMANDS javac --release 17 *.java java LatchHandoff","COMMANDS\njavac --release 17 *.java\njava LatchHandoff\nExpected console output:\nlatch result=42\nInterview proof: Explain the exact atomic action or publication edge. State what changes"],["HANDS-ON EXERCISE 08 / 08 — L08. VarHandle publication modes","The reader observes a release write through an acquire read on the same variable. COMMANDS javac --release 17 *.java java ReleaseAcquire","COMMANDS\njavac --release 17 *.java\njava ReleaseAcquire\nExpected console output:\nrelease/acquire payload=42\nInterview proof: Explain the exact atomic action or publication edge. State what changes"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

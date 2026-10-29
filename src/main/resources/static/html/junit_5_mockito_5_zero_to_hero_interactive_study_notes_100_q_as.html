@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JUnit 5 &amp; Mockito 5 — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #059669;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">JUnit 5 &amp; Mockito 5</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Clean Premium Notes · Java 17 · JUnit Jupiter 5 · Mockito 5
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Testing &amp; Quality</span>
+              <span>•</span>
+              <span>142 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              JUnit 5 &amp; Mockito 5 — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Clean Premium Notes (Java 17 · JUnit Jupiter 5 · Mockito 5). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">JUnit 5 &amp; Mockito 5</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">JUnit 5 &amp; Mockito 5 — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of JUnit 5 &amp; Mockito 5.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">JUnit 5 &amp; Mockito 5 — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"junit-mockito","title":"JUnit 5 & Mockito 5","subtitle":"Zero to Hero Clean Premium Notes","category":"Testing & Quality","badge":"Java 17 · JUnit Jupiter 5 · Mockito 5","color":"#059669","pages":142,"chapters":["Testing Fundamentals","Junit Annotations And Assertions","Fixtures And Lifecycle","Parameterized Testing","Errors, Futures And Time","Junit Platform And Extensions","Mockito Object Setup","Mockito Stubbing Patterns","Matchers And Captors","Behavior Verification","Spies And Special Cases","Strictness And Test Isolation","Fakes, Contracts And Concurrency","Async And Spring Mvc","Spring Data And Security","Test Strategy And Coverage","Integration, Containers And Regressions","Refactoring And Performance Tests","Release Readiness","Architect Scenarios"],"questions":[["Q001",0,"What is a unit test?","A unit test checks one small behavior with controlled inputs and clear expected results. It should run quickly and isolate the reason for a failure; the unit may be one class or a small cluster of related classes.","Test input -> real unit -> expected outcome","Requirement Real behavior Useful check","Choose the right test boundary and assert a visible requirement.","Does a unit test have to test one method?","No. Test the visible behavior of a unit, including the calls needed to reach it. Splitting a workflow into artificial method-level tests can make refactoring harder."],["Q002",0,"How are unit, integration and end-to-end tests different?","A unit test checks a narrow behavior with fast controlled dependencies. An integration test checks how real components work together, and an end-to-end test checks a complete user flow across boundaries.","Test input -> real unit -> expected outcome","Requirement Real behavior Useful check","Choose the right test boundary and assert a visible requirement.","Where should a repository query be tested?","Use a real test database for the query, indexes and mapping. Mocking a repository in a service unit test does not validate its SQL or ORM behavior."],["Q003",0,"What makes a test reliable and maintainable?","A reliable test has one clear purpose, deterministic setup, observable assertions and useful failure messages. It avoids shared state, sleeps and assumptions about execution order.","Test input -> real unit -> expected outcome","Requirement Real behavior Useful check","Choose the right test boundary and assert a visible requirement.","Why should a test fail when production behavior changes?","Because tests are executable requirements. A test that always passes or asserts only a mock call can miss a broken business result."],["Q004",0,"What is the Arrange-Act-Assert pattern?","Arrange creates inputs and collaborators; Act invokes the behavior once; Assert verifies its result and important side effects. This readable flow reduces accidental confusion between setup and expectations.","Test input -> real unit -> expected outcome","Requirement Real behavior Useful check","Choose the right test boundary and assert a visible requirement.","Can a test contain more than one assertion?","Yes, when assertions describe one coherent outcome. Split unrelated behaviors into different tests so a failure has a clear meaning."],["Q005",0,"What is the difference between a test double, stub, mock, fake and spy?","A double replaces a collaborator. A stub returns prepared data, a mock records interactions, a fake has a working simplified implementation, and a spy wraps real behavior while allowing observation or stubbing.","Test input -> real unit -> expected outcome","Requirement Real behavior Useful check","Choose the right test boundary and assert a visible requirement.","When is an in-memory fake better than a mock?","When realistic state transitions are essential and a simple deterministic fake can model them. Validate real database semantics separately."],["Q006",1,"What does @Test do in JUnit Jupiter?","@Test marks a method as a test executed by the Jupiter engine through the JUnit Platform. The method normally returns void and is not a private method.","assertEquals(220, service.total(200, 10));","Input Actual result Assertion","Use the correct assertion for equality, identity, collections and absence.","Does a Java main method run JUnit tests automatically?","No. Use a JUnit-aware IDE or build-tool test runner with Jupiter engine available on the test runtime classpath."],["Q007",1,"When should you use assertEquals instead of assertSame?","assertEquals tests equality under equals; assertSame requires the identical object reference. For domain values, equality is usually the intended contract.","assertEquals(220, service.total(200, 10));","Input Actual result Assertion","Use the correct assertion for equality, identity, collections and absence.","Can two different objects pass assertEquals?","Yes, if equals returns true. Their references remain different, so assertSame would fail."],["Q008",1,"What do assertTrue, assertFalse and assertNull verify?","They verify boolean conditions or whether a reference is null. Prefer expressive assertions that show expected and actual values rather than vague compound conditions.","assertEquals(220, service.total(200, 10));","Input Actual result Assertion","Use the correct assertion for equality, identity, collections and absence.","Why can assertEquals be easier to debug than assertTrue?","JUnit can show expected and actual values directly. A failed true/false expression may hide which value was wrong."],["Q009",1,"How does assertAll help?","assertAll evaluates multiple grouped assertions and reports all their failures together. It helps validate related fields in one returned value without stopping at the first failed field.","assertEquals(220, service.total(200, 10));","Input Actual result Assertion","Use the correct assertion for equality, identity, collections and absence.","Should assertAll group unrelated workflows?","No. Keep a group focused on one outcome; unrelated checks should be in independent test methods."],["Q010",1,"How do you test collections without depending on accidental order?","Choose an assertion matching the contract: exact ordered list when order is promised, or membership/set equality when it is not. Never assume hash map iteration order without a stated requirement.","assertEquals(220, service.total(200, 10));","Input Actual result Assertion","Use the correct assertion for equality, identity, collections and absence.","When is a sorted collection assertion wrong?","When sorting is not the product behavior; the test may hide a defect in required ordering or unnecessarily impose new behavior."],["Q011",2,"What do @BeforeEach and @AfterEach do?","@BeforeEach runs setup before each test and @AfterEach runs cleanup after it. Keep fixture creation local enough that readers can understand it; cleanup must not hide failures.","@BeforeEach void setup() { items = new ArrayList<>(); }","Fresh fixture Run test Clean state","Make test setup predictable without relying on order.","Is one @BeforeEach invocation shared by all tests?","No, it runs for each test invocation, including parameterized invocations, subject to the chosen test-instance lifecycle."],["Q012",2,"What do @BeforeAll and @AfterAll do?","They surround all tests in a class, often to create and release expensive shared resources. By default they are static because Jupiter creates a new test instance per method.","@BeforeEach void setup() { items = new ArrayList<>(); }","Fresh fixture Run test Clean state","Make test setup predictable without relying on order.","Can @BeforeAll be non-static?","Yes, when using @TestInstance(PER_CLASS). Ensure shared mutable state does not cause order-dependent tests."],["Q013",2,"What is the default JUnit Jupiter test-instance lifecycle?","The default is PER_METHOD: each test gets a fresh test-class instance. This helps isolate instance fields but does not reset static state, files or external services.","@BeforeEach void setup() { items = new ArrayList<>(); }","Fresh fixture Run test Clean state","Make test setup predictable without relying on order.","Does PER_METHOD prevent all state leaks?","No. Static maps, caches, database records and background workers can still leak state between tests."],["Q014",2,"When should @TestInstance(PER_CLASS) be used?","Use PER_CLASS when one test instance is intentional, such as expensive fixture ownership or non-static @BeforeAll. Document and synchronize mutable shared fields if parallel execution is enabled.","@BeforeEach void setup() { items = new ArrayList<>(); }","Fresh fixture Run test Clean state","Make test setup predictable without relying on order.","What is the key risk of PER_CLASS?","One test can change fields observed by another. Tests may pass separately but fail as a suite."],["Q015",2,"Why should tests not depend on execution order?","Order-coupled tests hide shared state and fail under parallelism, retries or individual execution. Give each test its own setup and teardown or reset external state deliberately.","@BeforeEach void setup() { items = new ArrayList<>(); }","Fresh fixture Run test Clean state","Make test setup predictable without relying on order.","Does @T estMethodOrder fix shared-state defects?","No. It only controls execution order; it does not make inter-test dependency a good design."],["Q016",3,"How does @ParameterizedTest work?","One test method runs for multiple supplied argument sets. Use it for the same rule over boundary inputs, not as a substitute for tests with different purposes.","@CsvSource({\"17,false\", \"18,true\", \"19,true\"})","Test rows Same rule Outcomes","Repeat one business rule over boundary inputs.","What happens when one argument row fails?","That invocation fails and is reported individually; other invocations can still run unless a runner stops the suite."],["Q017",3,"How do @ValueSource, @CsvSource and @MethodSource differ?","@ValueSource supplies simple values, @CsvSource provides rows of text-converted fields, and @MethodSource can supply richer objects and Streams of Arguments.","@CsvSource({\"17,false\", \"18,true\", \"19,true\"})","Test rows Same rule Outcomes","Repeat one business rule over boundary inputs.","When is @MethodSource a better choice?","Use it for custom objects, nested lists, explicit nulls or complicated expected outcomes that are hard to express as CSV strings."],["Q018",3,"How can you test null, empty and blank strings?","Provide separate inputs because null, empty and whitespace-only strings are different values. Assertions should reflect exactly what the contract permits or rejects.","@CsvSource({\"17,false\", \"18,true\", \"19,true\"})","Test rows Same rule Outcomes","Repeat one business rule over boundary inputs.","Can @ValueSource(strings={\"\"}) provide null?","No. Use @NullSource or @NullAndEmptySource for null/empty combinations as appropriate."],["Q019",3,"Why use @EnumSource in parameterized testing?","It enumerates a stable set of enum constants without hard-coded string conversions. Filter included or excluded names when only certain states follow the same rule.","@CsvSource({\"17,false\", \"18,true\", \"19,true\"})","Test rows Same rule Outcomes","Repeat one business rule over boundary inputs.","How do you catch a future new enum constant?","Test all values using @EnumSource without restrictive names, or use an exhaustive domain switch where available."],["Q020",3,"When should you prefer a dynamic test or @TestFactory?","Dynamic tests are useful when the cases are created at runtime and names can be generated. They have different lifecycle semantics from independent @Test methods.","@CsvSource({\"17,false\", \"18,true\", \"19,true\"})","Test rows Same rule Outcomes","Repeat one business rule over boundary inputs.","Does @BeforeEach run before each dynamic child?","No. It runs around the factory method, not separately around every generated DynamicTest executable."],["Q021",4,"How do you assert an exception with assertThrows?","Wrap only the operation expected to fail, then assert the exception type and meaningful fields/message. assertThrows accepts the expected type or a subtype.","assertThrows(IllegalArgumentException.class, () -> divide(5, 0));","Failure setup Action Error contract","Test exceptional paths and bounded completion.","When would assertThrowsExactly be preferred?","When accepting a subclass would violate the contract. Otherwise assertThrows is often less brittle."],["Q022",4,"How do you test that no exception is thrown?","Use assertDoesNotThrow on the operation and inspect the returned value if useful. A test without assertions can still pass while doing nothing meaningful.","assertThrows(IllegalArgumentException.class, () -> divide(5, 0));","Failure setup Action Error contract","Test exceptional paths and bounded completion.","Does assertDoesNotThrow prove correctness?","No. Also check the resulting state, returned value or durable effect where the requirement demands it."],["Q023",4,"What is the difference between assertTimeout and assertTimeoutPreemptively?","assertTimeout executes on the calling thread and checks elapsed time afterward; preemptive timeout can execute work in another thread and interrupt it. Preemptive timeouts can disrupt thread-bound contexts.","assertThrows(IllegalArgumentException.class, () -> divide(5, 0));","Failure setup Action Error contract","Test exceptional paths and bounded completion.","Why is preemptive timeout risky with Spring transactions?","Work may execute outside the thread-bound test transaction, causing unexpected committed changes. Prefer a non-preemptive timeout or operation-level deadline."],["Q024",4,"How should asynchronous code be tested without Thread.sleep?","Coordinate with CompletableFuture, CountDownLatch or bounded await-style mechanisms and assert terminal outcomes. Use explicit deadlines so tests fail rather than hang indefinitely.","assertThrows(IllegalArgumentException.class, () -> divide(5, 0));","Failure setup Action Error contract","Test exceptional paths and bounded completion.","Does waiting for a future guarantee an external side effect completed?","Only if completion semantics promise that effect. Verify the actual observable state or result boundary."],["Q025",4,"What does assertIterableEquals check?","It compares iterables element by element in iteration order. For maps or order- insensitive collections, choose a contract-matching assertion instead.","assertThrows(IllegalArgumentException.class, () -> divide(5, 0));","Failure setup Action Error contract","Test exceptional paths and bounded completion.","Will two sets with equal elements always iterate in equal order?","No; their iteration behavior can differ. Compare set equality when order is not part of the contract."],["Q026",5,"What are assumptions in JUnit?","Assumptions such as assumeTrue abort or skip a test when its required environment is unavailable, rather than reporting a failed assertion. Use sparingly so important checks are not silently skipped.","@Tag(\"integration\")\n@Test void verifiesDatabaseContract() { ... }","Platform Jupiter engine Test result","Understand discovery, extensions, tags and safe parallel tests.","Should a broken configuration become an assumption?","Usually no. Fail clearly if the test environment is required for the build, and reserve assumptions for intentionally optional conditions."],["Q027",5,"What is the JUnit Platform and how does it relate to Jupiter?","The JUnit Platform discovers and launches test engines; Jupiter supplies modern annotations and execution rules. Vintage can execute older JUnit 3/4 tests when configured.","@Tag(\"integration\")\n@Test void verifiesDatabaseContract() { ... }","Platform Jupiter engine Test result","Understand discovery, extensions, tags and safe parallel tests.","Why can tests compile but not execute?","The test engine or build-tool provider may be missing or misconfigured even though the Jupiter API is present."],["Q028",5,"What does @Nested improve?","@Nested groups tests by state or behavior under descriptive inner classes. It helps readers understand a workflow such as empty cart versus populated cart.","@Tag(\"integration\")\n@Test void verifiesDatabaseContract() { ... }","Platform Jupiter engine Test result","Understand discovery, extensions, tags and safe parallel tests.","Does @Nested create a separate production object automatically?","No. Arrange the fixture yourself and understand the outer and nested test-instance lifecycle."],["Q029",5,"When should you use @DisplayName?","Use it when a business-readable test label explains behavior better than a method name. Good names state input, action and outcome without restating implementation details.","@Tag(\"integration\")\n@Test void verifiesDatabaseContract() { ... }","Platform Jupiter engine Test result","Understand discovery, extensions, tags and safe parallel tests.","How should a test name describe a bug regression?","Describe the formerly broken scenario and expected result, e.g., shouldNotChargeTwiceForSameRequestKey."],["Q030",5,"How do tags and test suites help large projects?","@Tag can classify tests by purpose (unit, integration, slow); build tools and launchers can include or exclude tags. Keep fast feedback separate from slower integration coverage without hiding failures.","@Tag(\"integration\")\n@Test void verifiesDatabaseContract() { ... }","Platform Jupiter engine Test result","Understand discovery, extensions, tags and safe parallel tests.","Should all tests run on every commit?","Run a meaningful fast suite on each change and slower suites in CI gates; never permanently omit high-risk integration verification."],["Q031",6,"What is a JUnit extension?","An extension hooks into test lifecycle, parameters, exceptions and other execution points. MockitoExtension is one example that manages Mockito mocks in Jupiter tests.","@ExtendWith(MockitoExtension.class)\nclass UserServiceTest { @Mock UserRepo repo; }","Mock repository Real service Assert value","Create mocks and keep the class under test real.","When should an extension be chosen over @BeforeEach?","When reusable cross-cutting test behavior or parameter resolution is needed across classes, rather than ad hoc duplicated setup."],["Q032",6,"Why must parallel test execution be designed deliberately?","Parallel tests may share static state, system properties, ports, files and external databases. Enable parallel execution only after fixtures, resource ownership and concurrency checks are safe.","@ExtendWith(MockitoExtension.class)\nclass UserServiceTest { @Mock UserRepo repo; }","Mock repository Real service Assert value","Create mocks and keep the class under test real.","Can PER_METHOD alone make parallel database tests safe?","No. They may still modify the same external rows or schema; use isolation, unique data or serialization."],["Q033",6,"What does Mockito.mock create?","It creates a test double implementing the requested type so you can control its answers and inspect interactions. By default an unstubbed method returns a default value, not domain truth.","@ExtendWith(MockitoExtension.class)\nclass UserServiceTest { @Mock UserRepo repo; }","Mock repository Real service Assert value","Create mocks and keep the class under test real.","Should every class in a test be mocked?","No. Keep the class under test real; mock external collaborators only when isolation is useful."],["Q034",6,"What do @Mock and @ExtendWith(MockitoExtension.class) provide?","@Mock declares a mock field or parameter; MockitoExtension creates/cleans up annotated mocks for JUnit Jupiter tests. Without initialization, a @Mock field can remain null.","@ExtendWith(MockitoExtension.class)\nclass UserServiceTest { @Mock UserRepo repo; }","Mock repository Real service Assert value","Create mocks and keep the class under test real.","Is MockitoExtension a Spring extension?","No. It is Mockito's Jupiter integration and works without loading a Spring ApplicationContext."],["Q035",6,"What does @InjectMocks actually do?","Mockito tries constructor, setter or field injection of available mocks into the class under test. It is not a general dependency injection container and may leave some collaborators unresolved.","@ExtendWith(MockitoExtension.class)\nclass UserServiceTest { @Mock UserRepo repo; }","Mock repository Real service Assert value","Create mocks and keep the class under test real.","When is manual constructor injection better?","When explicit construction makes required dependencies and test wiring clearer, especially for immutable services."],["Q036",7,"How do mocks differ from spies?","A mock has no real behavior unless configured; a spy delegates to real methods by default. Spies can run side effects and require care during stubbing.","when(repo.findName(7L)).thenReturn(\"Meena\");","Matched call Stubbed value Service branch","Return and throw controlled collaborator outcomes.","Which is safer for a database repository test?","Neither validates SQL. Use a real repository against a test database and reserve mocks for caller-unit tests."],["Q037",7,"What are default answers for an unstubbed Mockito method?","Mockito returns type-appropriate defaults such as zero, false, empty optional/ collection in supported cases, or null. Never treat a default as a correct business response.","when(repo.findName(7L)).thenReturn(\"Meena\");","Matched call Stubbed value Service branch","Return and throw controlled collaborator outcomes.","Why can an unstubbed call hide a defect?","A default false or empty result might match the test's expected outcome even though a necessary dependency call was omitted."],["Q038",7,"How does when(...).thenReturn(...) work?","It registers a response for a matching method invocation on a mock. When the production code later calls the method with matching arguments, the configured result is returned.","when(repo.findName(7L)).thenReturn(\"Meena\");","Matched call Stubbed value Service branch","Return and throw controlled collaborator outcomes.","Should you stub a method that your test does not call?","No. Unnecessary stubs confuse the test and strict stubbing may flag them."],["Q039",7,"When do doReturn(...).when(...) and when(...).thenReturn(...) differ?","For ordinary mocks either may work, but when(spy.method()) calls the real spy method during stubbing. doReturn(...).when(spy).method() avoids that real invocation.","when(repo.findName(7L)).thenReturn(\"Meena\");","Matched call Stubbed value Service branch","Return and throw controlled collaborator outcomes.","Why can a spy throw while being stubbed?","The real method runs inside when(spy.method()). Use doReturn when real execution is unsafe at setup time."],["Q040",7,"How do thenThrow and doThrow differ?","thenThrow configures a non-void stubbed call to throw; doThrow can stub a void method and can be used with spies. Choose checked exceptions permitted by the method signature.","when(repo.findName(7L)).thenReturn(\"Meena\");","Matched call Stubbed value Service branch","Return and throw controlled collaborator outcomes.","What failure should a payment gateway mock throw?","Model a domain-relevant timeout or rejection; the service must distinguish uncertain outcome from definite refusal."],["Q041",8,"How do thenAnswer and Answer work?","An Answer computes a stub result from the invocation and its arguments. Use it sparingly for concise rules; excessive answers can reproduce the implementation under test.","verify(publisher).publish(eventCaptor.capture());","Invocation Captor Validate fields","Match only the needed inputs and capture important output objects.","When is thenAnswer better than many thenReturn calls?","When inputs determine a simple result rule and separate stubs would obscure that input-output relationship."],["Q042",8,"How does chained stubbing work for repeated calls?","Mockito supports consecutive answers, e.g., thenReturn(first, second), useful for retry tests. Once specified answers are exhausted, the last configured value is generally repeated.","verify(publisher).publish(eventCaptor.capture());","Invocation Captor Validate fields","Match only the needed inputs and capture important output objects.","How can retries be asserted safely?","Verify final behavior and the allowed attempt count; avoid relying on uncontrolled sleeps or nondeterministic scheduling."],["Q043",8,"What do lenient stubs mean?","Leniency relaxes specific strict-stubbing checks, which can help shared fixtures in narrow cases. Prefer moving stubs into tests that actually need them rather than disabling protection broadly.","verify(publisher).publish(eventCaptor.capture());","Invocation Captor Validate fields","Match only the needed inputs and capture important output objects.","Why is lenient() on every mock harmful?","It hides dead setup, argument mismatches and unused stubs, weakening tests during refactoring."],["Q044",8,"What are argument matchers like any() and eq()?","Matchers describe which invocation arguments should match a stub or verification. If you use matchers for any argument in one invocation, supply matchers for all arguments in that invocation.","verify(publisher).publish(eventCaptor.capture());","Invocation Captor Validate fields","Match only the needed inputs and capture important output objects.","Why does mixing eq(5) with a raw second value fail?","Mockito records matchers separately and expects their count to match method arguments. Use eq(...) for the other value too."],["Q045",8,"How does ArgumentCaptor work?","It captures values passed to a mocked collaborator so you can assert what the class under test sent. It is most helpful when emitted data is the observable contract.","verify(publisher).publish(eventCaptor.capture());","Invocation Captor Validate fields","Match only the needed inputs and capture important output objects.","When should you avoid ArgumentCaptor?","When a simple eq(expected) argument verification expresses the requirement more clearly."],["Q046",9,"How should you verify a method was called once?","Use verify(mock).method(arguments), which defaults to times(1), then verify the observable result if relevant. A call check alone does not prove domain correctness.","verify(gateway, never()).charge(any());","Business action Safe effect Verification","Verify critical effects without over-specifying implementation.","Is it good to verify every method call?","No. Over-verification couples tests to implementation details and makes safe refactoring expensive."],["Q047",9,"How do times, never and atLeast differ?","times(n) requires an exact invocation count, never() requires none, and atLeast(n) allows more. Choose a count only when it is part of the business or retry contract.","verify(gateway, never()).charge(any());","Business action Safe effect Verification","Verify critical effects without over-specifying implementation.","When is never() a high-value assertion?","When preventing an unsafe action is the requirement, e.g., never charge a card after invalid input."],["Q048",9,"What does InOrder verify?","It verifies selected interactions occurred in a specific order across one or more mocks. Use it only if ordering changes correctness, such as save-before-publish intent.","verify(gateway, never()).charge(any());","Business action Safe effect Verification","Verify critical effects without over-specifying implementation.","Does InOrder prove an external transaction committed?","No. It only observes calls to doubles; use an integration test to validate transaction behavior."],["Q049",9,"When should verifyNoMoreInteractions be used?","Use it when unexpected collaborator calls would violate an important boundary. Applying it everywhere makes tests fragile when harmless calls are added.","verify(gateway, never()).charge(any());","Business action Safe effect Verification","Verify critical effects without over-specifying implementation.","What is a better assertion for side-effect prevention?","Verify that the dangerous operation was never invoked and that the returned failure/ status is correct."],["Q050",9,"How do you verify a negative branch such as a rejected order?","Assert the business error and confirm no write or downstream charge occurred. Arrange the repository to return the rejection condition without building an unnecessary full application.","verify(gateway, never()).charge(any());","Business action Safe effect Verification","Verify critical effects without over-specifying implementation.","Would verifying only that save was never called be sufficient?","No. Also assert the outcome so a test cannot pass when the service silently does nothing."],["Q051",10,"What is a Mockito spy and what risks does it create?","A spy wraps a real object and invokes real methods unless configured otherwise. That can trigger network, file or mutable-state effects during testing and stubbing.","doReturn(\"x\").when(spy).read();","Real spy doReturn stub Controlled result","Avoid accidentally executing real behavior during spy stubbing.","Can a spy replace a missing integration test?","No. It may call some real logic but still does not prove that a database or network integration behaves correctly."],["Q052",10,"How should you stub a spy safely?","Use doReturn, doThrow or doAnswer for methods whose real execution should not run during setup. Prefer a small real domain object without spying when possible.","doReturn(\"x\").when(spy).read();","Real spy doReturn stub Controlled result","Avoid accidentally executing real behavior during spy stubbing.","Why is doReturn safer than when on a spy?","when(spy.call()) evaluates call immediately; doReturn(...).when(spy).call() configures the stub without executing the real method."],["Q053",10,"How do you test a void method with Mockito?","Stub failures using doThrow(...).when(mock).voidMethod(), or verify the invocation using verify(mock).voidMethod(...). Most void effects should also have an observable contract.","doReturn(\"x\").when(spy).read();","Real spy doReturn stub Controlled result","Avoid accidentally executing real behavior during spy stubbing.","Should a void method test assert only interactions?","No. If the method changes state, writes data or publishes events, test the resulting state using a suitable real boundary where needed."],["Q054",10,"When should static methods be mocked?","Mockito's scoped static mocking can isolate an unavoidable hard-coded static dependency. Prefer injecting Clock, adapters or suppliers instead of routine static mocking.","doReturn(\"x\").when(spy).read();","Real spy doReturn stub Controlled result","Avoid accidentally executing real behavior during spy stubbing.","Why must MockedStatic be closed?","The static mock is scoped and must be released to prevent interference with later tests, usually by try-with-resources."],["Q055",10,"Can Mockito mock final classes and methods?","Modern Mockito 5 uses inline mocking by default, enabling final types in supported JVM configurations. Mocking ability still depends on runtime instrumentation rules.","doReturn(\"x\").when(spy).read();","Real spy doReturn stub Controlled result","Avoid accidentally executing real behavior during spy stubbing.","Should tests rely heavily on mocking domain records?","Usually no. Construct real immutable records and mock the external dependency that returns them; values are cheap and clarify expectations."],["Q056",11,"What does deep stubbing do and why is it risky?","RETURNS_DEEP_STUBS builds mocks for chained return values. It can hide a poorly designed dependency chain and couples tests to internal navigation.","// MockitoExtension creates mocks for each test invocation.","New mocks Test logic No leakage","Treat unused stubs and shared state as actionable signals.","What design change avoids a.b().c().d() mocking?","Expose a focused collaborator method that returns the required domain value, or compose the lower-level calls inside an adapter."],["Q057",11,"How do you test constructors that create hard- coded dependencies?","First prefer refactoring to constructor injection. Constructor mocking can be a temporary tool for legacy code, but adds instrumentation complexity and fragile tests.","// MockitoExtension creates mocks for each test invocation.","New mocks Test logic No leakage","Treat unused stubs and shared state as actionable signals.","What is the most useful seam in legacy code?","Separate object construction from business logic so tests can inject a controlled collaborator without modifying global state."],["Q058",11,"What is the purpose of strict stubbing in Mockito?","Strict stubbing points out unnecessary configured interactions and argument mismatches that often indicate stale or incorrect tests. Keep tests intentionally small.","// MockitoExtension creates mocks for each test invocation.","New mocks Test logic No leakage","Treat unused stubs and shared state as actionable signals.","How should you fix an unnecessary stubbing exception?","Remove the unused stub or move it into the test that needs it, rather than globally disabling strictness."],["Q059",11,"Why are shared mutable mocks across tests dangerous?","Tests can leak interactions, stubs and invocation history, especially under parallel execution. Prefer fresh mocks per test with MockitoExtension or explicit construction.","// MockitoExtension creates mocks for each test invocation.","New mocks Test logic No leakage","Treat unused stubs and shared state as actionable signals.","Does reset(mock) solve all test isolation issues?","No. It only resets that mock's configuration and history, not external resources or hidden static state; fresh fixture objects are clearer."],["Q060",11,"What is overmocking?","Overmocking means replacing too much real domain logic with scripted interaction, so tests verify the script rather than production behavior. Keep pure calculations and value objects real.","// MockitoExtension creates mocks for each test invocation.","New mocks Test logic No leakage","Treat unused stubs and shared state as actionable signals.","What symptom suggests overmocking?","A test must mock several methods of the class under test or knows the exact private call chain, yet checks no business result."],["Q061",12,"What is a contract test for a fake implementation?","A contract test runs the same required behavior against the fake and real adapter to uncover semantic differences. It is especially helpful for edge cases and failure outcomes.","CountDownLatch ready = new CountDownLatch(2);","Fake logic Real boundary Contract comparison","Recognize where mocks stop proving correctness.","Can a HashMap fake enforce database uniqueness under concurrency?","Not by default. Even a thread-safe fake may differ from transactions, collation and SQL constraints; run real integration checks."],["Q062",12,"When is an interaction test justified instead of a state test?","Use it when the interaction itself is a required effect, such as suppressing payment, sending exactly one audit event or passing a stable idempotency key.","CountDownLatch ready = new CountDownLatch(2);","Fake logic Real boundary Contract comparison","Recognize where mocks stop proving correctness.","Why not verify all repository reads?","Reads are often an implementation detail. Focus on outcome and required side effects, with integration tests for repository semantics."],["Q063",12,"How should you test CompletableFuture success and failure?","Provide already-completed futures or controlled CompletableFuture instances and assert final outcomes with bounded get/join or Jupiter timeout rules. Test both normal completion and exceptional completion.","CountDownLatch ready = new CountDownLatch(2);","Fake logic Real boundary Contract comparison","Recognize where mocks stop proving correctness.","What failure occurs if you never complete a test future?","The test can hang. Use controlled completion and a time bound with informative failure output."],["Q064",12,"How can you test scheduled retries without sleeping?","Inject a scheduler or clock and drive virtual time or scheduled tasks explicitly. Verify backoff decisions, maximum attempts and final outcome deterministically.","CountDownLatch ready = new CountDownLatch(2);","Fake logic Real boundary Contract comparison","Recognize where mocks stop proving correctness.","Does a fake clock replace a real retry integration test?","No. It validates policy; real networking and scheduler behavior still need an integration test."],["Q065",12,"How should race conditions be tested?","Use latches or barriers to coordinate the contested moment and repeat stress checks. Assert an invariant such as at most one successful stock reservation.","CountDownLatch ready = new CountDownLatch(2);","Fake logic Real boundary Contract comparison","Recognize where mocks stop proving correctness.","Can passing a concurrent test prove absence of every race?","No. Stress tests provide evidence only for the interleavings exercised; design invariants must be enforced by correct synchronization or atomic storage."],["Q066",13,"What is the difference between timeout testing and cancellation testing?","Timeout testing checks the caller's deadline result; cancellation testing checks whether underlying work stops or releases resources. A timed-out future can leave a running external action.","@WebMvcTest(OrderController.class)\nclass OrderControllerTest { /* MockMvc */ }","Async input Controller Response","Control async results and choose an appropriate Spring test slice.","Should a timeout guarantee a payment was not processed?","No. Model the outcome as possibly unknown and reconcile using a stable idempotency key."],["Q067",13,"How do you test event consumption with at-least- once delivery?","Send the same event twice through a controlled harness and check that the business effect occurs once. A database integration test should prove the deduplication marker and effect commit together.","@WebMvcTest(OrderController.class)\nclass OrderControllerTest { /* MockMvc */ }","Async input Controller Response","Control async results and choose an appropriate Spring test slice.","Can verify(consumer, times(1)) prove exactly-once business effect?","No. It observes one mock invocation, not a durable transaction or broker redelivery behavior."],["Q068",13,"What is the difference between @SpringBootTest and a plain unit test?","@SpringBootTest starts a Spring application context to exercise integration wiring. A plain JUnit + Mockito test instantiates a service without Spring and is usually much faster.","@WebMvcTest(OrderController.class)\nclass OrderControllerTest { /* MockMvc */ }","Async input Controller Response","Control async results and choose an appropriate Spring test slice.","Should simple pricing logic use @SpringBootT est?","Usually not. Test pricing as a plain unit and reserve context tests for configuration, wiring and infrastructure behavior."],["Q069",13,"How does @WebMvcTest differ from @SpringBootTest?","@WebMvcTest focuses on MVC components and related infrastructure; @SpringBootTest loads broader application context. Use the smallest context that exercises the behavior being claimed.","@WebMvcTest(OrderController.class)\nclass OrderControllerTest { /* MockMvc */ }","Async input Controller Response","Control async results and choose an appropriate Spring test slice.","What is still needed to test real authentication?","Configure Spring Security filters and test identities, then test relevant authorized and forbidden paths."],["Q070",13,"When should MockMvc be used?","MockMvc drives Spring MVC request handling without a real server socket, verifying routes, validation, serialization and response contracts.","@WebMvcTest(OrderController.class)\nclass OrderControllerTest { /* MockMvc */ }","Async input Controller Response","Control async results and choose an appropriate Spring test slice.","Does MockMvc prove a reverse proxy or TLS handshake works?","No. It does not open a real network socket. Use a running-server integration or end- to-end test for those boundaries."],["Q071",14,"What is the purpose of @DataJpaTest?","It configures a focused JPA test slice, often with transactional rollback after each test. Use it to test mappings, query methods, constraints and persistence behavior.","@DataJpaTest\nclass OrderRepositoryTest { /* real SQL */ }","Test DB Spring proxy Invariant","Test ORM mappings, security rules and rollback in managed contexts.","Why can a repository test pass on H2 but fail on PostgreSQL?","SQL syntax, types, collation, transaction semantics and query plans differ; use the target database, e.g., through Testcontainers, for important compatibility tests."],["Q072",14,"When should Spring dependencies be replaced by mocks in context tests?","Replace only a collaboration outside the slice being tested; Spring Boot's replacement annotation depends on Boot version. Prefer a plain unit test when no Spring behavior matters.","@DataJpaTest\nclass OrderRepositoryTest { /* real SQL */ }","Test DB Spring proxy Invariant","Test ORM mappings, security rules and rollback in managed contexts.","Is a context-level mock the same as MockitoExtension?","No. The former replaces a bean in a Spring ApplicationContext; MockitoExtension manages mocks for a plain Jupiter test."],["Q073",14,"How do you test @Transactional behavior correctly?","Run an integration test that invokes the Spring-proxied service and checks database changes and rollback boundaries. A Mockito call check does not execute a real transaction.","@DataJpaTest\nclass OrderRepositoryTest { /* real SQL */ }","Test DB Spring proxy Invariant","Test ORM mappings, security rules and rollback in managed contexts.","Why can self-invocation break a transaction test?","Default proxy-based advice does not intercept calls made from one method to another on the same instance."],["Q074",14,"How do you test validation of REST input?","Send valid, missing, malformed and boundary requests through MVC and assert status plus structured errors. Separate Java bean-validation behavior from service- level business rules.","@DataJpaTest\nclass OrderRepositoryTest { /* real SQL */ }","Test DB Spring proxy Invariant","Test ORM mappings, security rules and rollback in managed contexts.","Should every invalid request invoke a mocked service?","No. For rejected input, verify that the controller or framework stops before performing a dangerous business operation."],["Q075",14,"How do you test authentication and authorization paths?","Cover unauthenticated, authenticated-but-forbidden, permitted and wrong-resource- owner cases. Security tests should include filters and method-level authorization where used.","@DataJpaTest\nclass OrderRepositoryTest { /* real SQL */ }","Test DB Spring proxy Invariant","Test ORM mappings, security rules and rollback in managed contexts.","Does mocking an authentication service prove security works?","No. The security chain, token validation, and object ownership rules need context and integration evidence."],["Q076",15,"What is the testing pyramid?","It suggests many fast focused tests, fewer component integration tests and a small number of full end-to-end flows. The exact mix depends on risk, not a fixed percentage.","assertEquals(1, uniqueOrdersForKey(\"pay-7\"));","Fast unit Integration End-to-end","Use coverage as a map, not a correctness guarantee.","Can thousands of mocked tests replace one checkout integration test?","No. Independent mocked collaborators do not establish that payments, database writes and messages work together."],["Q077",15,"What is code coverage and what can it miss?","Line and branch coverage show which parts of code tests exercised, not whether outcomes were correct. A test can execute a line without asserting an important rule.","assertEquals(1, uniqueOrdersForKey(\"pay-7\"));","Fast unit Integration End-to-end","Use coverage as a map, not a correctness guarantee.","Is 100 percent coverage evidence of correctness?","No. Missing assertions, faulty test data and untested external failures can remain despite full line coverage."],["Q078",15,"How does mutation testing improve test assessment?","A mutation tool changes small parts of production code, such as a comparison or return value, and checks whether tests catch the change. Surviving meaningful mutations reveal weak assertions.","assertEquals(1, uniqueOrdersForKey(\"pay-7\"));","Fast unit Integration End-to-end","Use coverage as a map, not a correctness guarantee.","What should you do with an equivalent mutation?","Document it and avoid treating it as a missing test if it cannot change observable behavior."],["Q079",15,"What causes flaky tests?","Flakiness comes from shared state, timing assumptions, randomness, environment dependence, unstable network access and nondeterministic ordering. Diagnose and remove the cause rather than hiding it with retries.","assertEquals(1, uniqueOrdersForKey(\"pay-7\"));","Fast unit Integration End-to-end","Use coverage as a map, not a correctness guarantee.","Are automatic test retries a valid fix?","Not alone. They may reduce noise temporarily but can mask real concurrency or production defects."],["Q080",15,"What is the difference between integration testing and contract testing?","Integration testing checks concrete collaborators together; contract testing checks that a consumer and provider agree on a defined interface and behavior. Both are useful across service boundaries.","assertEquals(1, uniqueOrdersForKey(\"pay-7\"));","Fast unit Integration End-to-end","Use coverage as a map, not a correctness guarantee.","Can consumer contract tests replace production monitoring?","No. They catch compatibility problems in controlled inputs but do not detect all runtime outages and data issues."],["Q081",16,"When should Testcontainers be used?","Use Testcontainers to run disposable real dependencies such as PostgreSQL or Kafka for tests that require their behavior. Pin versions, manage cleanup and keep tests repeatable in CI.","// Example: use PostgreSQL Testcontainers for SQL semantics.","Container Real driver Query result","Exercise the actual infrastructure where semantics matter.","What is a downside of sharing one container across unrelated tests?","State and order coupling may leak between tests; use isolation strategies or carefully managed independent schemas/data."],["Q082",16,"How do you test a transaction outbox workflow?","Persist the business row and outbox row in one transaction, then simulate relay failures, duplicates and replay. Validate idempotent consumer effects with real storage boundaries.","// Example: use PostgreSQL Testcontainers for SQL semantics.","Container Real driver Query result","Exercise the actual infrastructure where semantics matter.","What does an outbox unit test fail to prove?","It does not prove durable atomic commit, database constraints, CDC behavior or broker delivery."],["Q083",16,"How should tests verify cache behavior?","Test cache hit, miss, invalidation, expiration and stale-load races against explicit freshness requirements. Use real cache integration tests for TTL and serialization semantics.","// Example: use PostgreSQL Testcontainers for SQL semantics.","Container Real driver Query result","Exercise the actual infrastructure where semantics matter.","Why is a mock Redis client insufficient for eviction tests?","It has no real eviction algorithm, memory policy, network protocol or persistence semantics."],["Q084",16,"How do you test idempotent payment requests?","Use a stable key in repeated requests; test same-key/same-intent replay, same-key/ different-intent conflict and concurrent duplicates. Verify durable storage with integration tests.","// Example: use PostgreSQL Testcontainers for SQL semantics.","Container Real driver Query result","Exercise the actual infrastructure where semantics matter.","Why can a local ConcurrentHashMap give false confidence?","It loses state on restart and is not shared across instances, so duplicate charges remain possible."],["Q085",16,"How do you structure a high-value test for a bug fix?","First reproduce the original failure with minimal data, assert the required result, then change the implementation and keep the test as regression coverage.","// Example: use PostgreSQL Testcontainers for SQL semantics.","Container Real driver Query result","Exercise the actual infrastructure where semantics matter.","What if the regression test passes before the fix?","It may not reproduce the defect; strengthen the scenario so it fails on the broken implementation."],["Q086",17,"How do you prevent tests from becoming brittle during refactoring?","Assert public behavior, externally important state and required interactions, not private helper calls or incidental ordering. Use builders and focused fixture factories for clarity.","assertEquals(expectedState, service.process(command));","Contract Refactor Same behavior","Write assertions that survive internal implementation changes.","What makes a refactor-safe service test?","The test continues to pass when implementation internals change but observable business semantics stay the same."],["Q087",17,"How should a senior engineer review a weak test suite?","Group failures by untested invariants, mocking boundaries, flakiness, slow dependencies and missing negative cases. Add tests where production risk is highest instead of blindly raising assertion counts.","assertEquals(expectedState, service.process(command));","Contract Refactor Same behavior","Write assertions that survive internal implementation changes.","What evidence shows the suite is improving?","Lower escaped defects and flakiness, faster actionable feedback, stronger mutation scores and reliable integration failures."],["Q088",17,"How should a team decide what to mock?","Keep domain decisions real, mock costly or nondeterministic collaborators in unit tests and test high-risk adapters against real systems. Define the behavioral boundary being proved in each test.","assertEquals(expectedState, service.process(command));","Contract Refactor Same behavior","Write assertions that survive internal implementation changes.","When is testing against a real service essential?","When transaction, serialization, database query, security filter, broker delivery or protocol behavior is the actual subject of the test."],["Q089",17,"How should you test a feature-flag rollout?","Cover enabled/disabled behavior, a missing flag, default policy and stale flag state. Assert sensitive behavior is denied safely and avoid embedding remote flag calls in pure logic tests.","assertEquals(expectedState, service.process(command));","Contract Refactor Same behavior","Write assertions that survive internal implementation changes.","Why should a feature flag default be tested?","An unavailable configuration service may expose an unsafe capability if the default is not explicit."],["Q090",17,"How do you test performance-sensitive logic without flaky timing assertions?","Use focused microbenchmarks for performance, representative load tests for system behavior and functional assertions for correctness. Use time limits only when they express a stable operational contract.","assertEquals(expectedState, service.process(command));","Contract Refactor Same behavior","Write assertions that survive internal implementation changes.","Why is a single short System.nano Time test weak evidence?","JIT warm-up, GC and machine load can dominate timing; compare distributions under controlled benchmarking conditions."],["Q091",18,"What belongs in a test review checklist before release?","Check business invariants, negative paths, cancellation, repeat events, data isolation, CI reproducibility and meaningful assertions. Record which boundaries remain untested and their operational mitigations.","try (var stream = Files.lines(path)) { /* test */ }","Risk Targeted test Evidence","Review neglected failure paths, cleanup and input generation.","How should a team document an untested failure path?","State the scenario, impact, owner, planned test and production detection or rollback approach rather than claiming complete verification."],["Q092",18,"How should tests verify resource cleanup?","Create a controlled resource that records close calls, trigger both success and failure paths, and assert cleanup. For real I/O resources, an integration test should check file/socket ownership and leaks.","try (var stream = Files.lines(path)) { /* test */ }","Risk Targeted test Evidence","Review neglected failure paths, cleanup and input generation.","Does try-with-resources always make cleanup successful?","It guarantees close is attempted in scope, but close itself can fail; test suppressed exceptions where they affect the contract."],["Q093",18,"How do you test retries against non-idempotent dependencies?","Use a controlled provider that records stable operation IDs and returns uncertain and definite failures. Assert the client retries only allowed outcomes and reuses idempotency intent.","try (var stream = Files.lines(path)) { /* test */ }","Risk Targeted test Evidence","Review neglected failure paths, cleanup and input generation.","Why is blind retry after a timeout unsafe?","The first remote operation may have succeeded even though its response was lost, so a new intent can repeat the effect."],["Q094",18,"How should an API test handle timestamps and time zones?","Inject Clock for unit tests, use explicit Instant/ZoneId values, and test midnight and daylight-saving boundaries. Avoid LocalDateTime.now() in assertions.","try (var stream = Files.lines(path)) { /* test */ }","Risk Targeted test Evidence","Review neglected failure paths, cleanup and input generation.","Why do tests fail around midnight?","Their expected date can be computed at a different instant or zone from the production code; control both."],["Q095",18,"How can property-based testing complement examples?","Generate many domain-valid inputs and check universal rules such as nonnegative balances or encode/decode round trips. Keep targeted examples for known edge cases and regression bugs.","try (var stream = Files.lines(path)) { /* test */ }","Risk Targeted test Evidence","Review neglected failure paths, cleanup and input generation.","Does random data automatically find race conditions?","No. It explores inputs, not necessarily interleavings, and failures need reproducible seeds and minimized counterexamples."],["Q096",19,"What is a snapshot test and when is it useful?","It compares output to a stored approved representation, often JSON or UI structure. Use it for stable contracts with clear review; large opaque snapshots create noisy approvals.","verify(eventPublisher, times(1)).publish(event);","Unit evidence System evidence Production risk","Connect test evidence to failure models and operational guarantees.","What can cause a harmless-looking snapshot update to be dangerous?","An accepted diff may remove required fields or expose sensitive data if no reviewer checks semantic meaning."],["Q097",19,"How should tests cover retries and circuit breakers together?","Use a fake clock and failing dependency to force failure thresholds, open/half-open states and bounded retries. Verify the combined call budget so nested retry layers do not amplify traffic.","verify(eventPublisher, times(1)).publish(event);","Unit evidence System evidence Production risk","Connect test evidence to failure models and operational guarantees.","Why can double retries cause overload?","Three retries in a gateway and three in a client can create many attempts for one user request, increasing pressure during an outage."],["Q098",19,"How can tests expose tenant-isolation defects?","Create two tenants with overlapping local IDs, then assert user A cannot query, edit or cache user B's resource. Integration tests should check the actual query predicates and security rules.","verify(eventPublisher, times(1)).publish(event);","Unit evidence System evidence Production risk","Connect test evidence to failure models and operational guarantees.","Why is mocking repository.findById risky in this test?","The mock bypasses tenant filtering in generated SQL and can return preselected safe data even when production code is unsafe."],["Q099",19,"How should CI select and report test suites?","Run fast unit tests early, block merge on essential integration/security checks and publish failed test names, logs and artifacts. Quarantine flaky tests only with an owner and deadline.","verify(eventPublisher, times(1)).publish(event);","Unit evidence System evidence Production risk","Connect test evidence to failure models and operational guarantees.","What should happen when an integration environment is unavailable?","Surface a clear infrastructure failure and decide gate policy explicitly; never silently claim the suite passed."],["Q100",19,"How do you explain test confidence in an architect interview?","Describe the invariant, test boundary, failure injection, evidence, and limitations. Unit tests prove local decisions; integration tests prove concrete collaborators; monitoring validates assumptions after deployment.","verify(eventPublisher, times(1)).publish(event);","Unit evidence System evidence Production risk","Connect test evidence to failure models and operational guarantees.","Can any test suite guarantee production has no defects?","No. Tests sample behaviors under controlled conditions. Combine them with correct design, reviews, staged releases, monitoring and recovery."]],"labs":[["CODING LAB C01 JAVA 17 / JUPITER 5 / MOCKITO 5 — Assertions and money boundaries","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab01AssertionsTest {\nstatic int priceWithTax(int cents, int taxPct) {\nif (cents < 0 || taxPct < 0) throw new IllegalArgumentException(\"negative\");\nreturn Math.addExact(cents, Math.multiplyExact(cents, taxPct) / 100);\n}\n@Test void returnsCalculatedTotal() {\nint price = priceWithTax(200, 10);\nassertAll(\"price\", () -> assertEquals(220, price), () -> assertTrue(price >= 200));\n}\n@Test void rejectsNegativePrice() {\nassertThrows(IllegalArgumentException.class, () -> priceWithTax(-1, 10));\n}\n}"],["CODING LAB C02 JAVA 17 / JUPITER 5 / MOCKITO 5 — Parameterized boundary tests","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.CsvSource;\nimport org.junit.jupiter.params.provider.NullAndEmptySource;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab02ParametersTest {\nstatic boolean eligible(int age) { return age >= 18; }\n@ParameterizedTest @CsvSource({\"17,false\", \"18,true\", \"19,true\", \"0,false\"})\nvoid checksAgeBoundary(int age, boolean expected) { assertEquals(expected, eligible(age)); }\n@ParameterizedTest @NullAndEmptySource\nvoid rejectsMissingCode(String code) { assertFalse(code != null && !code.isBlank()); }\n}"],["CODING LAB C03 JAVA 17 / JUPITER 5 / MOCKITO 5 — Nested fixtures and lifecycle","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.*;\nimport java.util.*;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab03LifecycleTest {\nprivate List<String> queue;\n@BeforeEach void setUp() { queue = new ArrayList<>(); }\n@Nested class EmptyQueue {\n@Test void beginsEmpty() { assertTrue(queue.isEmpty()); }\n@Test void addingItemChangesSize() { queue.add(\"A\"); assertEquals(1, queue.size()); }\n}\n@Nested class NonEmptyQueue {\n@BeforeEach void seed() { queue.add(\"first\"); }\n@Test void preservesItem() { assertEquals(\"first\", queue.get(0)); }\n}\n}"],["CODING LAB C04 JAVA 17 / JUPITER 5 / MOCKITO 5 — Exceptions and failure contracts","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab04ExceptionsTest {\nstatic int divide(int numerator, int denominator) {\nif (denominator == 0) throw new IllegalArgumentException(\"denominator is zero\");\nreturn numerator / denominator;\n}\n@Test void reportsUsefulError() {\nvar failure = assertThrowsExactly(IllegalArgumentException.class, () -> divide(10, 0));\nassertEquals(\"denominator is zero\", failure.getMessage());\n}\n@Test void succeedsForKnownValue() { assertEquals(5, assertDoesNotThrow(() -> divide(10,\n2))); }\n}"],["CODING LAB C05 JAVA 17 / JUPITER 5 / MOCKITO 5 — Fake clock and time-dependent logic","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport java.time.*;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab05ClockTest {\nstatic boolean expired(Instant deadline, Clock clock) { return !\nclock.instant().isBefore(deadline); }\n@Test void checksExactBoundaryWithoutSleeping() {\nClock fixed = Clock.fixed(Instant.parse(\"2026-01-01T00:00:00Z\"), ZoneOffset.UTC);\nassertFalse(expired(Instant.parse(\"2026-01-01T00:00:01Z\"), fixed));\nassertTrue(expired(Instant.parse(\"2026-01-01T00:00:00Z\"), fixed));\n}\n}"],["CODING LAB C06 JAVA 17 / JUPITER 5 / MOCKITO 5 — Async futures and controlled completion","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport java.util.concurrent.*;\nimport java.time.Duration;\nimport static org.junit.jupiter.api.Assertions.*;\nclass Lab06AsyncTest {\nstatic CompletableFuture<Integer> doubleLater(CompletableFuture<Integer> source) {\nreturn source.thenApply(n -> n * 2);\n}\n@Test void verifiesControlledCompletion() {\nCompletableFuture<Integer> source = new CompletableFuture<>();\nvar output = doubleLater(source); source.complete(12);\nassertTimeout(Duration.ofSeconds(1), () -> assertEquals(24, output.get(1,\nTimeUnit.SECONDS)));\n}\n@Test void preservesFailure() {\nvar source = new CompletableFuture<Integer>();\nvar output = doubleLater(source); source.completeExceptionally(new\nIllegalStateException(\"offline\"));\nassertThrows(CompletionException.class, output::join);\n}\n}"],["CODING LAB C07 JAVA 17 / JUPITER 5 / MOCKITO 5 — MockitoExtension with @Mock and @InjectMocks","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.InjectMocks;\nimport org.mockito.Mock;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n@ExtendWith(MockitoExtension.class)\nclass Lab07ServiceMockitoTest {\ninterface UserRepository { String findName(long id); }\nstatic class UserService {\nprivate final UserRepository repo;\nUserService(UserRepository repo) { this.repo = repo; }\nString displayName(long id) { return repo.findName(id).toUpperCase(); }\n}\n@Mock UserRepository repo;\n@InjectMocks UserService service;\n@Test void returnsUppercaseName() {\nwhen(repo.findName(7L)).thenReturn(\"meena\");\nassertEquals(\"MEENA\", service.displayName(7L));\nverify(repo).findName(7L);\n}\n}"],["CODING LAB C08 JAVA 17 / JUPITER 5 / MOCKITO 5 — Stubbing failures and argument matchers","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.Mock;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\nimport static org.mockito.ArgumentMatchers.*;\n@ExtendWith(MockitoExtension.class)\nclass Lab08StubbingTest {\ninterface Gateway { String pay(String key, int cents); }\nstatic class PaymentService {\nprivate final Gateway gateway;\nPaymentService(Gateway gateway) { this.gateway = gateway; }\nString charge(String key, int cents) { if (cents <= 0) throw new\nIllegalArgumentException(); return gateway.pay(key, cents); }\n}\n@Mock Gateway gateway;\n@Test void returnsProviderReceipt() {\nwhen(gateway.pay(eq(\"pay-7\"), anyInt())).thenReturn(\"receipt-7\");\nassertEquals(\"receipt-7\", new PaymentService(gateway).charge(\"pay-7\", 300));\nverify(gateway).pay(\"pay-7\", 300);\n}\n@Test void rejectsBadAmountWithoutCallingProvider() {\nassertThrows(IllegalArgumentException.class, () -> new PaymentService(gateway).charge(\"x\",\n0));\nverifyNoInteractions(gateway);\n}\n}"],["CODING LAB C09 JAVA 17 / JUPITER 5 / MOCKITO 5 — ArgumentCaptor and event contents","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.ArgumentCaptor;\nimport org.mockito.Mock;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n@ExtendWith(MockitoExtension.class)\nclass Lab09CaptorTest {\nrecord OrderEvent(String orderId, int totalCents) {}\ninterface Publisher { void publish(OrderEvent event); }\nstatic class Checkout {\nprivate final Publisher publisher;\nCheckout(Publisher publisher) { this.publisher = publisher; }\nvoid submit(String id, int cents) { publisher.publish(new OrderEvent(id, cents)); }\n}\n@Mock Publisher publisher;\n@Test void publishesTheCorrectBusinessData() {\nnew Checkout(publisher).submit(\"ord-5\", 450);\nvar captor = ArgumentCaptor.forClass(OrderEvent.class);\nverify(publisher).publish(captor.capture());\nassertAll(() -> assertEquals(\"ord-5\", captor.getValue().orderId()),\n() -> assertEquals(450, captor.getValue().totalCents()));\n}\n}"],["CODING LAB C10 JAVA 17 / JUPITER 5 / MOCKITO 5 — Consecutive stubbing and retry count","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.Mock;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n@ExtendWith(MockitoExtension.class)\nclass Lab10RetryTest {\ninterface Worker { boolean attempt(); }\nstatic class Retrier {\nprivate final Worker worker;\nRetrier(Worker worker) { this.worker = worker; }\nboolean run(int maxAttempts) {\nfor (int n = 0; n < maxAttempts; n++) if (worker.attempt()) return true;\nreturn false;\n}\n}\n@Mock Worker worker;\n@Test void stopsAfterSuccess() {\nwhen(worker.attempt()).thenReturn(false, false, true);\nassertTrue(new Retrier(worker).run(4));\nverify(worker, times(3)).attempt();\n}\n}"],["CODING LAB C11 JAVA 17 / JUPITER 5 / MOCKITO 5 — Spy-safe stubbing and partial mocking","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\nclass Lab11SpyTest {\nstatic class Formatter {\nString normalize(String text) { if (text == null) throw new\nIllegalArgumentException(\"null\"); return text.trim(); }\nString greeting(String name) { return \"Hi \" + normalize(name); }\n}\n@Test void doReturnPreventsRealMethodDuringStubbing() {\nFormatter spy = spy(new Formatter());\ndoReturn(\"Meena\").when(spy).normalize(null);\nassertEquals(\"Hi Meena\", spy.greeting(null));\nverify(spy).normalize(null);\n}\n@Test void realClassStillRejectsNull() {\nassertThrows(IllegalArgumentException.class, () -> new Formatter().normalize(null));\n}\n}"],["CODING LAB C12 JAVA 17 / JUPITER 5 / MOCKITO 5 — Interaction order and idempotency","JUnit Jupiter 5 & Mockito 5 hands-on coding lab","package guide;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.Mock;\nimport org.mockito.InOrder;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\n@ExtendWith(MockitoExtension.class)\nclass Lab12OrderAndIdempotencyTest {\ninterface Ledger { boolean createIfAbsent(String key); }\ninterface Sender { void send(String key); }\nstatic class Workflow {\nprivate final Ledger ledger; private final Sender sender;\nWorkflow(Ledger ledger, Sender sender) { this.ledger = ledger; this.sender = sender; }\nboolean process(String key) { if (!ledger.createIfAbsent(key)) return false;\nsender.send(key); return true; }\n}\n@Mock Ledger ledger; @Mock Sender sender;\n@Test void sendsOnlyAfterAcceptedLocalIntent() {\nwhen(ledger.createIfAbsent(\"request-1\")).thenReturn(true, false);\nWorkflow work = new Workflow(ledger, sender);\nassertTrue(work.process(\"request-1\")); assertFalse(work.process(\"request-1\"));\nInOrder order = inOrder(ledger, sender);\norder.verify(ledger).createIfAbsent(\"request-1\");\norder.verify(sender).send(\"request-1\");\norder.verify(ledger).createIfAbsent(\"request-1\");\nverify(sender, times(1)).send(\"request-1\");\n}\n}"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+2026-10-29 11:43:22.752798+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLTimeoutException: Timeout trying to lock table {0}; SQL statement:
+insert into user_accounts (created_at,email,id) values (?,?,default) [50200-232]
+2026-10-29 11:43:23.911867+05:30 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLTimeoutException: Timeout trying to lock table {0}; SQL statement:
+insert into user_accounts (created_at,email,id) values (?,?,default) [50200-232]
+2026-10-29 11:43:23.513804+05:30 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLTimeoutException: Timeout trying to lock table {0}; SQL statement:
+insert into user_accounts (created_at,email,id) values (?,?,default) [50200-232]

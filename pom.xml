@@ -40,6 +40,23 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Embedded H2 Database & Spring Data JPA for Zero-Cost Out-of-the-box storage -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- PostgreSQL driver for free-tier Render / Neon / Supabase deployment -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Apache PDFBox for on-the-fly PDF parsing if custom PDFs are dropped into /static/pdfs -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

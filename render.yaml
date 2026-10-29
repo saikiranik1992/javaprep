@@ -1,3 +1,10 @@
+databases:
+  - name: javaprep-db
+    databaseName: javaprep
+    user: javaprep_user
+    plan: free
+    region: oregon
+
 services:
   - type: web
     name: architect-zero-to-hero-thymeleaf-portal
@@ -16,3 +23,13 @@ services:
         value: 20
       - key: JAVA_TOOL_OPTIONS
         value: "-XX:+UseSerialGC -XX:MaxRAMPercentage=70.0 -XX:TieredStopAtLevel=1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: javaprep-db
+          property: connectionString
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_MOCK_ENABLED
+        value: "true"

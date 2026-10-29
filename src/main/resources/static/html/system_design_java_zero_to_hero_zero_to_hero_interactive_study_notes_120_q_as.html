@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design + Java (Zero to Hero) — Zero to Hero Interactive Study Notes (120 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #db2777;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">System Design + Java (Zero to Hero)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              24 Chapters · 120 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Distributed Systems, Invariants &amp; Production Architecture · 120 Q&amp;As · 8 Worked Architectures · 12 Java 17 Labs
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (24)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (120)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 120</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Architecture &amp; System Design</span>
+              <span>•</span>
+              <span>154 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              System Design + Java (Zero to Hero) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Distributed Systems, Invariants &amp; Production Architecture (120 Q&amp;As · 8 Worked Architectures · 12 Java 17 Labs). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 120 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">120</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (24)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 24 Chapters (120 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">System Design + Java (Zero to Hero)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 120</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">System Design + Java (Zero to Hero) — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of System Design + Java (Zero to Hero).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">System Design + Java (Zero to Hero) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"system-design-java","title":"System Design + Java (Zero to Hero)","subtitle":"Distributed Systems, Invariants & Production Architecture","category":"Architecture & System Design","badge":"120 Q&As · 8 Worked Architectures · 12 Java 17 Labs","color":"#db2777","pages":154,"chapters":["How to approach a system design interview","Requirements, estimates and capacity","Networking and API contracts","Scaling and load distribution","Choosing storage and data models","Transactions and concurrency control","Replication, partitioning and hot keys","Consistency, CAP and consensus","Caching and content delivery","Queues, logs and streaming","Outbox, idempotency and distributed workflows","Timeouts, retries and resilience","Java concurrency and resource budgets","Service boundaries and architecture patterns","Search, analytics and derived data","Realtime connections and fan-out","Security and tenant isolation","Observability and performance diagnosis","Deployment, shutdown and disaster recovery","Multi-region and global systems","Rate limiting, fairness and admission","Identifiers and useful algorithms","Business invariants: money, stock and reservations","Senior deep dives and production scenarios"],"questions":[["Q001",0,"What is system design, and how is it different from coding?","System design decides how components, data and operations work together to meet functional and quality requirements. Coding implements behavior inside those boundaries.","Java method: reserve(productId, quantity)\nSystem question: who owns stock, what happens on retry,\nand how do we prevent two orders selling the last unit?","A correct method can still belong to an unreliable system. The design must explain storage, concurrent requests, timeouts, recovery and ownership. A diagram is useful only when you can explain a request and a failure through it.","Starting with Kafka or Kubernetes before describing the requirement usually hides the main problem.","Which invariant must survive a service crash?","Stock cannot go below zero and one seat cannot belong to two buyers. Enforce these rules in durable database transactions."],["Q002",0,"What should you clarify before drawing the architecture?","Clarify the main operations, scale, latency, durability, consistency, security and scope. Separate requirements from assumptions and confirm which user journey matters most.","Ticket booking assumptions:\nSearch may be slightly stale.\nA confirmed seat must have one owner.\nPayment timeout must remain recoverable.","These requirements allow a cached search path but require an authoritative booking transaction. Ask about peak traffic, geographic scope and retention. When the interviewer does not provide numbers, use explicit hypothetical values and revise the design if those values change.","Do not treat every endpoint as needing identical consistency or availability.","Is an unavailable checkout preferable to duplicate sales?","Usually yes: reject or delay checkout instead of making duplicate sales. Show the user a clear retry message."],["Q003",0,"How should you use a 45-minute design interview?","Spend a few minutes defining the problem, estimate the critical scale, draw a minimal complete design, then deepen the highest-risk decisions and explain failures.","0-5 min: scope and invariants\n5-10: workload, APIs and data model\n10-20: request path and architecture\n20-38: concurrency, scaling and failure deep dive\n38-45: tradeoffs, monitoring and evolution","Treat this schedule as a practice aid. If the interviewer asks about partitioning early, adapt. A strong answer connects decisions: the workload motivates a partition key, that key creates a hot-key risk, and the mitigation changes cost or ordering.","Listing components without walking through a request does not demonstrate correctness.","Where is the first bottleneck at ten times the traffic?","Measure database queries, hot keys, external calls and pool usage under a 10x load test; optimize the first saturated part. Clarify"],["Q004",0,"What is the difference between high-level and low- level design?","High-level design describes service boundaries, storage, communication and deployment. Low-level design describes classes, interfaces, algorithms and state transitions within a component.","HLD: Booking service owns holds in a relational database.\nLLD: enum HoldState { ACTIVE, CONFIRMED, EXPIRED }\nJava command: \u0063onfirm(holdId, paymentReference)","The levels should agree. If the HLD promises idempotent confirmation, the LLD needs a stable command key and duplicate handling. Avoid spending the whole interview on class diagrams when the central challenge is distributed recovery.","A Java interface does not define a network reliability contract by itself.","What happens if confirm arrives twice?","Use the same request ID. Read the stored confirmation result; never charge or reserve the same seat again."],["Q005",0,"What makes an architecture answer convincing?","State the invariant, explain the normal path, expose the failure path, quantify assumptions and justify the tradeoff. Show how you will observe and evolve the design.","Claim: no overselling.\nMechanism: conditional stock update in one DB transaction.\nEvidence: concurrent test and affected-row count.\nBoundary: external payment is a separate workflow.","This answer is stronger than saying that a database is ACID. It identifies the operation that enforces the guarantee and the point at which that guarantee stops. Include one rejected alternative and why it conflicts with the workload.","Avoid promising absolute availability, zero latency or universal exactly-once processing.","How would you prove the invariant under concurrent requests?","Run many simultaneous purchase requests with one unit in stock; assert exactly one reservation and stock never falls below zero."],["Q006",1,"How do you convert daily requests into peak requests per second?","Divide daily requests by 86,400 to get the average, then apply an explicit peak factor. Estimate reads and writes separately because they stress different resources.","Assume 20,000,000 reads/day and 2,000,000 writes/day.\nAverage reads = 231.5/s; writes = 23.1/s.\nAt 8x peak: reads = 1,852/s; writes = 185/s.","These numbers suggest a moderate write load and a read-heavy workload, but they do not determine machine count. Benchmark the actual request path, payload, query and failure behavior. Include bursts such as a sale opening rather than assuming a smooth average.","A peak multiplier is a stated assumption, not a universal industry constant.","What if a single key receives half the reads?","Cache or copy hot read-only data and use request coalescing. Do not split authoritative stock without coordination."],["Q007",1,"How do you estimate storage and bandwidth?","Multiply retained record count by average encoded size, then add indexes, replicas and operational overhead. For bandwidth, multiply requests per second by transferred bytes.","1,000,000 events/day x 500 bytes x 30 days = 15 GB.\nThree copies: approximately 45 GB of raw event data.\n2,000 responses/s x 10 KB = approximately 20 MB/s.","This uses decimal units and excludes indexes, protocol overhead, compression and backups. Java heap object size can be much larger than serialized size. A design should distinguish working-set memory, authoritative storage, log retention and backup capacity.","Do not equate three replicas with three independent backups.","How much extra space is needed during rebalancing?","Allow spare capacity for temporary duplicate copies plus indexes, compaction and safety margin. Estimate from the rebalancing plan."],["Q008",1,"What does Little's Law tell you about concurrency?","For a stable system, average in-flight work equals arrival rate multiplied by average time in the system. It helps estimate concurrency and recognize queue growth.","Arrival rate = 1,000 requests/s.\nMean response time = 0.2 seconds.\nAverage in-flight requests = 200.","The time includes waiting when your boundary includes the queue. This relationship does not directly size a thread pool: requests may wait asynchronously or use several downstream resources. When arrivals exceed completion capacity for a sustained period, the stable-system assumption fails and queues grow.","Using p99 latency in place of the mean does not produce average concurrency.","How does a slower database change in-flight work?","For equal arrival rate, a slower database raises average in-flight work (L = arrival rate x response time) and may grow queues."],["Q009",1,"Why do p95 and p99 matter more than average latency alone?","Percentiles describe how slow requests affect a portion of users. An acceptable mean can hide a long tail caused by pauses, queueing, lock contention or slow dependencies.","For 10,000 sorted request durations:\np99 is near the 9,900th duration.\nMean 40 ms with p99 2,000 ms can still hurt checkout.","Measure the complete user operation and important internal stages. Fan-out often increases the chance that at least one dependency is slow. Keep histogram boundaries suitable for the SLO, and aggregate distributions rather than averaging percentile values across servers.","An average of instance p99 values is not the fleet p99.","Does the latency include queue and connection acquisition time?","Yes. Measure from arrival to final response, including waiting for queues, a connection and downstream services."],["Q010",1,"How do SLI, SLO and SLA differ?","An SLI is a measured service behavior, an SLO is its target, and an SLA is an agreement with consequences. Define success from the user's perspective.","SLI: successful valid checkout requests / valid requests.\nSLO example: 99.9% over a rolling 30-day window.\nAt 1,000,000 eligible requests: budget = 1,000 failures.","Document which errors count and how the denominator is measured. A request-based budget is different from a time-based downtime allowance. A fast response containing an unusable result may still be a failure. Use burn rate to detect rapid budget consumption.","Do not exclude overload failures simply to improve the reported success rate.","What signal detects a bad deploy before the monthly SLO fails?","Watch short-window error rate, p99 latency and error-budget burn during a canary; roll back early if they spike."],["Q011",2,"What happens between entering a URL and reaching a Java service?","The client resolves a name, establishes or reuses a connection, negotiates transport security when needed, and sends an HTTP request through routing layers to the application.","Browser -> DNS -> edge/CDN -> load balancer\n-> Spring controller -> service -> repository","Connection reuse, DNS caching and HTTP version change the exact sequence. TLS protects transport but does not replace authorization. Trace the time spent before the controller as well as inside it; a controller log alone cannot reveal a DNS or handshake failure.","Assuming every request creates a fresh TCP connection gives misleading latency estimates.","Where can a timeout occur before Java receives the request?","DNS lookup, connection setup, TLS handshake, proxy routing and the load balancer can all time out before the controller. Browser"],["Q012",2,"When should you choose REST, RPC or asynchronous messaging?","Choose according to interaction semantics. Resource-oriented HTTP works well for public APIs; typed RPC helps internal request-response calls; messages decouple completion when the caller can accept a delayed outcome.","POST /orders -> 202 + operation URL for long work.\nGET /operations/op-42 -> PENDING or COMPLETED.\nOrderCreated event -> independent notification consumer.","The operation record must be durable before acknowledging accepted work. RPC still needs timeouts, compatibility and authorization. Messaging shifts complexity to delivery, ordering, retention and status tracking; it does not remove it.","Returning 202 before work is durably accepted can lose an acknowledged operation.","How can the client discover the final outcome?","Return an operation ID; support GET /operations/{id}. Optionally send a webhook or event when finished. Client request"],["Q013",2,"What does HTTP idempotency mean?","Repeating an idempotent operation has the same intended effect as performing it once. Response codes or audit entries may differ. POST can gain application-level idempotency through an explicit contract.","PUT /profiles/42 with the same representation:\nintended stored representation stays the same.\nPOST /payments with Idempotency-Key: pay-7:\nthe service must define duplicate handling.","HTTP method semantics describe intent, not proof of an implementation. For a payment API, bind a key to the caller and a validated request fingerprint, retain the result, and reject key reuse with different intent. Scope and retention are part of the contract.","Generating a new idempotency key for every retry defeats deduplication.","What if the original payment committed but the response was lost?","A retry with the same idempotency key must return the saved outcome or current state, not create another payment."],["Q014",2,"Why is cursor pagination often better than large offsets?","A cursor seeks from a stable ordering key instead of scanning and discarding an ever- growing prefix. A deterministic tie-breaker prevents ambiguity when timestamps are equal.","SELECT id, created_at FROM orders\nWHERE customer_id = :customer\nAND (created_at, id) < (:lastTime, :lastId)\nORDER BY created_at DESC, id DESC LIMIT 50;","An index starting with customer_id and continuing with the ordering columns supports this access pattern. Sign or validate the cursor and bind it to the query scope. Concurrent edits can still change later pages unless the API promises a snapshot.","A cursor is not an authorization credential; check ownership on every request.","What should happen when the sort key changes after page one?","Define whether pages are a snapshot. If the ordering key can change, accept documented movement or use a stable snapshot cursor."],["Q015",2,"How do you evolve an API without breaking clients?","Prefer additive compatible changes, explicit semantics and a transition period. Validate compatibility for serialized data and behavior, not just Java method signatures.","record OrderView(String id, String status) {}\nLater JSON may add estimatedDelivery.\nClients must tolerate unknown optional fields.","Changing units, making a nullable value mandatory or reinterpreting a status can break clients even if JSON still parses. Define unknown enum behavior, deprecation telemetry and rollout order. For events, test old consumers against new producers and the reverse where required.","Renaming a field without a compatibility strategy can break independently deployed services.","How will you know the last old client has migrated?","Measure old-client traffic through version headers, API telemetry and compatibility dashboards; retire only after an agreed cutoff."],["Q016",3,"How do vertical and horizontal scaling differ?","Vertical scaling increases resources in one machine. Horizontal scaling adds machines and requires work and state to be distributed across them.","Vertical: a larger DB host reduces current CPU pressure.\nHorizontal: four stateless Java API instances share load.\nShared bottleneck: one write-primary database.","Vertical scaling can be a sensible first step with simpler operations. Horizontal scaling improves aggregate capacity only when shared resources and partitioning permit it. Plan what happens when one node fails and remaining nodes absorb its traffic.","Doubling Java instances while keeping a saturated database unchanged can increase queueing.","Can the service meet its SLO after losing one instance?","Test remaining-instance capacity using N-1 load testing. Keep SLO headroom, queues and downstream limits in the model."],["Q017",3,"What makes a service stateless?","A stateless request handler does not require a particular instance's memory to process the next request. Durable business state and shared coordination live in appropriate external systems.","Bad scaling assumption:\nMap<String, Cart> carts = new HashMap<>();\nOne instance's map is invisible to another instance.","Local caches and temporary request data are compatible with a stateless architecture if correctness does not depend on them surviving or being shared. Store carts durably when the product promises recovery; avoid making sticky sessions the only recovery mechanism.","Stateless does not mean that the business system has no state.","What happens to a cart when its instance restarts?","The cart survives only if stored in shared durable storage. An in-memory cart on one instance disappears on restart."],["Q018",3,"How do load-balancing algorithms affect a design?","Round robin spreads requests by turn; least-connections considers current connection counts; hashing provides affinity. Pick a method that matches request duration, connection behavior and state needs.","Short HTTP calls: round robin can be adequate.\nLong-lived sockets: connection-aware balancing helps.\nTenant affinity: hash routing may create hot tenants.","A connection count is only a proxy for load: multiplexed connections or uneven request cost can make it misleading. Health checks and draining are as important as the selection algorithm. Weighted routing can support canaries or unequal capacity.","A healthy process can still be unable to serve a critical dependency.","How will existing WebSocket connections move during deployment?","Open sockets usually remain on the old node until disconnected. Drain the node; clients reconnect using a last-seen event cursor."],["Q019",3,"What is the difference between a reverse proxy, gateway and service discovery?","A reverse proxy routes requests to backends; a gateway often adds API policy such as authentication or quotas; service discovery finds the current addresses of service instances.","Gateway: validate token and route /orders.\nDiscovery: locate healthy order-service endpoints.\nJava service: enforce order ownership and business rules.","These responsibilities may overlap in products, but explaining them separately avoids misplaced guarantees. Discovery information can be stale, so callers still need bounded failures and endpoint refresh. Keep critical object authorization in the owning service even if the edge authenticates users.","Putting every business rule in a gateway creates coupling and bypass risks.","What happens when discovery returns an instance that just terminated?","The call may fail or time out. Refresh discovery, retry safely within the deadline, and avoid sending to draining nodes."],["Q020",3,"How should autoscaling work under a traffic spike?","Scale using a signal related to the bottleneck, keep warm capacity for rapid bursts, and bound queues while additional instances start. Scaling is part of admission control, not a substitute for it.","Queue wait rises before CPU saturates for blocking I/O.\nScale on suitable request/queue signals.\nReject excess work when safe capacity is exhausted.","Startup time, cold caches and database connection limits can make aggressive scaling harmful. Add hysteresis and consider per-tenant fairness. For consumers, backlog age and sustainable processing rate can matter more than CPU.","Creating many instances can create a simultaneous connection storm.","What protects the system during the minutes before new capacity is ready?","Protect with warm spare capacity, bounded queues, rate limits, graceful rejection and cached safe responses."],["Q021",4,"When should you use a relational database?","Use it when relationships, constraints, transactions and flexible queries are central. Start with the required queries and invariants, then assess whether one database can support the workload.","orders(id, customer_id, status, amount_minor)\norder_items(order_id, product_id, quantity)\nUNIQUE(customer_id, idempotency_key)","A constraint protects the invariant across all application instances and scripts using that database. Relational systems can scale through indexing, replicas, partitioning and workload separation, with tradeoffs. A small service with relational data does not need a distributed database by default.","Enforcing uniqueness with a Java read-then-insert check is vulnerable to races.","Which constraint prevents two retries creating different orders?","A unique index on (customer_id, idempotency_key), or the correct equivalent scope, rejects duplicate order creation."],["Q022",4,"When does a document or key-value store fit better?","A document store can fit aggregate-oriented reads and changing nested structures; a key-value store fits direct lookup by key. Evaluate each product's actual consistency and transaction capabilities.","Document: product catalog with category-specific attributes.\nKey-value: sessionId -> session metadata.\nQuery requirement: list products by price and brand.","The third requirement still needs suitable indexing or a separate query model. Embedding data can improve reads while increasing update size and duplication. Avoid selecting a database solely because the schema changes; a relational system can also store structured JSON where appropriate.","NoSQL does not mean no schema; the application still depends on data shape.","How will an update to embedded shared data propagate?","Update the shared source record and rebuild or notify affected documents; version copied fields to catch stale updates."],["Q023",4,"How do normalization and denormalization trade off?","Normalization reduces duplication and update anomalies. Denormalization copies or precomputes data to serve a known read path faster, at the cost of keeping copies consistent.","Normalized: order references customer_id.\nHistorical snapshot: order stores shipping address at purchase.\nRead projection: customer_order_summary stores counts.","The address snapshot is part of historical business truth, not merely an optimization. A summary projection needs an update or rebuild strategy. Name which copy is authoritative and whether the user can tolerate projection lag.","Denormalized fields without ownership and repair rules become inconsistent silently.","Can the summary be rebuilt from authoritative records?","Yes, if its source records and rules are retained. Replay or recompute it, then compare totals before switching reads."],["Q024",4,"How should indexes be designed for an API query?","Design indexes around filters, ordering and selectivity, then verify with the database query plan and representative data. Indexes trade faster reads for storage and write maintenance.","Query: orders for one customer, newest first.\nCREATE INDEX ix_order_customer_time\nON orders(customer_id, created_at DESC, id DESC);","This index aligns with the cursor example. Whether it is used depends on data distribution, statistics and the full query. Explain covering/index-only possibilities separately from the basic lookup; do not assume every selected column should be indexed.","An index on each column separately is not equivalent to a useful composite index.","How does this index affect a high-volume insert workload?","Every insert must also maintain this index, adding write I/O and storage. Measure before adding more indexes."],["Q025",4,"Why separate object storage from metadata storage?","Large immutable files fit object storage, while ownership, status and queryable metadata fit a database. This avoids routing all file bytes through the relational database or application heap.","DB: asset(id, owner_id, object_key, state, size_bytes)\nObject store: binary bytes under a generated key.\nState: UPLOADING -> SCANNING -> AVAILABLE.","Access should depend on the metadata state and authorization. Because object storage and the database are different systems, handle orphaned objects, missing objects and interrupted uploads with cleanup and reconciliation.","A successful byte upload does not automatically mean the asset is safe to publish.","Which job detects uploaded files whose finalization never completed?","A scheduled reconciler searches uploads stuck in UPLOADING/SCANNING, verifies object state and completes or cleans them. Direct upload"],["Q026",5,"What do ACID properties guarantee?","Atomicity groups operations, consistency means declared invariants remain valid through correct transactions, isolation controls concurrent interaction, and durability concerns persistence of committed results under the system's failure model.","Transfer within one database:\nBEGIN; debit account A; credit account B; COMMIT;\nBoth balance changes commit together or neither does.","Application logic and constraints are still responsible for business correctness. Durability depends on the database and storage configuration. A local database transaction does not automatically make an external payment provider part of the same commit.","ACID consistency is different from distributed read consistency such as linearizability.","What happens if an HTTP call succeeds before the DB transaction rolls back?","The outside call is not rolled back with the database. Record uncertainty and compensate or reconcile safely."],["Q027",5,"How can two requests safely compete for the last stock unit?","Use an atomic conditional update and check the affected-row count, or use an appropriate locking transaction. Enforce the stock change and related reservation in one database transaction.","UPDATE inventory\nSET available = available - :qty\nWHERE product_id = :id AND available >= :qty;\n// require qty > 0; success means exactly one row changed","A positive quantity check is essential. The database arbitrates concurrent updates; zero rows means missing product or insufficient stock and may require a defined response. Record a stable reservation key in the same transaction to handle duplicate commands.","A Java synchronized block protects only cooperating threads in one JVM.","Where will the reservation record be committed relative to the decrement?","Insert the reservation in the same transaction as the conditional decrement; commit both or neither."],["Q028",5,"How do optimistic and pessimistic locking differ?","Optimistic locking detects conflicting versions at update time. Pessimistic locking reserves access using database locks before making a decision. Choose based on contention and transaction length.","UPDATE orders SET status = :next, version = version + 1\nWHERE id = :id AND version = :expected;\n// zero rows: stale version or missing record","Optimistic conflicts need a business-aware response; do not blindly retry decisions computed from stale data. Pessimistic locks can serialize contention but increase waiting and deadlock risk. Keep locked transactions short and acquire multiple locks in a consistent order.","Version checks protect only writes that participate in the protocol.","Should a stale address edit be retried or shown as a conflict?","Show a 409/conflict and ask the user to review changes; automatic retry could overwrite another user's edit."],["Q029",5,"Why can isolation level change the result of a business operation?","Isolation levels allow different concurrent histories. A read followed by a decision can become invalid before commit unless the operation uses sufficient isolation, locks or constraints.","Two doctors both read: another doctor is on call.\nEach turns their own on_call flag off.\nRow-version checks alone can still leave no doctor on call.","This write-skew example touches different rows, so locking only the modified row is insufficient. Define the cross-row invariant and protect it with a suitable serializable transaction or an explicit coordination row. Database isolation names and guarantees vary by product.","PostgreSQL READ COMMITTED gives a new snapshot per statement, not one immutable transaction snapshot.","What must be retried after a serialization failure?","Retry the entire transaction from a fresh read, with a bounded retry budget, not just its last SQL statement."],["Q030",5,"How should Java services handle transaction boundaries?","Place the boundary around a complete local business operation, keep it short, and understand the framework's interception rules. Avoid holding locks while waiting for slow remote work.","@Transactional\npublic void reserve(Command c) {\ninventory.decrementIfAvailable(c);\nreservations.insert(c.requestId());\n}","This Spring fragment assumes a transactional repository and an intercepted call. In default proxy mode, self-invocation does not trigger transaction advice. Verify rollback rules for the exception types you use. External calls belong in an explicit workflow with compensation or reconciliation.","Returning successfully after catching a business failure may accidentally commit partial intended work.","How would you verify both rows roll back after an insert failure?","Force the reservation insert to fail in an integration test, then assert stock and reservation rows are unchanged."],["Q031",6,"What is the difference between replication and sharding?","Replication stores copies of the same data on multiple nodes. Sharding distributes different subsets across nodes. Each shard may have its own replicas.","Shard A: customers 1-999, replicated three times.\nShard B: customers 1000-1999, replicated three times.\nReplication changes copies; sharding changes placement.","Replication can improve read capacity and fault recovery but does not remove the primary's write workload in a single-leader design. Sharding spreads writes but complicates cross-shard queries, rebalancing and transactions. Begin with partitioning only when workload or ownership requires it.","A replica and a shard are not interchangeable terms.","How will a customer query route to the correct shard?","Hash or look up customer_id in the shard map; version routing so moves do not send writes to two owners."],["Q032",6,"Why can reading from a replica return stale data?","Asynchronous replication may not have applied the primary's latest commit. A successful write on the primary does not mean every replica can immediately return it.","User changes profile name and receives success.\nNext GET is routed to a lagging replica.\nResponse briefly contains the old name.","Possible policies include reading the primary for a session after a write, waiting for a relevant replication position, or explicitly accepting stale data. Define read-your-writes expectations for each operation. A routing timeout or failover can complicate a simple stickiness policy.","A healthy replica is not necessarily a sufficiently fresh replica.","Which metric prevents reads from replicas with unacceptable lag?","Monitor replication lag in time or log position, and route consistency-sensitive reads to primary when lag exceeds policy."],["Q033",6,"How do you choose a partition key?","Choose a key that distributes load while keeping common operations within one partition. Consider traffic distribution, data size, ordering and future tenant growth.","Orders partitioned by customer_id:\ncustomer history is local; global sales reports are not.\nEvents partitioned by order_id:\nper-order event order is easier to preserve.","The right key differs for storage and an event log. A tenant key simplifies isolation but a large tenant may dominate one partition. Hashing improves distribution but range scans may need fan-out or a separate index.","Even distribution of record counts does not guarantee even distribution of traffic.","What happens when one tenant grows one hundred times larger?","Split the tenant by a secondary key if feasible, dedicate it to a shard, or isolate its workload; preserve required ordering."],["Q034",6,"What does consistent hashing solve?","It maps keys to nodes so membership changes move a limited subset of keys instead of remapping most keys as simple modulo hashing can. It does not solve storage migration by itself.","Modulo routing: hash(key) % nodeCount.\nChanging 4 nodes to 5 changes many destinations.\nHash ring: keys move mainly near the changed ownership range.","Virtual nodes can smooth uneven placement. Rendezvous hashing is another approach: choose the node with the highest key-node score, as demonstrated in the Java lab. Real changes require data movement, versioned routing and handling old owners during transition.","Calling the algorithm consistent does not imply strong read consistency.","How will reads work while a range is being copied?","Use a migration-aware router: check old and new owners during transition with versioned ownership and cutover rules."],["Q035",6,"How do you handle a hot key or a hot partition?","Measure whether the heat is reads, writes or fan-out, then use a mitigation that preserves the required semantics. Options include replication, caching, batching or partitioning the work differently.","Popular product reads: CDN/cache and local read copies.\nPopular product stock: one authoritative reservation policy.\nAnalytics counter: split increments and later aggregate.","A split counter is acceptable when an approximate or delayed total is sufficient. Splitting stock into uncontrolled independent counters can oversell. Hot-key mitigation often sacrifices immediacy, simplicity or exactness; state that cost explicitly.","Adding more shards does not help a key that still belongs to one shard.","Which operations can safely use a delayed aggregate?","Dashboards, view counts and noncritical analytics may use delayed sums. Payment, exact stock and seat ownership may not."],["Q036",7,"What does the CAP theorem actually say?","During a network partition, a distributed read/write system cannot guarantee both linearizable consistency and a successful response to every request reaching a non- failing node under the theorem's model.","Two isolated replicas receive conflicting stock updates.\nOption: reject some writes to protect one ordering.\nOption: accept writes and later resolve divergence.","Partition tolerance is not a feature you can disable while networks still fail. Outside a partition, systems still make latency and coordination tradeoffs. Discuss the operation and its failure behavior rather than branding a whole application as CP or AP.","CAP availability is not the same as a 99.9% business success SLO.","Can stale catalog reads continue while stock writes are rejected?","Yes. Catalog viewing can tolerate staleness, but stock writes may be denied until one authority is available."],["Q037",7,"How do strong, eventual and read-your-writes consistency differ?","Linearizable operations behave as if they occur in one real-time order. Eventual consistency promises convergence under its stated assumptions. Read-your-writes ensures a session sees its own acknowledged updates.","Stock confirmation: require an authoritative decision.\nSearch index: accept documented update lag.\nProfile edit: preserve the editor's read-your-writes experience.","These guarantees are not synonyms for isolation levels. Specify convergence conditions, allowed staleness and what happens during failover. Session guarantees may require tokens or routing; they should not depend on accidental connection affinity.","Eventual consistency alone does not specify how many seconds stale data may remain.","What happens if updates stop but a replica cannot reconnect?","It will remain behind until it reconnects or is rebuilt. Eventual consistency does not promise progress during permanent isolation."],["Q038",7,"Why is a majority quorum useful, and what are its limits?","Overlapping majorities can support coordinated decisions when used by a correct protocol. A simple read/write quorum arithmetic rule alone does not establish linearizability.","N = 3; majority = 2.\nAny two majorities intersect.\nR + W > N is an overlap condition, not a full protocol.","Version handling, concurrent writes, membership changes, failures and read paths matter. Sloppy quorums and asynchronous application can alter guarantees. When a design requires consensus, use a proven implementation and explain what losing quorum means for operations.","Reading two arbitrary replicas is not automatically a linearizable read.","Can a minority serve safe writes while disconnected from the majority?","Not as quorum-committed writes. It can reject or queue requests; accepting them as final risks divergence."],["Q039",7,"What problem does Raft solve?","Raft coordinates a replicated log through leader election, log replication and safety rules. It lets a replicated state machine agree on committed operations under its fault assumptions.","Three voting nodes tolerate one unavailable node.\nFive voting nodes can tolerate two unavailable nodes.\nNo majority: progress may stop, while safety is preserved.","Raft is not a replacement for business validation, partitioning or disaster recovery. Followers may be behind; safe reads require the implementation's read protocol. Leadership alone does not authorize arbitrary local writes without commitment rules.","Do not claim that electing a leader makes every follower read current.","Why does a three-node cluster need two votes to make progress?","A majority of 3 is 2; any two sets of 2 nodes overlap, helping preserve one committed log history."],["Q040",7,"Why do distributed locks need ownership checks and sometimes fencing?","A lease can expire while an old holder is paused. Ownership-safe release prevents deleting another holder's lease, while fencing lets the protected resource reject stale owners' writes.","Holder A gets fence 7, then pauses.\nHolder B gets fence 8 and writes.\nResource rejects A's later write carrying fence 7.","The resource must durably enforce monotonic fencing; adding a token without checking it does nothing. A lock service and the database can fail independently. Prefer a local database constraint or conditional transaction when it directly enforces the invariant.","A TTL does not guarantee the old holder stops executing when its lease expires.","Where is the last accepted fencing token stored?","The resource (often a database row) stores the highest accepted token and rejects writes with smaller tokens."],["Q041",8,"How do cache-aside, write-through and write- behind differ?","Cache-aside loads on a miss and writes authoritative storage separately. Write-through includes cache updates in the write path. Write-behind defers persistence and therefore changes the durability contract.","Cache-aside Java sketch:\nvar cached = cache.get(key);\nif (cached != null) return cached;\nvar value = repository.find(key);\ncache.put(key, value); return value;","This fragment omits TTL, concurrent misses and invalidation intentionally. Write-through across two independent systems still needs failure handling; it is not automatically atomic. Write-behind is suitable only when acknowledged data-loss and recovery risks are acceptable or durably queued.","A successful cache write is not proof that a durable database write succeeded.","Which store remains authoritative after a cache outage?","The durable database stays authoritative in cache-aside. A cache outage must not silently become lost data."],["Q042",8,"Why is cache invalidation hard?","A read can race with a write and refill old data after invalidation. Correctness depends on update ordering, versions, retention and the consistency the API promises.","Reader loads version 4 from DB.\nWriter commits version 5 and deletes cache entry.\nReader then places version 4 back into the cache.","A TTL limits how long such data may remain only if the refill and expiry semantics are controlled; it does not prevent the race. Version-aware writes, change events and bounded stale policies can help. For correctness-critical decisions, consult authoritative state rather than trusting a cache.","Deleting after a database write alone does not eliminate all stale refill races.","Can the cache reject a lower-version replacement?","Yes: attach a version and update only if the incoming version is not older than the cached version."],["Q043",8,"What causes a cache stampede and how do you prevent it?","A popular key expires or disappears and many callers reload it simultaneously. Coalesce misses, spread expiry times, warm critical data or serve permitted stale values while one refresh runs.","100 callers miss product:42.\nSingle-flight: one loader; 99 wait for its result.\nTTL jitter: avoid thousands of unrelated keys expiring together.","Single-flight in one JVM still allows one load per application instance. A distributed refresh policy adds lease and failure complexity. Bound waiting and loading time; a stuck loader should not block the key indefinitely. Keep stale serving separate from availability of authoritative decisions.","Jitter alone does not prevent a stampede on one extremely hot key.","What happens to waiters if the loader throws an exception?","Fail or time out the shared load, release waiting callers with an error/fallback and permit a later bounded retry."],["Q044",8,"How do TTL and eviction differ?","TTL makes an entry logically expire after a time policy. Eviction removes entries to manage capacity. A cache hit policy must account for both and tolerate entries disappearing early.","TTL: product data is fresh for 60 seconds.\nEviction: memory pressure removes it after 5 seconds.\nNext request reloads even though TTL was not reached.","Choose an eviction strategy based on access patterns and budget memory for implementation overhead. A Redis cache can use approximate LRU or LFU policies; an authoritative Redis workload requires a different persistence and eviction discussion. Cache size should cover the useful working set, not necessarily the whole database.","TTL is not a guarantee that a key will remain resident for that duration.","How will you detect cache churn that overloads the database?","Track miss ratio, eviction rate, hot-key reloads and database queries. A sharp miss/load rise signals churn."],["Q045",8,"When should you use a CDN and HTTP caching?","Use edge caching for cacheable content that many users request, with explicit freshness, validators and privacy rules. It reduces origin traffic and often improves geographic latency.","Public asset: Cache-Control: public, max-age=86400.\nVersioned path: /assets/app.a83f.js.\nPrivate account response: use an appropriate private/no-store policy.","An ETag can support conditional validation. Shared-cache keys must include every relevant response variant; authenticated or personalized content needs careful policy. Purges and versioned URLs have different costs. Cache directives do not replace access control at the origin.","A cache key missing tenant or language context can return the wrong user's variant.","What happens when a deleted public file is still cached at an edge?","The edge may keep serving it until expiry or purge. Use purge/versioning and choose cache TTL to match revocation needs."],["Q046",9,"What is the difference between a work queue and an event log?","A work queue commonly distributes tasks among workers. A retained event log supports replay and independent consumer positions. Product capabilities overlap, so describe the required behavior.","Queue use: send one email task to a worker.\nLog use: OrderCreated consumed by billing and analytics.\nEach log consumer group tracks its own progress.","A log can also distribute work within a group, while some queues retain history. Replay changes the operational contract: old events must remain interpretable and side effects must not be repeated accidentally. Decide retention, acknowledgement and poison-message handling.","A message broker is not automatically a permanent source of business truth.","Can a new analytics consumer rebuild six months of history?","Only if the log still retains that data, or a snapshot/archive is available. Six months is not"],["Q047",9,"How do at-most-once and at-least-once delivery differ?","At-most-once can lose work but avoids repeat delivery under its contract. At-least-once can redeliver work, so effects need deduplication or natural idempotency.","Consumer updates DB, then crashes before acknowledging.\nBroker redelivers the event after recovery.\nConsumer must avoid applying the business effect twice.","Acknowledging before an effect risks loss; acknowledging afterward risks duplication. A unique event key stored in the same database transaction as the effect can close the local duplication window. It does not make a remote side effect atomic with that transaction.","Duplicate transport delivery and duplicate business effect are different measurements.","Where is the dedup marker committed relative to the effect?","Commit the dedup marker and local business update in the SAME database transaction so neither can happen alone."],["Q048",9,"What ordering can a partitioned log provide?","A partition can maintain a sequence of records. Ordering across partitions or across independently produced operations requires additional coordination or explicit business versioning.","Kafka key = orderId.\nEvents for one key normally route to one partition.\nDifferent orders may be processed concurrently.","Producer configuration and concurrent producers also affect the business order represented by the log. Consumers that dispatch to parallel workers can complete effects out of order even when delivery order is stable. Sequence numbers can detect gaps and obsolete updates.","Partition delivery order does not guarantee ordered completion in a multithreaded consumer.","How should a consumer handle version 8 arriving after version 9?","Ignore older version 8 after 9, or repair a detected gap; do not apply state transitions backward."],["Q049",9,"How should retries and dead-letter handling work for consumers?","Retry transient failures within a bounded policy, preserve the needed order, and isolate permanently failing records with enough context for investigation and safe replay.","Event e-17 fails validation permanently.\nRecord event ID, schema version and reason.\nMove to a controlled failure workflow; do not retry forever.","A retry topic can let later events overtake earlier ones. If an aggregate requires strict order, pause or quarantine that aggregate rather than silently skipping its state transition. A dead-letter store needs owners, alerts, retention and a replay procedure.","A dead-letter queue without monitoring turns visible failures into hidden backlog.","Can replay repeat a notification or payment already completed?","Yes. Replay may resend unless effects are idempotent or tracked using durable external- operation IDs."],["Q050",9,"What does backpressure mean in a streaming system?","Downstream limits should influence upstream admission or production so slow processing does not create unbounded memory and latency. When slowing producers is impossible, define shedding or durable buffering.","Consumer capacity: 500 events/s.\nProducer rate: 700 events/s.\nBacklog grows by 200 events/s while this imbalance continues.","Measure oldest-message age as well as count. A durable log buys time, but finite retention and storage still impose limits. Parallelism helps only if partitioning, downstream capacity and ordering allow it. Treat replay throughput as a separate workload competing with live processing.","A larger queue postpones overload; it does not increase processing rate.","How long until retention is exceeded at the current growth rate?","Backlog growth is 200 events/s in the example. Time to exceed capacity = free retained slots / 200 seconds."],["Q051",10,"What problem does the transactional outbox solve?","It records the business change and an event to publish in one local database transaction, avoiding the gap between committing data and separately publishing an event.","BEGIN;\nINSERT INTO orders(...);\nINSERT INTO outbox(event_id, aggregate_id, payload) VALUES(...);\nCOMMIT;","A relay or change-data-capture process publishes committed outbox rows. If publication succeeds but marking completion fails, it may publish again. Consumers therefore still need duplicate handling. Track oldest unpublished age and clean up only according to recovery and retention policy.","Outbox provides durable publish intent, not automatically exactly-once delivery.","What happens if the relay crashes immediately after publishing?","It publishes again after restart because the relay did not mark success. Consumers must ignore duplicate event IDs."],["Q052",10,"How should an idempotency key be implemented?","Scope the key to a caller and operation, bind it to a canonical validated request, atomically coordinate ownership and store a durable result or status. Define expiry and duplicate-in-progress behavior.","UNIQUE(caller_id, operation, request_key)\nFields: request_hash, state, result_reference.\nSame key + different request hash -> conflict.","Canonicalization must handle semantically equivalent input consistently. A local database operation can commit the key and effect together. For an external effect, persist workflow state and use the provider's stable key plus reconciliation. Never claim an in-memory map is a durable multi-instance idempotency store.","Expiring keys too early can turn a delayed retry into a second operation.","What response should a concurrent duplicate receive while the first request is running?","Return the existing result if finished; otherwise respond with an in-progress status or wait briefly and safely."],["Q053",10,"What is a saga, and when is it useful?","A saga coordinates local transactions across services using explicit steps and compensating actions. It supports recoverable workflows when one global atomic transaction is unavailable or undesirable.","Reserve inventory -> authorize payment -> confirm order.\nIf authorization fails: release reservation.\nIf later work fails: retry, reconcile or compensate by policy.","Compensation is a business operation, not a database rollback of the past. It can fail and needs idempotency, retry and audit. Orchestration centralizes workflow state; choreography reacts to events but can make the overall process harder to inspect.","A payment refund may have different timing and rules from undoing an uncommitted payment.","Who owns a workflow stuck between authorization and confirmation?","A durable workflow owner (saga coordinator/order service) stores state and runs recovery/ reconciliation jobs. Order"],["Q054",10,"Why is exactly-once processing a bounded claim?","It describes a guarantee within a specified system and protocol. It does not automatically cover arbitrary external effects, replay, client retries and all failure modes.","Kafka transaction: atomically write Kafka output and offsets.\nHTTP email provider: outside that transaction.\nDB unique event key: can protect one local DB effect.","Name the boundary, isolation, producer/consumer configuration and effect. Producer idempotence handles certain duplicate writes to Kafka; it is different from an end-to-end payment guarantee. A design can often achieve effectively-once business behavior with stable identities and reconciliation.","Do not label the entire workflow exactly-once because one broker supports transactions.","Which side effect remains outside the coordinated commit?","Any provider call outside the coordinated database/log transaction, such as an email or payment API, can repeat."],["Q055",10,"How do reconciliation and audit improve reliability?","Reconciliation compares durable records across boundaries and repairs or escalates mismatches. Audit explains what commands and transitions occurred without relying on temporary process memory.","Local payment state = PENDING, provider state = SUCCEEDED.\nReconciler queries using the original provider reference.\nIt advances the workflow without charging again.","Run reconciliation on a schedule and after incident recovery. Use bounded scans or cursors, idempotent repairs and an escalation state for ambiguous cases. An audit log should capture stable IDs and decisions while avoiding secrets and unnecessary personal data.","Treating every unknown external outcome as failure can create duplicate effects on retry.","What evidence distinguishes a failed charge from a lost success response?","Check the provider using its stable payment reference and webhook/status API; a timeout alone proves neither success nor failure."],["Q056",11,"How should you set timeouts and end-to-end deadlines?","Bound each stage and carry a remaining deadline through the request path. Include connection acquisition and queue waiting rather than budgeting only the remote response time.","Client deadline: 800 ms.\nReserve 100 ms for local processing and response.\nCalls, pool wait and permitted retries share the remainder.","Choose budgets from observed latency, the user objective and acceptable false timeouts, then load-test them. A timeout means the caller stopped waiting; it does not establish that the callee stopped work or rolled back. Cancellation must be cooperative and propagated where supported.","Giving every nested call the full original deadline can exceed the user's budget.","How much time remains before starting the second attempt?","Subtract elapsed time and reserved safety budget from the overall deadline; skip retries with too little time left."],["Q057",11,"When should you retry, and why add jitter?","Retry operations whose failures may be transient and whose effects are safe to repeat, within a bounded attempt and time budget. Randomized delay reduces synchronized retry waves.","Delay cap = min(maxDelay, base * 2^attempt).\nFull jitter example: random delay from 0 to that cap.\nDo not retry invalid input or an exhausted total deadline.","Classify errors using the API contract. Retry at one deliberate layer to avoid multiplicative attempts. A payment timeout requires an idempotency or status lookup contract, not an optimistic assumption of failure. Respect relevant rate-limit signals and avoid retrying into a saturated dependency.","Three attempts at each of three nested layers can create 27 downstream attempts.","Which layer owns retry policy for this business operation?","Choose one responsible layer for retries; prevent multiplied attempts across client, gateway and each service."],["Q058",11,"How does a circuit breaker work?","It stops most calls after a failure policy is triggered, then allows controlled probes to see whether the dependency recovered. It limits repeated failures rather than fixing the dependency.","Closed: normal calls, collect outcomes.\nOpen: fail fast or use a defined fallback.\nHalf-open: limited probes before normal traffic returns.","Choose whether timeouts, selected errors and slow calls count as failures. Keep breaker scope aligned with the dependency or operation; one broken tenant should not necessarily trip every tenant. Fallback data must still satisfy the user contract.","Circuit breakers do not bound the number of successful but slow concurrent calls; bulkheads can.","What happens if all instances enter half-open together?","Use jitter, per-instance probe caps and half-open trial limits so all nodes do not hit recovery at once."],["Q059",11,"What is a bulkhead, and how is it different from rate limiting?","A bulkhead limits concurrent work or isolates resources so one dependency cannot consume the whole service. Rate limiting controls admission over time; the two address different overload shapes.","Payment calls: semaphore permits = 20.\nReports: separate bounded executor and DB budget.\nRequest quota: 100 calls per user per minute.","A low request rate can still exhaust concurrency if each call hangs. Acquire with a bounded wait or fail fast; release permits in finally blocks. Separate resource pools only where the isolation benefit justifies the extra overhead.","A semaphore does not enforce a fixed requests-per-second quota.","What happens when a report request blocks for several minutes?","Put reports in a separate bounded executor. When full, reject the new report rather than block checkout threads."],["Q060",11,"What is graceful degradation?","It deliberately reduces optional behavior while preserving essential correctness and a clear user experience. The fallback must be explicitly allowed by the product's requirements.","Catalog page: omit recommendations during an outage.\nStock purchase: reject or remain pending if authority is unavailable.\nSearch: serve a documented stale index when acceptable.","Define which dependencies are optional, which failure modes trigger fallback and how recovery happens. Monitor degraded responses separately from fully successful ones. Avoid returning fabricated confirmation for a write whose outcome is unknown.","A stale price or authorization decision may violate the contract even when it improves uptime.","Which user journey can continue safely without this dependency?","Keep login, read-only catalog or previously confirmed order lookup if safe; block uncertain"],["Q061",12,"How should you size a Java thread pool?","Start with workload type and resource limits, then measure throughput and latency. CPU-bound work is constrained by effective CPU capacity; blocking I/O also depends on downstream capacity and wait time.","var pool = new ThreadPoolExecutor(\n8, 8, 0, TimeUnit.SECONDS,\nnew ArrayBlockingQueue<Runnable>(200),\nnew ThreadPoolExecutor.AbortPolicy());","This bounded example caps execution and queued tasks; it is not a universal recommendation of eight threads. Rejection must become a controlled API outcome. Common fixed-thread-pool factory methods can use unbounded queues, so inspect the actual executor. Count queued work in the deadline.","A huge queue can preserve acceptance while making every result too late to be useful.","What happens when the 201st waiting task arrives?","If all workers and queue slots are occupied, reject or apply a documented backpressure policy; never grow without bound."],["Q062",12,"Do virtual threads remove the need for concurrency limits?","No. Java 21+ virtual threads make many blocking tasks cheaper in thread resources, but database connections, remote quotas, CPU and memory still need explicit limits.","Java 21+ concept:\nExecutors.newVirtualThreadPerTaskExecutor()\nStill bound payment calls and database access separately.","Use virtual threads for suitable blocking workloads, then observe actual behavior on the target JDK and libraries. They do not make CPU-heavy work faster merely by adding concurrency. The runnable exercises in this guide use Java 17 so they require no preview flags or newer runtime.","Unlimited cheap threads can still create unlimited expensive downstream work.","Where will you enforce the database concurrency budget?","Use a semaphore or pool limit before DB calls. Virtual threads do not create extra DB connections."],["Q063",12,"Why must database connection pools be budgeted across instances?","Each application instance adds potential database sessions. The total must fit the database's sustainable concurrency and leave room for administration, background jobs and other applications.","12 instances x 30 connections = 360 potential connections.\nAutoscale to 24 instances -> 720.\nThe database does not automatically gain capacity.","Pool size is not the same as useful database parallelism. Measure acquisition wait, active usage, transaction duration and DB saturation. Use short transactions, bounded acquisition and backpressure. Different workloads may require separate budgets even when they share one physical database.","Raising pool size to fix waiting can worsen a CPU- or lock-bound database.","Which limit stops autoscaling from overwhelming the database?","Cap total connections across replicas: instances x maxPoolSize <= DB budget, with headroom for failover and admin work."],["Q064",12,"Why is ConcurrentHashMap not a distributed transaction?","It provides thread-safe map operations within one JVM. It neither shares memory across instances nor atomically commits independent business resources with crash durability.","map.putIfAbsent(requestKey, result); // one JVM\ncheck balance; debit account; add audit record;\n// these three operations need a business transaction","Per-key compute operations can coordinate a narrow local update, but a sequence across keys is not automatically atomic. Process restart loses ordinary in-memory state. Use the map for caches or local coordination only when the design tolerates these boundaries.","Thread-safe containers do not make a multi-step business operation thread-safe by themselves.","What changes when a second application instance handles the retry?","Another JVM has a different map and lock. Use durable shared state and database uniqueness for global correctness."],["Q065",12,"How do JVM memory and GC affect system design?","Allocation rate, live data and pauses influence tail latency and capacity. Budget heap plus native memory, thread stacks and buffers, and use evidence before tuning collector settings.","Large request body -> allocation spike.\nUnbounded queue -> retained tasks and payloads.\nContainer memory = heap + non-heap + native overhead.","Use GC logs, allocation profiling, heap analysis and request traces to distinguish causes. Streaming payloads and bounding queues can solve a design problem that a larger heap only delays. Cache entries often contain object overhead beyond their serialized byte size.","Setting maximum heap equal to the container memory limit leaves no room for other memory.","Which retained objects grow with backlog rather than useful working data?","Queued events, retained payloads and unbounded collections may grow with backlog. Measure heap, allocation and GC pauses."],["Q066",13,"When should you choose a modular monolith over microservices?","A modular monolith fits when one deployment and local transactions meet current needs. Microservices can help independent ownership or scaling but introduce network and operational costs.","Modules: catalog, orders, payment workflow.\nEnforce interfaces and data ownership inside one application.\nExtract notifications when independent scale justifies it.","A monolith can be well structured; microservices can still be tightly coupled. Judge team boundaries, release needs, workloads and reliability. Avoid splitting every entity into a service, which can make one business operation require many coordinated calls.","More network boundaries create more partial-failure states.","Which measurable problem will this service extraction solve?","Name a measured need such as independent deployment, scaling or team ownership; extraction has operational cost."],["Q067",13,"How should a service own its data?","One service should control the writes and invariant for its business domain. Other services use contracts or replicated projections rather than bypassing ownership with shared-table writes.","Inventory owns stock and reservations.\nOrder service calls reserve or consumes reservation outcomes.\nAnalytics reads a projection, not live ownership tables.","Physical databases may initially be shared for operational reasons, but access boundaries should remain explicit. Cross-service foreign keys and direct updates make independent evolution harder. Define how data is copied and how deletion or correction reaches projections.","Sharing a database does not justify every service modifying every table.","Who approves a schema change that affects another service's projection?","The owning service approves its schema. Consumers coordinate event/API contracts and rebuild their own projections."],["Q068",13,"What is CQRS, and when is it useful?","CQRS separates command behavior from query behavior. It can use one database or separate projections; it is useful when read and write models have meaningfully different needs.","Command: reserve inventory with strict validation.\nQuery: product search with precomputed availability text.\nProjection lag is shown or accepted by product policy.","CQRS does not require event sourcing, Kafka or separate microservices. Separate read storage adds update propagation, rebuild and lag management. Start with simple command/query separation and add projections for a demonstrated read problem.","A read projection should not silently become the authority for stock confirmation.","How will a newly deployed projection catch up?","Replay a retained event log or backfill from a snapshot, then apply live changes until a measured lag threshold is met."],["Q069",13,"What is event sourcing, and how does it differ from an event log?","Event sourcing stores domain events as the authoritative history from which current state is derived. A transport event log may carry copies of changes while another store remains authoritative.","Account events: Opened, Credited, Debited.\nCurrent balance = replay of valid ordered account events.\nSnapshot: acceleration, not replacement of authoritative history.","The approach requires versioned events, aggregate concurrency, replay rules and handling of corrections. External effects must not automatically repeat during replay. Historical data deletion and sensitive fields need deliberate design. Event sourcing is useful for some domains but adds complexity.","Publishing OrderCreated after a normal database insert is not automatically event sourcing.","How would you evolve an old event whose schema no longer matches current code?","Use versioned event upcasters or adapters, preserve old event meaning and test replay against historical samples."],["Q070",13,"How can a large system migrate safely to a new design?","Move one bounded capability at a time, define a single authority during transition, and verify equivalence before switching traffic. Use reversible routing and a repair path.","Step 1: new read model receives change events.\nStep 2: shadow compare selected responses.\nStep 3: canary traffic, observe, then expand.","Dual writes across independent stores are fragile without a durable coordination mechanism. Migration checkpoints, validation counts and reconciliation reveal missed changes. After cutover, plan how rollback interacts with writes that occurred only in the new authority.","Rolling back application code does not necessarily roll back changed data semantics.","What prevents both old and new services from owning the same write?","Use one write owner at a time; route commands through it and compare dual-read results before a staged cutover. Old owner"],["Q071",14,"Why use a search index instead of the transactional database for text search?","A search engine offers specialized text indexing, relevance and query features. Keep authoritative data ownership separate and define how updates reach the searchable projection.","Product DB commit -> durable change event -> index update.\nSearch returns product IDs and display fields.\nCheckout revalidates price and stock from authoritative services.","The index may lag or contain a product that was just deleted. Handle tombstones, versions and authorization filters. For simpler workloads, the database's built-in text features may be sufficient; a separate search cluster creates operational overhead.","A relevant search hit is not proof that the user may access or purchase the item.","How will you rebuild the index without blocking live search?","Build a new index from a snapshot while streaming live updates, compare it, then atomically switch the search alias."],["Q072",14,"How do batch and stream processing differ?","Batch processes bounded datasets at intervals. Stream processing handles ongoing events with incremental state. Choose based on freshness requirements, cost and correctness under late data.","Daily revenue report: batch may be enough.\nFraud signal during checkout: timely stream may be needed.\nBoth need rules for corrections and duplicated events.","A hybrid design can use streaming for rapid visibility and batch reconciliation for authoritative correction. Streaming does not inherently mean real-time completion; backlog and downstream delays still matter. Track data freshness independently of request latency.","Fast ingestion does not establish accurate or timely final aggregates.","How late can an event arrive and still revise the result?","Choose a lateness watermark and correction policy. Very late events may update historical results or go to adjustments."],["Q073",14,"What is the difference between event time and processing time?","Event time describes when the business event occurred. Processing time describes when a processor observed it. Delays and clock issues can make those times differ substantially.","Purchase happened at 23:59 yesterday.\nMobile device reconnects at 08:00 today.\nA daily sales metric must choose the intended time basis.","Define timezone, trustworthy timestamp source and late-event handling. Watermarks or lateness policies guide when a computation treats a window as sufficiently complete; they cannot make all late events impossible. Reprocessing may update earlier totals.","Device clocks are not necessarily accurate enough to enforce business ordering.","Should a late refund alter yesterday's report or today's adjustment ledger?","For finance, keep an immutable original period and post a dated correction if accounting rules require that approach."],["Q074",14,"How can you maintain a materialized aggregate safely?","Define the source of truth, stable event identities, update ordering and recovery strategy. Apply each local increment with deduplication or rebuild from authoritative records.","Event e-5: order total + 1,250 minor units.\nAtomic transaction: insert processed event ID, update total.\nDuplicate e-5: no additional increment.","This is a local database pattern, not universal exactly-once streaming. Corrections need explicit negative or replacement operations. High-volume counters may be partitioned and merged when delayed totals are acceptable. Decide what the dashboard should display during lag or rebuild.","Summing repeated delivery records without deduplication overstates revenue.","How will you reconcile the aggregate against the ledger?","Replay ordered IDs from the ledger into a versioned aggregate and compare sums/record counts to authoritative rows."],["Q075",14,"How should you rebuild a projection while writes continue?","Take a consistent baseline or a defined source position, replay changes from the matching position, and switch only after checking catch-up and correctness. Track versions to avoid older replay overwriting newer data.","Build index-v2 from a baseline at source position P.\nReplay changes after P while live writes continue.\nValidate and switch a read alias when caught up.","Snapshot and change positions must align; otherwise the gap can lose or duplicate changes. Deduplication handles duplicates, while version checks preserve latest state. T ombstones matter as much as inserts. Use resource budgets so rebuilding does not starve production traffic.","Copying rows and then listening for events without a gap strategy can miss writes.","What evidence shows the new projection is complete enough for cutover?","Verify source coverage, event catch-up position, counts and sampled results; then switch reads and monitor mismatches."],["Q076",15,"When should you use polling, server-sent events or WebSockets?","Polling is simple for infrequent updates; server-sent events provide server-to-client streaming; WebSockets support bidirectional communication. Choose according to interaction, infrastructure and recovery needs.","Status every minute: polling.\nLive job progress: SSE may fit.\nInteractive chat: WebSocket plus durable history API.","Persistent connections require authentication renewal, heartbeat policy, load balancing and draining. Reconnect should resume from a stable position rather than assume nothing happened while disconnected. The transport does not store messages or prove delivery to a person.","A successful socket write does not prove that a user read a message.","How does the client recover messages missed during reconnect?","Keep a last-seen event ID/sequence. On reconnect, fetch the missing interval and"],["Q077",15,"How should a chat system define message ordering?","Use an explicit conversation sequence or another deterministic contract. Distinguish server acceptance order, delivery order and display order, and do not rely solely on client clocks.","Client sends clientMessageId = m-7.\nServer commits conversation sequence = 104.\nRetry m-7 returns the same accepted message.","Serializing sequence assignment per conversation can become a hot partition for a huge room. If strict global ordering is unnecessary, relax the requirement explicitly. Delivery through multiple gateways may differ, so clients can sort or detect gaps using the server sequence.","Two timestamps can be equal or inaccurate and still need a tie-breaker.","What happens when sequence 106 arrives before 105?","Buffer version 106 briefly until 105 arrives, then replay missing history; do not assume network arrival order is truth."],["Q078",15,"How do you route messages to connected users?","Track which connection gateway currently hosts a user's sessions, route live delivery there, and keep durable message history independent of the connection directory.","Directory: user-42 -> gateway-A + gateway-C.\nMessage committed -> delivery event -> active gateways.\nOffline or missed delivery -> recover from history cursor.","Directory entries expire and can become stale during disconnection or deployment. Multi-device users may need delivery to several sessions. A failed live route should not delete the durable message. Presence is often approximate and should have a TTL-based contract.","Presence is a transient observation, not proof that a person is attentive.","How will a stale gateway directory entry affect message recovery?","The first push may fail, but durable messages remain in storage. Reconnect and replay must not rely on that directory."],["Q079",15,"How do fan-out on write and fan-out on read compare?","Fan-out on write precomputes recipient feeds, making reads cheaper. Fan-out on read combines sources at read time, making writes cheaper but reads more expensive. A hybrid handles uneven audience sizes.","Normal author: add post ID to follower feed projections.\nCelebrity author: merge recent posts during feed read.\nRank and paginate using a stable feed contract.","Audience size and read frequency decide the tradeoff. Precomputed fan-out needs retry, duplicate handling and deletion propagation. Read-time merging needs bounded source queries and caching. Ranking changes can complicate cursor semantics.","A post with millions of followers can overwhelm naive synchronous fan-out.","How long may a follower wait before a new post appears?","State an explicit freshness SLO, e.g., a few seconds for normal feed updates, and test it under fan-out load."],["Q080",15,"How do you control slow realtime clients?","Bound per-connection buffers and define disconnect, resume or coalescing behavior when a client cannot keep up. Preserve durable events separately from ephemeral updates.","Chat messages: durable history with resume cursor.\nTyping indicators: coalesce or drop if the buffer is full.\nSlow client: disconnect with a recoverable session policy.","Do not let one connection retain unlimited heap or block a shared event loop. Backpressure policies vary by message type; a missed typing indicator is less serious than a missing committed message. Monitor queue bytes and age, not just message count.","An unbounded per-socket queue can exhaust a server before CPU is busy.","Which events are safe to drop and which require replay?","Drop typing indicators or presence updates if allowed; retain chat messages and replay by durable ID."],["Q081",16,"How do authentication and authorization differ?","Authentication establishes identity; authorization decides whether that identity may perform this action on this resource. Validate both for synchronous and asynchronous work.","GET /orders/42\nAuthenticated user: customer-7.\nService checks that order 42 belongs to customer-7 or an allowed role.","A gateway can validate a token, but the owning service still knows the object-level business rule. Scope background jobs to the original authority or an explicit service identity. Permission changes may require fresh checks rather than trusting old cached decisions.","Knowing an unguessable resource ID does not grant permission to access it.","What happens if a queued command runs after permission is revoked?","Recheck permission at execution, or cancel the command if authorization was revoked; queue-time checks may become stale. Token"],["Q082",16,"How should a multitenant system isolate data?","Bind every operation to a validated tenant context and enforce isolation in queries, keys, caches, events and operational tooling. Larger or sensitive tenants may need stronger physical separation.","SELECT * FROM orders\nWHERE tenant_id = :authorizedTenant AND id = :orderId;\nCache key: tenantId + ':' + orderId.","Do not trust a tenant ID from the request without connecting it to the caller's authority. T enant quotas and workload budgets protect performance isolation as well as privacy. Consider row-level controls, separate schemas or dedicated databases according to requirements and operating cost.","A correctly scoped SQL query can still leak data through an incorrectly scoped cache.","How are support tools prevented from bypassing tenant boundaries?","Use tenant-aware repository policies, row-level security where suitable, scoped support roles and audited access."],["Q083",16,"Why are encryption, secrets and key rotation separate design concerns?","Transport and storage encryption protect different paths. Secret management controls credentials, and key rotation limits long-lived exposure. Each requires an ownership and rollout plan.","TLS: protects request bytes in transit.\nDB/object encryption: protects stored bytes under its threat model.\nService credential: delivered securely and rotated without downtime.","Encryption does not prevent an authorized application from returning the wrong user's data. Avoid placing secrets in source code, logs or ordinary config artifacts. Design overlapping credential validity and revocation so services can transition safely.","A token in a trace or error log can bypass otherwise strong transport protection.","How will old and new keys coexist during rotation?","Publish a new key ID, accept old and new during migration, re-encrypt/expire old data, then revoke the old key."],["Q084",16,"How should signed upload or download URLs be secured?","Authorize the request before issuing a narrowly scoped, short-lived capability. Bind the operation to a generated object key and validate content and ownership again during finalization.","User requests upload for an owned draft asset.\nServer issues URL for that specific object and operation.\nFinalization checks object metadata and approved workflow state.","Treat the URL as a bearer capability and avoid logging it. Depending on the storage API, restrictions and reuse behavior differ; expiry is not always a one-use guarantee. Size, type, checksum and scanning requirements should be enforced by supported policy or validation.","A client-provided object key can overwrite another user's content if accepted blindly.","Can an issued URL be reused before it expires?","Often yes until expiry, depending on the signing policy. Use short TTLs, narrow scope and storage-level controls."],["Q085",16,"How should deletion work when data has replicas and projections?","Define a deletion lifecycle covering authoritative rows, search indexes, caches, objects, events, exports and backups. Track completion and prevent deleted data from reappearing during replay.","Mark account deletion request durably.\nPropagate tombstones to projections and storage owners.\nRebuild logic respects tombstones and retention policy.","Some audit or financial records may follow separate documented retention requirements; this guide does not prescribe legal policy. Minimize sensitive fields in immutable events before creating them. Backup expiry and restore procedures must respect the intended deletion lifecycle.","Removing one database row does not delete copies in a search cluster or cache.","What prevents a replay from recreating a deleted user profile?","Record tombstones/deletion versions and prevent event replay from recreating them; purge dependent projections."],["Q086",17,"How do metrics, logs and traces complement each other?","Metrics summarize behavior over time; logs record detailed events; traces connect stages of a distributed operation. Use stable correlation IDs and consistent semantic fields.","Metric: checkout latency histogram.\nLog: order=o-7, state=PAYMENT_PENDING, reason=timeout.\nTrace: gateway -> order -> inventory -> provider.","Not every request needs a verbose log or stored trace. Sampling, cardinality and retention affect cost and diagnostic coverage. Carry trace context across messages and record the relationship between acceptance and later processing. Avoid logging payloads with secrets.","A trace that starts after a long queue wait can understate the user latency.","Which signal links an HTTP request to its asynchronous workflow?","Use one correlation/trace ID plus the durable operation/event ID across HTTP, outbox and consumer logs."],["Q087",17,"Which golden signals should you monitor?","Track latency, traffic, errors and saturation, plus domain-specific correctness and freshness. Pair user symptoms with resource causes so alerts support diagnosis.","User signals: successful bookings and confirmation latency.\nResource signals: DB lock wait, pool wait and queue age.\nCorrectness: oversell count and unresolved payment outcomes.","CPU alone can look healthy while requests wait on a database or remote service. A business invariant alert may matter more than a small latency increase. Define ownership and runbooks for actionable alerts and suppress noisy non-actionable events.","A broker being reachable does not mean consumers are keeping up.","Which alert fires when accepted work stops progressing?","Alert on oldest pending age, processing success rate and stuck-state counts, not only API success at acceptance."],["Q088",17,"Why can metric cardinality become a production problem?","Every unique label combination can create another time series. Unbounded labels such as user ID or request ID increase memory, storage and query costs.","Good bounded label: operation='checkout', result='timeout'.\nRisky label: request_id='unique-for-every-request'.\nPut detailed identifiers in controlled logs or traces instead.","Even several individually bounded labels can multiply into a large set. Establish budgets for tenant, route and exception labels. Normalize dynamic URL paths into route templates. Use exemplars or trace links when supported to connect a metric spike to diagnostic detail.","Labeling by raw URL can create one series for every object ID.","How many combinations can this label schema produce?","Multiply the number of unique values for all label dimensions; avoid unbounded user_id/ request_id metric labels."],["Q089",17,"How do you find the bottleneck in a slow Java API?","Break down queue, executor, connection acquisition, database, remote call and serialization time. Correlate traces with resource metrics and profiles before changing pool or heap settings.","Observed p99 = 1.8 s.\nTrace: pool acquisition = 1.5 s; SQL = 20 ms.\nInvestigate long transactions and connection budget first.","If SQL itself is slow, inspect plans, row counts and lock waits. If CPU is busy, profile allocation and compute paths. T est a candidate change under representative load and compare the user SLO, not only one local metric.","Increasing threads without locating the wait can increase downstream contention.","Is the connection pool empty because of slow queries, leaks or long transactions?","Check active/idle/awaiting connections, slow-query times, blocked transactions and leaks with trace evidence. Request trace"],["Q090",17,"How should you validate capacity and failure behavior?","Use representative data and workload distributions, measure sustainable throughput and tails, then inject specific failures. Verify invariants and recovery, not just happy- path request counts.","Load: normal + burst + hot tenant + large payload.\nFault: kill consumer after DB commit before acknowledgement.\nExpected: duplicate delivery but one local business effect.","Include cold cache, dependency slowness and recovery backlog. A small deterministic lab proves an algorithmic behavior, not production capacity or distributed correctness. Document environment and assumptions so measurements are reproducible.","A benchmark with only cache hits cannot size the database fallback path.","Can recovery traffic coexist with live traffic without missing the SLO?","Run load plus failover/replay together, measuring user SLOs and recovery times, not only steady-state throughput."],["Q091",18,"How do liveness, readiness and startup probes differ?","Liveness guides restart of a stuck process; readiness guides traffic admission; startup protects slow initialization before other probes begin. Use each for its intended lifecycle question.","Startup: initialization completed.\nReadiness: able to handle this service's traffic.\nLiveness: process is irrecoverably unhealthy without restart.","Probe semantics and orchestration actions must match the platform. Making liveness depend on every remote service can cause cascading restarts during a shared outage. Readiness can reflect critical dependencies while optional features degrade. Avoid expensive probes that worsen overload.","A temporarily unavailable database is not always a reason to restart every API process.","How should readiness behave during connection-pool exhaustion?","Mark unready when the node cannot serve essential requests; prevent tight readiness flapping with sane thresholds. Startup"],["Q092",18,"What does graceful shutdown require?","Stop taking new work, remove the instance from traffic, drain or checkpoint existing work within a budget, and release resources. Durable uncompleted work should be safely redeliverable.","Mark unready -> propagate routing change -> stop admission.\nFinish short requests; checkpoint/ack completed consumer work.\nClose pools before the termination deadline.","Load balancer propagation and existing connections introduce races. For long-lived sockets, communicate reconnect and provide resume positions. Never acknowledge unfinished message effects just to make shutdown faster. A forced kill remains possible, so correctness must survive it.","Graceful shutdown is an optimization for clean exits, not a replacement for crash recovery.","What happens when termination arrives before a payment workflow finishes?","Persist workflow state first. On termination, stop admitting work, drain briefly, then resume from durable state later."],["Q093",18,"How do rolling, canary and blue-green deployment differ?","Rolling replaces instances gradually; canary exposes a small portion of traffic first; blue-green keeps two deployment environments and switches routing. All need compatible data and contracts.","Canary: send 1% of checkout traffic to version B.\nCompare error rate, latency and business invariants.\nIncrease traffic only after the defined observation gate.","Percentages are illustrative, not a fixed safe policy. Mixed versions can share queues and schemas, so validate compatibility in both directions where required. Rollback must consider new data states and side effects, not only code images.","A healthy process startup is not proof that a deployment is safe for users.","What signal detects a canary creating duplicate reservations?","Compare canary duplicate-key conflicts, duplicate reservations per request ID and invariant alerts; abort if they rise."],["Q094",18,"What is an expand-and-contract database migration?","Add compatible structures first, migrate readers and writers through a transition, validate backfill, then remove old structures only after old consumers are gone.","1. Add nullable delivery_window_v2.\n2. Deploy compatible writers; backfill with checkpoints.\n3. Switch reads after validation.\n4. Later enforce constraints and remove old field.","DDL locking and online behavior differ by database and operation. Avoid a single unbounded backfill transaction. A dual-write phase within one local transaction can be manageable; across independent databases it needs additional coordination. T est old application code against the expanded schema.","Dropping the old column before the last old instance stops can break a rolling deploy.","How will you resume a backfill after interruption?","Backfill in small, idempotent batches with a checkpoint/cursor and verification so restart resumes safely. Add column"],["Q095",18,"How do RPO and RTO differ, and why are replicas not enough?","RPO is the acceptable data-loss window; RTO is the acceptable recovery time. Replicas can copy corruption or accidental deletion, so recovery also needs protected backups and tested restoration.","Hypothetical target: RPO 5 minutes; RTO 30 minutes.\nNeed compatible backup/log retention and restore process.\nTest actual restore time and recovered data integrity.","Targets are requirements, not guarantees produced by naming a replication mode. Include credentials, configuration, object data and dependencies in the recovery plan. A failover drill and a backup restore drill verify different failure scenarios.","Three live copies can all reproduce the same erroneous delete.","How do you restore a correct point in time without losing later valid work unnecessarily?","Restore from backup and WAL to a verified point; reconcile later valid operations from independent logs/ providers where possible."],["Q096",19,"How do active-passive and active-active regions differ?","Active-passive routes normal writes to one active region and keeps another for recovery. Active-active serves work in multiple regions and needs explicit data ownership or conflict resolution.","Active-passive: simpler write authority, slower failover path.\nActive-active: local service paths, harder concurrent-write rules.\nHome-region model: each account has one write owner.","The right design depends on recovery targets, latency and the business invariant. Active-active application traffic does not necessarily imply multi-primary writes to every record. Cross-region synchronous coordination can increase write latency and reduce progress during partition.","Two regions accepting the same account debit independently can violate balance rules.","Where is the write authority for a user traveling abroad?","Route to an explicit home/write authority. Traveling users may read locally but send strict"],["Q097",19,"Why is failover more than changing DNS?","Failover must ensure the new authority is ready, old writers cannot continue conflicting writes, data loss is understood, and clients and dependent systems reconnect safely.","Detect failure -> confirm authority decision.\nFence old writer -> promote suitable replica.\nUpdate routing -> reconcile pending external operations.","DNS caching and existing connections make traffic changes gradual. Promotion after asynchronous replication may lose acknowledged writes under some configurations. T est role changes, retries and idempotency during failover. A control-plane error can be more dangerous than a short outage.","Promoting a replica without preventing old-primary writes can create split brain.","How are requests to the old region rejected after promotion?","Use leader epochs, fencing tokens or storage leases so a demoted region cannot accept writes after promotion."],["Q098",19,"What does data locality change in a design?","Placing data near its main access path can reduce latency, transfer cost and coordination. It also affects partition routing, recovery and requirements for where particular data may reside.","Tenant home region stores authoritative records.\nGlobal directory maps tenant -> home region.\nPublic static assets can be replicated near readers.","Directory updates become part of tenant migration. Region requirements may arise from contracts or policy; verify the applicable requirement rather than assuming all data must be globally copied. Model cross-region access explicitly for users and background workers.","A global cache can undermine an otherwise carefully scoped locality policy.","How do you move a tenant without two simultaneous write owners?","Pause its writes, copy/verify state, flip versioned routing, then enable one new owner; reject stale route versions."],["Q099",19,"How can conflict resolution change business meaning?","Last-write-wins, merging and conflict-preserving strategies each encode a policy. Choose a strategy that matches the data, rather than using timestamps as a universal correctness solution.","Profile nickname: last-write-wins may be acceptable.\nSet of likes: merge identities under a defined model.\nAccount balance: arbitrary last-write-wins loses valid money movements.","Wall-clock skew and ties can distort timestamp ordering. Some data types support useful convergent merge semantics, but reversals and business constraints still require care. For critical operations, avoid conflicting independent writers or use an appropriate coordinated protocol.","Eventual convergence does not establish that the converged value is correct for the business.","Can two concurrent valid operations both be preserved?","Some operations are commutative (two increments); two purchases for one remaining item"],["Q100",19,"What should a region-outage runbook include?","Describe detection, authority and fencing, promotion, traffic admission, dependency readiness, recovery validation and eventual return. Assign owners and define a stopping condition for unsafe ambiguity.","Check replication position and expected loss window.\nVerify identity, secrets, DB, broker and object access.\nTrack pending workflows through stable request IDs.","Practice with partial outages, not just complete region disappearance. Returning to the old topology needs synchronization and ownership transfer just like initial failover. Communication and status systems should not rely only on the failing region.","A second region without tested credentials and dependencies is not a complete recovery capability.","How will you prove the system is safe before restoring normal write traffic?","Identify owners, promotion steps, write fencing, data checks, DNS/client routing, rollback, contacts and drills."],["Q101",20,"How do fixed-window and sliding-window rate limits compare?","Fixed windows count requests in discrete periods and are simple, but allow boundary bursts. Sliding-window approaches smooth the boundary with more state or an approximation.","Fixed limit: 100/minute.\n100 requests at 12:00:59 and 100 at 12:01:00:\n200 requests can arrive within two seconds.","A sliding log stores request times for exact rolling counts but uses memory proportional to traffic. Bucketed or weighted counters reduce cost with approximate behavior. Choose precision according to abuse risk and budget. The rejection response should explain retry behavior when useful.","A per-minute quota does not necessarily protect short-term concurrency.","What burst can a caller create near a window boundary?","A caller can send nearly a full limit just before reset and another full limit just after it: almost 2x briefly."],["Q102",20,"How does a token bucket work?","Tokens accumulate up to a capacity; each admitted request consumes tokens. The refill rate controls long-term throughput and capacity controls the permitted burst.","Capacity = 10 tokens; refill = 2 tokens/s.\nInitially allow a burst of 10.\nAfter exhaustion, roughly 2 new unit requests/s can proceed.","Use an appropriate monotonic time source for elapsed time in a local limiter. Concurrent checks and consumption must be atomic. Weighted operations can consume different token amounts. A distributed implementation needs a shared atomic state transition or an explicitly approximate policy.","Running this bucket independently in five instances multiplies the aggregate permitted rate.","What should happen when the request costs more than bucket capacity?","Reject an oversized request rather than wait forever; validate cost > 0 and document whether partial tokens are allowed."],["Q103",20,"How do you enforce a distributed quota?","Choose a single authoritative state transition per quota key, or explicitly allocate approximate budgets to nodes. Define accuracy, latency and behavior when the coordinator is unavailable.","Key: tenant + operation + policyVersion.\nAtomic check/refill/decrement in shared storage.\nLocal emergency concurrency caps protect each process.","An atomic Redis script or dedicated quota service can coordinate a key, but storage failover and partition behavior still matter. For some APIs, temporary approximate quotas are acceptable; for financial limits, they may not be. Global coordination can become a latency or hot-key bottleneck.","An eventually consistent read-then-write counter does not provide an exact global quota.","Which policy is used during a quota-store outage?","Use a central atomic counter/script or partitioned quota allocation; define consistency and fallback when unavailable."],["Q104",20,"How do quotas and fairness differ?","A quota caps usage; fairness prevents one workload from starving others within shared capacity. Use per-tenant budgets, bounded queues or scheduling policies according to the product contract.","Tenant A: 10,000 queued reports.\nTenant B: 1 interactive request.\nA single FIFO can make B wait behind all of A's work.","Separate interactive and batch traffic or use weighted scheduling. Reserve capacity for control and recovery work when necessary. T enant-specific limits should avoid high-cardinality metric explosions and have a manageable configuration lifecycle.","Global rate limiting can protect the system while still allowing one tenant to dominate it.","What maximum wait can a small tenant experience during a large import?","Use per-tenant queues/weights and maximum waits; a big import must not monopolize shared capacity."],["Q105",20,"Should a limiter fail open or fail closed?","Choose per operation based on the consequence of excess work versus denied work. Document the fallback, apply local protection, and expose degraded enforcement to monitoring.","Public product reads: may use a cautious local fallback.\nPaid external SMS: tighter admission may be required.\nCritical money limit: do not invent availability guarantees.","There is no universal safe setting. A fail-open policy can overload an already damaged dependency; a fail- closed policy can create an outage from the limiter itself. Use cached policy and bounded local budgets when appropriate, with clear accuracy limits.","Treating every quota as a security invariant can unnecessarily reject harmless reads.","How long may degraded quota enforcement continue?","Only a short, documented period with extra alarms and reduced access, based on risk and capacity."],["Q106",21,"How do database sequences, random IDs and time- based IDs compare?","Sequences simplify compact uniqueness in one authority; random IDs enable decentralized generation; time-based layouts can improve ordering but need clock and node-identity handling.","Sequence -> compact, may reveal volume.\nRandom UUID -> decentralized, larger keys.\nTime-based ID -> timestamp + node + local sequence.","Uniqueness and unpredictability are separate requirements. A unique ID is not an access-control mechanism. Distributed time-based generators need defined behavior on clock rollback, sequence exhaustion and duplicated node identifiers. Index locality and storage overhead should influence the choice.","Encoding a sequential number does not make it secret.","What happens if two nodes accidentally use the same generator identity?","Detect duplicate generator IDs, fence the node, and use collision-resistant IDs or a durable"],["Q107",21,"Why use Base62 for short codes, and what does it not solve?","Base62 represents numbers with letters and digits to make a compact URL-friendly code. Encoding alone neither creates unique IDs nor protects against guessing.","Alphabet size = 62.\nSix characters offer 62^6 = 56,800,235,584 combinations.\nRandom selection still needs collision detection and retry.","Use a unique database constraint on the code and an appropriate allocation strategy. Sequential IDs encoded in Base62 avoid random collisions but can reveal patterns. Add moderation and redirect safety rules independently. Confirm allowed characters and case sensitivity across clients and storage.","A huge namespace does not make random collision probability zero.","How would you allocate a user-selected custom alias safely?","Enforce a unique alias index/conditional insert and return conflict when someone else owns it."],["Q108",21,"What is a Bloom filter useful for?","It is a compact probabilistic membership structure that can say definitely absent or possibly present, under its normal no-deletion and consistent-population assumptions. Verify positive results in authoritative storage.","Request for code XYZ.\nFilter says absent -> skip lookup only if filter coverage is valid.\nFilter says present -> check the database.","False positives create extra lookups. Stale population, unsafe deletion or incomplete rebuilds can create application-level false negatives even when the core algorithm does not. Estimate capacity and false- positive rate before choosing bit and hash counts.","Never use a possibly-present answer as proof that a record exists.","What happens to newly created records before the filter update arrives?","A stale filter can say 'not found' for a new record. Read source-of-truth during refresh or choose a freshness protocol."],["Q109",21,"When is rendezvous hashing useful?","It assigns a key to the node with the highest deterministic key-node score. Adding a node moves only keys won by the new node, which makes membership changes easier to reason about.","score = hash(key + delimiter + stableNodeId).\nowner = node with the maximum unsigned score.\nUse identical encoding and tie-breaking on every client.","The simple method checks each node, so cost grows with membership size. Weighted versions can account for unequal capacity. The Java lab verifies the limited-remapping property when adding one node, but it does not implement distributed migration or failure detection.","Java hashCode is not a complete stable cross-language routing specification.","How will routing configurations be versioned during membership changes?","Distribute a routing epoch; old clients must refresh or be rejected/redirected during rebalance."],["Q110",21,"How can probabilistic structures and approximate counters be used responsibly?","Use approximation where the product can tolerate bounded error, document the error model, and keep correctness-critical decisions on an authoritative path.","Approximate distinct visitors: useful analytics.\nApproximate item popularity: useful ranking signal.\nAvailable money or remaining tickets: enforce exact policy.","Error bounds, merge behavior and reset semantics differ by algorithm. A metric approximation can be useful without being valid for billing. Include estimation error and pipeline lag in the dashboard meaning. Avoid claiming exact totals because repeated runs happen to match small test data.","An approximate traffic estimate should not silently determine an exact financial settlement.","Which decisions remain correct when the estimate is wrong?","Use estimates for caching, analytics or hints; never authorize charges, ownership or hard quotas from a guessed count."],["Q111",22,"How should money be represented in Java and storage?","Use a defined currency and exact representation, such as integer minor units or BigDecimal with explicit scale and rounding policy. Do not use binary floating point for authoritative monetary calculations.","record Money(String currency, long minorUnits) {}\nUSD 12.34 -> minorUnits 1234 under a two-decimal policy.\nUse checked arithmetic and validate matching currencies.","Currencies and business instruments can have different scales, so do not assume two decimals universally. Overflow, rounding and exchange rates need explicit rules. A ledger records movements and supports reconciliation more reliably than overwriting a balance without history.","BigDecimal constructed from a double can preserve an unintended binary approximation.","At which boundary is tax or exchange rounding applied?","Round at the defined business stage and currency scale; persist the rounding rule and exact resulting minor units."],["Q112",22,"Why use reservation states instead of immediately reducing final availability?","A reservation models temporary ownership while a workflow completes. Expiry, confirmation and release are explicit transitions with one authoritative decision per resource.","AVAILABLE -> HELD -> CONFIRMED\nHELD -> EXPIRED or RELEASED\nConfirm only if hold is active and belongs to the caller.","An expiry worker and confirmation can race, so the database must arbitrate using conditional updates or locks. The timeout shown to a client should reflect server policy, not only a local countdown. Decide the outcome of payment success after the hold expired.","A scheduled Java timer in one instance is not a durable global expiry mechanism.","Which transition wins if confirmation and expiry execute simultaneously?","One atomic state transition wins. The losing worker rereads the final status and must not reverse confirmation."],["Q113",22,"How should payment states handle an unknown outcome?","Persist an explicit pending or unknown state, reuse a stable provider key, and query or reconcile before issuing a new effect. A timeout is not evidence that the provider failed.","CREATED -> SUBMITTED -> SUCCEEDED or DECLINED\nSUBMITTED -> UNKNOWN after a lost response\nUNKNOWN -> reconciled final state using the same provider reference","Callbacks can arrive before or after polling results; duplicate and out-of-order updates need a valid transition policy. Keep order state separate from payment state when they have different ownership. Manual review is a valid terminal escalation for unresolved ambiguity.","Automatically charging again after every timeout can create duplicate payments.","How do you handle a success callback after the UI has shown pending?","Keep the order PENDING/RECONCILING, accept a verified late callback idempotently and update the UI safely."],["Q114",22,"How can a local ledger transfer remain correct under retries?","Use a stable command identity, balanced ledger entries and a transaction enforcing account and currency rules. Commit deduplication and the local transfer together.","Command transfer-9:\nDebit A by 500; credit B by 500 in the same currency.\nUNIQUE(command_id) prevents repeated local application.","Lock ordering, insufficient funds and serialization conflicts require explicit handling. A transfer to another independent institution is a distributed workflow with settlement and reconciliation, not merely a two- row update. Define whether account balances are derived or materialized and how they are checked.","A globally unique ID alone does not stop duplicate execution unless it is enforced.","How do concurrent debits avoid taking an account below its permitted balance?","Lock/conditionally update the balance in one transaction, enforce minimum balance and deduplicate transfer IDs."],["Q115",22,"What does a notification delivery guarantee actually mean?","Accepted, sent to provider, delivered to a device and read by a person are different states. Promise only the state you can observe and control, and retain stable identities across retries.","Notification n-42:\nQUEUED -> PROVIDER_ACCEPTED -> DELIVERED when reported.\nRead receipts are a separate product behavior.","Provider callbacks can be duplicated or delayed. Email and SMS may not support perfect deduplication or delivery evidence. Opt-out and preference changes should be checked at the appropriate sending boundary. Define expiration so stale messages do not arrive long after they are useful.","A successful provider HTTP response does not necessarily prove device delivery.","Which state should the dashboard display during provider ambiguity?","Show 'delivery unknown / checking' rather than 'failed' or 'delivered' until provider evidence arrives."],["Q116",23,"The cache disappears and the database collapses: what would you change?","Treat cache loss as a planned workload, bound fallback concurrency, coalesce reloads and prioritize essential requests. Rebuild gradually instead of flooding the database.","Before: every miss immediately queries DB.\nAfter: bounded loaders + short waits + permitted stale serving.\nCold-cache load test verifies recovery budget.","Separate cache misses, cache timeouts and total cache outage in metrics. A circuit breaker on the cache can reduce repeated delays, but the database still needs admission control. Warm-up should avoid all instances loading the same keys simultaneously.","Increasing database connections without checking DB capacity can accelerate collapse.","Which requests will be rejected while the cache warms?","Reject low-value/nonessential fallback queries first, protect critical checkout and cap DB reload concurrency."],["Q117",23,"Consumer lag rises while CPU is low: how do you investigate?","Measure queue age, partition skew, database or provider waits, retry volume and processing concurrency. Low CPU suggests waiting or uneven work, not necessarily spare usable capacity.","One partition contains a huge tenant.\nOther consumers idle while that partition waits on DB locks.\nAdding consumers does not divide this partition automatically.","Inspect per-partition lag and duration, not only total backlog. Check ordering constraints before parallelizing effects. A poison event can block progress, while repeated transient failures can consume the entire retry budget. Fix the bottleneck and test backlog recovery alongside live traffic.","Scaling consumers beyond partition or downstream limits may create no throughput gain.","Can the hot tenant be repartitioned without breaking ordering?","Only with a new partition key/mapping and replay plan. Per-entity order must still be defined and preserved."],["Q118",23,"A deployment produces duplicate orders: where do you look first?","Verify stable request identities, durable uniqueness, transaction boundaries and compatibility between versions. Trace one duplicate from client retries through gateways, services and event consumers.","Version A scopes key by customer + request ID.\nVersion B accidentally scopes by instance + request ID.\nMixed deployment can admit the same command twice.","Compare the actual persisted records and constraint definitions, not just code annotations. Check whether keys expired, payload fingerprints changed or a proxy interception was bypassed. Stop expansion of the bad version and reconcile effects according to business policy.","Deleting duplicates without understanding payment and inventory effects can corrupt state.","Which database constraint would have prevented the regression?","A unique constraint on the real caller scope and stable request key would reject the duplicate even across versions."],["Q119",23,"What should a strong design tradeoff explanation sound like?","Name the chosen guarantee and its cost, describe the alternative, and connect the choice to a requirement. Avoid presenting technologies as universally better.","Choice: route stock confirmation to one write authority.\nBenefit: one correct reservation ordering.\nCost: higher remote latency and unavailable writes on lost authority.\nAlternative: regional stock allocation with explicit budgets.","The alternative can improve local availability but adds allocation and rebalancing complexity. Quantify the assumptions that make the decision reasonable. Describe the trigger for revisiting it, such as regional demand or a tighter latency target.","Saying 'it scales better' without naming the bottleneck and cost is incomplete.","What changed requirement would make you choose the alternative?","Choose regional allocation when low local write latency or regional independence becomes a hard requirement and quotas can be split."],["Q120",23,"How should you finish an interview design answer?","Summarize the user journey, guarantees, bottleneck, failure behavior and next evolution. Check that every important requirement maps to an explicit mechanism and observable signal.","Booking guarantee -> conditional DB transition.\nRetry guarantee -> durable request key and stored result.\nRecovery -> outbox, reconciliation and tested restoration.\nScale -> indexed reads, cache, partitioning when justified.","Invite a deep dive into the highest-risk boundary if time remains. Explain one limitation honestly and how you would validate it before production. The goal is a defensible system with clear assumptions, not an elaborate diagram filled with tools.","Do not finish with an unsupported claim that the design has no single point of failure.","What experiment would you run first before implementing this system?","Run a concurrent invariant test or failure-injection prototype around the riskiest component, such as last- seat booking."]],"labs":[["C01 — T oken bucket with an injected clock","Full standalone source: Lab01.java · No framework dependencies · `javac --release 17 Lab01.java`","public class Lab01 {\nstatic final class Bucket {\nfinal double capacity, perSecond;\ndouble tokens; long lastNanos;\nBucket(double capacity, double rate, long now) {\nif (capacity <= 0 || rate <= 0 || !Double.isFinite(capacity)\n|| !Double.isFinite(rate)) throw new IllegalArgumentException();\nthis.capacity = capacity; perSecond = rate;\ntokens = capacity; lastNanos = now;\n}\nsynchronized boolean allow(double cost, long now) {\nif (cost <= 0 || !Double.isFinite(cost))\nthrow new IllegalArgumentException();\nif (now < lastNanos) throw new IllegalArgumentException(\"clock\");\ntokens = Math.min(capacity,\ntokens + (now - lastNanos) / 1_000_000_000d * perSecond);\nlastNanos = now;\nif (tokens < cost) return false;\ntokens -= cost; return true;\n}\n}\npublic static void main(String[] args) {\nvar b = new Bucket(2, 1, 0);\nboolean a = b.allow(1, 0), c = b.allow(1, 0);\nboolean blocked = !b.allow(1, 0);\nboolean refill = b.allow(1, 1_000_000_000L);\nboolean oversized = !b.allow(3, 5_000_000_000L);\nboolean invalid = false;\ntry { b.allow(0, 5_000_000_000L); }\ncatch (IllegalArgumentException ex) { invalid = true; }\nif (!(a && c && blocked && refill && oversized && invalid))\nthrow new AssertionError();\nSystem.out.println(\"burst=2; blocked=true; refill=true\");\nSystem.out.println(\"oversized rejected; zero cost rejected\");\n}\n}\nVERIFIED OUTPUT\nburst=2; blocked=true; refill=true\noversized rejected; zero cost rejected\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab01 Java 17 · exact source in companion ZIP"],["C02 — Bounded LRU cache","Full standalone source: Lab02.java · No framework dependencies · `javac --release 17 Lab02.java`","import java.util.*;\npublic class Lab02 {\nstatic final class Lru<K,V> {\nprivate final int capacity;\nprivate final LinkedHashMap<K,V> data =\nnew LinkedHashMap<>(16, 0.75f, true);\nLru(int capacity) {\nif (capacity < 1) throw new IllegalArgumentException();\nthis.capacity = capacity;\n}\nsynchronized V get(K key) { return data.get(key); }\nsynchronized void put(K key, V value) {\nObjects.requireNonNull(key); Objects.requireNonNull(value);\ndata.put(key, value);\nif (data.size() > capacity)\ndata.remove(data.keySet().iterator().next());\n}\nsynchronized List<K> keys() { return List.copyOf(data.keySet()); }\n}\npublic static void main(String[] args) {\nvar cache = new Lru<String,Integer>(2);\ncache.put(\"a\", 1); cache.put(\"b\", 2); cache.get(\"a\");\ncache.put(\"c\", 3);\nif (cache.get(\"b\") != null) throw new AssertionError();\nif (!cache.keys().equals(List.of(\"a\", \"c\")))\nthrow new AssertionError();\ncache.put(\"a\", 9);\nif (cache.get(\"a\") != 9 || cache.keys().size() != 2)\nthrow new AssertionError();\nSystem.out.println(\"b evicted; a retained; update does not grow cache\");\n}\n}\nVERIFIED OUTPUT\nb evicted; a retained; update does not grow cache\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab02 Java 17 · exact source in companion ZIP"],["C03 — TTL cache with deterministic expiry","Full standalone source: Lab03.java · No framework dependencies · `javac --release 17 Lab03.java`","import java.util.*;\npublic class Lab03 {\nrecord Entry(String value, long expiresAt) {}\nstatic final class Cache {\nprivate final Map<String,Entry> data = new HashMap<>();\nsynchronized void put(String key, String value, long now, long ttl) {\nif (ttl <= 0) throw new IllegalArgumentException();\ndata.put(Objects.requireNonNull(key),\nnew Entry(Objects.requireNonNull(value), Math.addExact(now, ttl)));\n}\nsynchronized String get(String key, long now) {\nvar e = data.get(key);\nif (e == null) return null;\nif (now >= e.expiresAt()) { data.remove(key); return null; }\nreturn e.value();\n}\n}\npublic static void main(String[] args) {\nvar c = new Cache();\nc.put(\"p\", \"v1\", 100, 10);\nif (!\"v1\".equals(c.get(\"p\", 109))) throw new AssertionError();\nif (c.get(\"p\", 110) != null) throw new AssertionError();\nc.put(\"p\", \"v2\", 110, 20);\nif (!\"v2\".equals(c.get(\"p\", 120))) throw new AssertionError();\nif (c.get(\"missing\", 120) != null) throw new AssertionError();\nboolean overflow = false;\ntry { c.put(\"x\", \"x\", Long.MAX_VALUE, 1); }\ncatch (ArithmeticException ex) { overflow = true; }\nif (!overflow) throw new AssertionError();\nSystem.out.println(\"fresh at 109; expired at 110; replacement works\");\nSystem.out.println(\"missing returns null; expiry overflow rejected\");\n}\n}\nVERIFIED OUTPUT\nfresh at 109; expired at 110; replacement works\nmissing returns null; expiry overflow rejected\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab03 Java 17 · exact source in companion ZIP"],["C04 — Rendezvous hashing and limited remapping","Full standalone source: Lab04.java · No framework dependencies · `javac --release 17 Lab04.java`","import java.util.*;\nimport java.nio.charset.StandardCharsets;\nimport java.security.MessageDigest;\nimport java.nio.ByteBuffer;\npublic class Lab04 {\nstatic long score(String key, String node) {\ntry {\nbyte[] hash = MessageDigest.getInstance(\"SHA-256\")\n.digest((key + \"\\0\" + node).getBytes(StandardCharsets.UTF_8));\nreturn ByteBuffer.wrap(hash).getLong();\n} catch (Exception ex) { throw new IllegalStateException(ex); }\n}\nstatic String owner(String key, List<String> nodes) {\nif (nodes.isEmpty()) throw new IllegalArgumentException();\nreturn nodes.stream().max((a,b) -> {\nint c = Long.compareUnsigned(score(key,a), score(key,b));\nreturn c != 0 ? c : a.compareTo(b);\n}).orElseThrow();\n}\npublic static void main(String[] args) {\nvar oldNodes = List.of(\"A\", \"B\", \"C\");\nvar newNodes = List.of(\"A\", \"B\", \"C\", \"D\");\nint moved = 0;\nfor (int i = 0; i < 1000; i++) {\nString key = \"k\" + i;\nString before = owner(key, oldNodes), after = owner(key, newNodes);\nif (!before.equals(after)) {\nmoved++;\nif (!after.equals(\"D\")) throw new AssertionError();\n}\nif (!before.equals(owner(key, List.of(\"C\", \"A\", \"B\"))))\nthrow new AssertionError();\n}\nif (moved == 0 || moved == 1000) throw new AssertionError();\nSystem.out.println(\"all moved keys go to D; list order is irrelevant\");\n}\n}\nVERIFIED OUTPUT\nall moved keys go to D; list order is irrelevant\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab04 Java 17 · exact source in companion ZIP"],["C05 — Executor bulkhead and rejection","Full standalone source: Lab05.java · No framework dependencies · `javac --release 17 Lab05.java`","import java.util.concurrent.*;\npublic class Lab05 {\npublic static void main(String[] args) throws Exception {\nvar started = new CountDownLatch(1);\nvar release = new CountDownLatch(1);\nvar pool = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS,\nnew ArrayBlockingQueue<Runnable>(1),\nnew ThreadPoolExecutor.AbortPolicy());\nboolean rejected = false;\nFuture<Integer> queued = null;\ntry {\npool.execute(() -> {\nstarted.countDown();\ntry { release.await(); }\ncatch (InterruptedException ex) { Thread.currentThread().interrupt(); }\n});\nif (!started.await(2, TimeUnit.SECONDS)) throw new AssertionError();\nqueued = pool.submit(() -> 7);\ntry { pool.submit(() -> 9); }\ncatch (RejectedExecutionException ex) { rejected = true; }\nif (!rejected) throw new AssertionError();\n} finally {\nrelease.countDown(); pool.shutdown();\n}\nif (queued == null || queued.get(2, TimeUnit.SECONDS) != 7)\nthrow new AssertionError();\nif (!pool.awaitTermination(2, TimeUnit.SECONDS)) {\npool.shutdownNow(); throw new AssertionError();\n}\nSystem.out.println(\"one running; one queued; third rejected\");\nSystem.out.println(\"queued work completes after release\");\n}\n}\nVERIFIED OUTPUT\none running; one queued; third rejected\nqueued work completes after release\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab05 Java 17 · exact source in companion ZIP"],["C06 — Single-flight loading for concurrent misses","Full standalone source: Lab06.java · No framework dependencies · `javac --release 17 Lab06.java`","import java.util.concurrent.*;\nimport java.util.concurrent.atomic.AtomicInteger;\nimport java.util.function.Supplier;\npublic class Lab06 {\nstatic final class Flights {\nfinal ConcurrentHashMap<String,CompletableFuture<String>> active =\nnew ConcurrentHashMap<>();\nfinal CountDownLatch joined = new CountDownLatch(1); // test observation\nString get(String key, Supplier<String> loader) {\nvar mine = new CompletableFuture<String>();\nvar existing = active.putIfAbsent(key, mine);\nif (existing != null) { joined.countDown(); return existing.join(); }\ntry {\nString result = loader.get(); mine.complete(result); return result;\n} catch (RuntimeException | Error ex) {\nmine.completeExceptionally(ex); throw ex;\n} finally { active.remove(key, mine); }\n}\n}\npublic static void main(String[] args) throws Exception {\nvar f = new Flights(); var calls = new AtomicInteger();\nvar entered = new CountDownLatch(1); var release = new CountDownLatch(1);\nvar pool = Executors.newFixedThreadPool(2);\ntry {\nvar first = pool.submit(() -> f.get(\"p\", () -> {\ncalls.incrementAndGet(); entered.countDown();\ntry { release.await(); }\ncatch (InterruptedException ex) { throw new RuntimeException(ex); }\nreturn \"value\";\n}));\nif (!entered.await(2, TimeUnit.SECONDS)) throw new AssertionError();\nvar second = pool.submit(() -> f.get(\"p\", () -> {\nthrow new AssertionError(\"duplicate load\");\n}));\nif (!f.joined.await(2, TimeUnit.SECONDS)) throw new AssertionError();\nrelease.countDown();\nif (!second.get(2, TimeUnit.SECONDS).equals(\"value\") ||\n!first.get(2, TimeUnit.SECONDS).equals(\"value\"))\nthrow new AssertionError();\nif (calls.get() != 1 || !f.active.isEmpty()) throw new AssertionError();\nSystem.out.println(\"two callers; one load; in-flight entry removed\");\n} finally { release.countDown(); pool.shutdownNow(); }\n}\n}\nVERIFIED OUTPUT\ntwo callers; one load; in-flight entry removed\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab06 Java 17 · exact source in companion ZIP"],["C07 — Local idempotency and conflicting intent","Full standalone source: Lab07.java · No framework dependencies · `javac --release 17 Lab07.java`","import java.util.*;\npublic class Lab07 {\nrecord Request(String customer, String key, long amount) {}\nrecord Scope(String customer, String key) {}\nrecord Stored(Request request, String response) {}\nstatic final class Service {\nfinal Map<Scope,Stored> completed = new HashMap<>();\nint effects;\nsynchronized String apply(Request r) {\nif (r.amount() <= 0) throw new IllegalArgumentException();\nvar scope = new Scope(r.customer(), r.key());\nvar old = completed.get(scope);\nif (old != null) {\nif (!old.request().equals(r))\nthrow new IllegalArgumentException(\"key reused with new intent\");\nreturn old.response();\n}\nString result = \"order-\" + (++effects);\ncompleted.put(scope, new Stored(r, result));\nreturn result;\n}\n}\npublic static void main(String[] args) {\nvar s = new Service(); var r = new Request(\"c1\", \"k1\", 500);\nString a = s.apply(r), b = s.apply(r);\nboolean conflict = false;\ntry { s.apply(new Request(\"c1\", \"k1\", 700)); }\ncatch (IllegalArgumentException ex) { conflict = true; }\nString other = s.apply(new Request(\"c2\", \"k1\", 500));\nif (!a.equals(b) || a.equals(other) || !conflict || s.effects != 2)\nthrow new AssertionError();\nSystem.out.println(\"retry returns order-1; conflicting intent rejected\");\nSystem.out.println(\"other caller has a separate scope; effects=2\");\n}\n}\nVERIFIED OUTPUT\nretry returns order-1; conflicting intent rejected\nother caller has a separate scope; effects=2\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab07 Java 17 · exact source in companion ZIP"],["C08 — Concurrent inventory with compare-and-set","Full standalone source: Lab08.java · No framework dependencies · `javac --release 17 Lab08.java`","import java.util.concurrent.*;\nimport java.util.concurrent.atomic.AtomicInteger;\npublic class Lab08 {\nstatic final class Stock {\nfinal AtomicInteger available = new AtomicInteger(3);\nboolean reserve(int quantity) {\nif (quantity <= 0) throw new IllegalArgumentException();\nwhile (true) {\nint old = available.get();\nif (old < quantity) return false;\nif (available.compareAndSet(old, old - quantity)) return true;\n}\n}\n}\npublic static void main(String[] args) throws Exception {\nvar stock = new Stock(); var wins = new AtomicInteger();\nvar start = new CountDownLatch(1);\nvar pool = Executors.newFixedThreadPool(8);\ntry {\nvar tasks = new java.util.ArrayList<Future<?>>();\nfor (int i = 0; i < 20; i++) tasks.add(pool.submit(() -> {\ntry { start.await(); }\ncatch (InterruptedException ex) { throw new RuntimeException(ex); }\nif (stock.reserve(1)) wins.incrementAndGet();\n}));\nstart.countDown();\nfor (var task : tasks) task.get(2, TimeUnit.SECONDS);\nif (wins.get() != 3 || stock.available.get() != 0)\nthrow new AssertionError();\nboolean invalid = false;\ntry { stock.reserve(-1); }\ncatch (IllegalArgumentException ex) { invalid = true; }\nif (!invalid) throw new AssertionError();\nSystem.out.println(\"20 callers; 3 reservations; stock=0\");\nSystem.out.println(\"negative quantity rejected\");\n} finally { start.countDown(); pool.shutdownNow(); }\n}\n}\nVERIFIED OUTPUT\n20 callers; 3 reservations; stock=0\nnegative quantity rejected\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab08 Java 17 · exact source in companion ZIP"],["C09 — Cursor pagination with equal timestamps","Full standalone source: Lab09.java · No framework dependencies · `javac --release 17 Lab09.java`","import java.util.*;\npublic class Lab09 {\nrecord Row(long time, long id) {}\nstatic final Comparator<Row> ORDER =\nComparator.comparingLong(Row::time).thenComparingLong(Row::id)\n.reversed();\nstatic List<Row> page(List<Row> rows, Row cursor, int size) {\nif (size < 1) throw new IllegalArgumentException();\nreturn rows.stream().filter(r -> cursor == null ||\nr.time() < cursor.time() ||\n(r.time() == cursor.time() && r.id() < cursor.id()))\n.sorted(ORDER).limit(size).toList();\n}\npublic static void main(String[] args) {\nvar rows = List.of(new Row(10,1), new Row(10,2),\nnew Row(10,3), new Row(9,4));\nvar first = page(rows, null, 2);\nvar second = page(rows, first.get(first.size()-1), 2);\nif (!first.equals(List.of(new Row(10,3), new Row(10,2))))\nthrow new AssertionError();\nif (!second.equals(List.of(new Row(10,1), new Row(9,4))))\nthrow new AssertionError();\nif (!page(rows, second.get(1), 2).isEmpty()) throw new AssertionError();\nSystem.out.println(\"page1 IDs=[3, 2]; page2 IDs=[1, 4]\");\nSystem.out.println(\"same-time rows are neither skipped nor repeated\");\n}\n}\nVERIFIED OUTPUT\npage1 IDs=[3, 2]; page2 IDs=[1, 4]\nsame-time rows are neither skipped nor repeated\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab09 Java 17 · exact source in companion ZIP"],["C10 — Fencing stale owners at a resource","Full standalone source: Lab10.java · No framework dependencies · `javac --release 17 Lab10.java`","public class Lab10 {\nstatic final class Resource {\nlong acceptedFence = -1; String value = \"initial\";\nsynchronized boolean write(long fence, String next) {\nif (fence < acceptedFence) return false;\nacceptedFence = fence; value = next; return true;\n}\n}\npublic static void main(String[] args) {\nvar r = new Resource();\nif (!r.write(7, \"A-first\")) throw new AssertionError();\nif (!r.write(8, \"B-current\")) throw new AssertionError();\nif (r.write(7, \"A-stale\")) throw new AssertionError();\nif (!r.value.equals(\"B-current\")) throw new AssertionError();\nif (!r.write(8, \"B-next\")) throw new AssertionError();\nSystem.out.println(\"fence 8 accepted; stale fence 7 rejected\");\nSystem.out.println(\"same current owner may write again\");\n}\n}\nVERIFIED OUTPUT\nfence 8 accepted; stale fence 7 rejected\nsame current owner may write again\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab10 Java 17 · exact source in companion ZIP"],["C11 — Reservation expiry versus confirmation","Full standalone source: Lab11.java · No framework dependencies · `javac --release 17 Lab11.java`","public class Lab11 {\nenum State { HELD, CONFIRMED, EXPIRED, RELEASED }\nstatic final class Hold {\nfinal long expiresAt; State state = State.HELD;\nHold(long expiresAt) { this.expiresAt = expiresAt; }\nsynchronized boolean \u0063onfirm(long now) {\nif (state == State.CONFIRMED) return true;\nif (state != State.HELD) return false;\nif (now >= expiresAt) { state = State.EXPIRED; return false; }\nstate = State.CONFIRMED; return true;\n}\nsynchronized boolean expire(long now) {\nif (state == State.HELD && now >= expiresAt) {\nstate = State.EXPIRED; return true;\n}\nreturn false;\n}\n}\npublic static void main(String[] args) {\nvar timely = new Hold(100);\nif (!timely.\u0063onfirm(99) || !timely.\u0063onfirm(101))\nthrow new AssertionError();\nif (timely.expire(101)) throw new AssertionError();\nvar late = new Hold(100);\nif (late.\u0063onfirm(100) || late.state != State.EXPIRED)\nthrow new AssertionError();\nvar swept = new Hold(100);\nif (!swept.expire(100) || swept.\u0063onfirm(101))\nthrow new AssertionError();\nSystem.out.println(\"confirmed retry stays confirmed; expiry cannot undo it\");\nSystem.out.println(\"exact expiry rejects confirmation; sweep wins are final\");\n}\n}\nVERIFIED OUTPUT\nconfirmed retry stays confirmed; expiry cannot undo it\nexact expiry rejects confirmation; sweep wins are final\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab11 Java 17 · exact source in companion ZIP"],["C12 — Outbox redelivery and local consumer deduplication","Full standalone source: Lab12.java · No framework dependencies · `javac --release 17 Lab12.java`","import java.util.*;\npublic class Lab12 {\nrecord Event(String id, long amount) {}\nstatic final class ProducerModel {\nfinal List<Event> outbox = new ArrayList<>();\nint orders;\nsynchronized void create(String eventId, long amount) {\norders++; outbox.add(new Event(eventId, amount));\n}\n}\nstatic final class ConsumerModel {\nfinal Set<String> seen = new HashSet<>(); long total;\nsynchronized boolean apply(Event event) {\nif (seen.contains(event.id())) return false;\nlong next = Math.addExact(total, event.amount());\nseen.add(event.id()); total = next; return true;\n}\n}\npublic static void main(String[] args) {\nvar p = new ProducerModel(); var c = new ConsumerModel();\np.create(\"e-1\", 500);\nvar event = p.outbox.get(0);\nif (!c.apply(event) || c.apply(event)) throw new AssertionError();\nif (c.total != 500 || c.seen.size() != 1 || p.orders != 1)\nthrow new AssertionError();\nboolean overflow = false;\ntry { c.apply(new Event(\"e-2\", Long.MAX_VALUE)); }\ncatch (ArithmeticException ex) { overflow = true; }\nif (!overflow || c.seen.contains(\"e-2\") || c.total != 500)\nthrow new AssertionError();\nSystem.out.println(\"duplicate e-1 ignored; total=500\");\nSystem.out.println(\"failed effect does not store its dedup marker\");\n}\n}\nVERIFIED OUTPUT\nduplicate e-1 ignored; total=500\nfailed effect does not store its dedup marker\nPractice boundary: This proves the local model's included checks, not a durable multi-node production guarantee. Add\nconcurrency, failure-injection and integration tests before production use.\nRunnable coding exercise Lab12 Java 17 · exact source in companion ZIP"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

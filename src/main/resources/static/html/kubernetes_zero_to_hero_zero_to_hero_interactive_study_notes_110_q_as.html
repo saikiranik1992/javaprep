@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kubernetes Zero to Hero — Zero to Hero Interactive Study Notes (110 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #0284c7;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Kubernetes Zero to Hero</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              22 Chapters · 110 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Illustrated Production Architect Notebook · Pods · Networking · RBAC · Helm · Troubleshooting
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (22)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (110)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 110</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Cloud &amp; Containers</span>
+              <span>•</span>
+              <span>163 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Kubernetes Zero to Hero — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Illustrated Production Architect Notebook (Pods · Networking · RBAC · Helm · Troubleshooting). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 110 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">110</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (22)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 22 Chapters (110 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Kubernetes Zero to Hero</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 110</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Kubernetes Zero to Hero — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Kubernetes Zero to Hero.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Kubernetes Zero to Hero — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"kubernetes","title":"Kubernetes Zero to Hero","subtitle":"Illustrated Production Architect Notebook","category":"Cloud & Containers","badge":"Pods · Networking · RBAC · Helm · Troubleshooting","color":"#0284c7","pages":163,"chapters":["Kubernetes foundations","Control plane and node architecture","Pods, containers and lifecycle","Deployments, ReplicaSets and rollouts","Services, DNS and traffic paths","Ingress, Gateway API and external routing","ConfigMaps, Secrets and runtime configuration","Startup, readiness, liveness and shutdown","Requests, limits, QoS and JVM sizing","Scheduling, affinity and topology","Volumes, claims and storage lifecycle","StatefulSets, DaemonSets, Jobs and CronJobs","Authentication, RBAC and workload identity","NetworkPolicy and layered traffic security","Autoscaling and downstream capacity","Observability and evidence-driven diagnosis","Helm, Kustomize, apply and GitOps","Spring Boot and Java workload design","Availability, disruption and rollout strategy","Cluster operations and recovery boundaries","Minikube, image loading and Windows/WSL access","Senior interview and architecture scenarios"],"questions":[["Q001",0,"What is Kubernetes?","Kubernetes keeps the requested number of containers running and helps them talk to each other.","kubectl apply -f deployment.yaml\nkubectl get deployments,pods,services -n interview\n# The manifest declares desired state; controllers work toward it.","A Deployment requesting three replicas causes controllers to maintain matching Pods. This is a continuing reconciliation process, not a one-time shell script.","Kubernetes does not automatically create correct retries, secure application code or database backups.","Which responsibility belongs to the application rather than the orchestrator?","The app must still handle business rules, failed payments, safe retries and data correctness."],["Q002",0,"How is Kubernetes different from Docker?","Docker builds and runs containers. Kubernetes manages those containers across a cluster.","Source -> image build -> registry\nKubernetes manifest -> node runtime -> running Pod\n# Docker-built images remain usable with a compatible runtime.","Image format and node runtime integration are separate contracts. Kubernetes uses CRI-compatible runtime integration; it does not require Docker Engine on every node.","A Docker Compose file is not automatically a Kubernetes deployment specification.","What changes when you move a single-host service into a cluster?","Add scheduling, Services, shared configuration, health checks, security, storage and safe rollout rules."],["Q003",0,"What does declarative configuration mean?","Write what the cluster should look like; controllers keep trying to reach that state.","spec:\nreplicas: 3\n# Deleting one owned Pod does not change this desired replica count.","The controller can replace an owned Pod to restore the declared count. Changing the Deployment specification changes the goal. Actual state may temporarily differ during scheduling or failures.","A declaration can be impossible to satisfy because of capacity, policy or missing dependencies.","How do you distinguish an accepted manifest from a healthy application?","A successful apply only proves the API accepted the object. Check Pod readiness and real requests too."],["Q004",0,"What are labels, selectors and annotations?","Labels identify objects, selectors choose them, and annotations carry extra notes.","metadata:\nlabels:\napp: orders\ntier: api\nannotations:\nexample.com/source-commit: abc123","A Service can select app=orders, while a deployment system records source identity in an annotation. Stable selector design matters because traffic and controller ownership depend on it.","A label is not an authorization rule. Mislabeling can route traffic to an unintended workload.","Why should release-version labels be separate from a Service's stable selector?","Keep Service selectors stable so a new release label does not remove every Pod from service traffic."],["Q005",0,"What does a namespace isolate?","A namespace groups Kubernetes resources, but is not a complete security wall.","kubectl get pods -n orders\nkubectl get namespaces\nkubectl get nodes\n# Nodes and PersistentVolumes are cluster-scoped.","Two namespaces can each contain a Service named api. Namespaces help organize ownership, quotas and RoleBindings. NetworkPolicy and runtime controls add other boundaries.","Namespace separation alone is insufficient for hostile multi-tenancy. Cluster- scoped resources and administrator authority remain shared.","What additional controls would you use for two independent teams?","Add RBAC, network rules, quotas, Pod Security policies and isolated credentials for each team."],["Q006",1,"What are the main control-plane components?","The API server receives requests, etcd stores state, the scheduler picks nodes, and controllers repair differences.","kubectl -> API server -> stored desired state\nScheduler -> node assignment\nController -> reconcile owned workloads\nKubelet -> execute assigned Pod through runtime integration","These responsibilities are cooperative. A scheduler does not start the Java process, and etcd does not contain the application's database.","Distribution-specific packaging can differ. Managed services hide some components but do not remove their architectural roles.","Which component would you investigate for a Pod with no node assignment?","Inspect the scheduler and Pod Events; verify node resources, selector rules, taints and PVC topology."],["Q007",1,"What do kubelet, the runtime, CNI and service networking do?","Kubelet manages a node's Pods, the runtime starts containers, and networking connects them.","kubectl get nodes -o wide\nkubectl describe node NODE\nkubectl get pods -n kube-system\n# Service forwarding may use kube-proxy or a supported replacement.","A running container with broken Pod networking is a different failure from a container creation error. Network implementations can use different mechanisms, including eBPF-based service handling.","Do not assume every cluster has an identical kube-proxy datapath or CNI policy capability.","How would you separate a runtime startup failure from a network failure?","Check waiting reason, events and container ID first; if running, inspect Pod IP, DNS, CNI and connectivity."],["Q008",1,"Why is etcd important, and what needs backing up?","etcd stores the cluster's desired and observed API state, not your application's database.","Cluster objects and control-plane state -> etcd recovery plan\nBusiness database and volume data -> separate data recovery plan\n# Test both recovery procedures independently.","Restoring cluster objects is not the same as restoring orders, uploaded files or database transaction logs. A managed platform may own etcd operations, but the application team still owns its data guarantees.","A backup without a tested restore does not establish recovery time or consistency.","Which secrets and encryption configuration must a control-plane restore account for?","Preserve etcd snapshots, encryption keys/configuration, certificate material and secrets-restoration procedures."],["Q009",1,"What happens if the API server is temporarily unavailable?","Existing Pods might keep serving, but new deployments and many cluster repairs may stop.","Existing node process: may continue serving\nNew Deployment update: cannot rely on API acceptance\nFailed-node replacement: may be delayed","The impact depends on local node state, network implementation and the specific failure. Availability of existing traffic does not imply the cluster can scale, reschedule or accept deployments.","Do not promise every application keeps working; control-plane-dependent operations and credentials may have their own requirements.","How would you monitor control-plane health separately from application availability?","Track API availability and request errors separately from real application success and user-facing latency."],["Q010",1,"How does a Pod get scheduled and started?","Admission checks a Pod, the scheduler selects a node, and kubelet starts its containers.","kubectl get pod POD -n interview -o wide\nkubectl describe pod POD -n interview\n# Look at node assignment, conditions and Events.","Pending with no assigned node points toward placement constraints. A node-assigned Pod can still wait for image pulls or volume attachment. Event evidence helps locate the failing step.","Admission, scheduling and application readiness are distinct gates.","Why can a Pod be assigned to a node yet never become Ready?","Image pull errors, volume mounts, crashing processes or failing probes can block readiness after assignment."],["Q011",2,"What is a Pod?","A Pod is the smallest scheduled unit: its containers share one network identity and selected volumes.","spec:\ncontainers:\n- name: api\nimage: TEAM/APP:TAG\n- name: helper\nimage: TEAM/HELPER:TAG","The two containers share the Pod network namespace and can reach each other through localhost. They do not automatically share every filesystem path; a declared volume can be mounted into both.","A Pod should represent tightly coupled execution, not every service in the system.","Why should an API and its separately scalable database usually be different workloads?","A database needs different scaling, upgrades, storage and recovery rules from an API, so separate them."],["Q012",2,"What is the difference between restarting a container and replacing a Pod?","Restarting a container keeps its Pod; replacing the Pod creates a new Pod identity.","kubectl get pod POD -n interview -o wide\nkubectl get pod POD -n interview -o jsonpath='{.metadata.uid}'\nkubectl logs POD -n interview -c api --previous","A kubelet restart can retain Pod-level context such as an emptyDir volume. A controller replacement does not preserve emptyDir data or promise the same network address. Use stable discovery and durable storage for those needs.","A Pod's restart count is not a count of every historical replacement.","Which data survives a container crash but not a Pod replacement?","An emptyDir survives a container restart in the same Pod, but is lost when that Pod is replaced."],["Q013",2,"What are init containers used for?","Init containers prepare something before the main application begins.","initContainers:\n- name: prepare\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"echo prepared > /work/state\"]\nvolumeMounts:\n- {name: work, mountPath: /work}","The app can read a prepared file if it mounts the same declared volume. Init work should have bounded retries and observable failure. A cluster-wide migration needs stronger ownership than one init container per replica.","This is a fragment requiring a work volume. A forever-waiting init step can leave every replica unavailable.","When would a separate Job be better than an init container?","Use a Job for one shared migration or task that must finish once per planned workflow, not once per replica."],["Q014",2,"What is a sidecar, and how is it different from an ordinary init container?","A sidecar is a helper that runs alongside the main application.","# Native sidecar sketch:\ninitContainers:\n- name: support\nimage: TEAM/SUPPORT:TAG\nrestartPolicy: Always","The support process can remain active while application containers execute. Legacy sidecar patterns also use regular app containers. Lifecycle and ordering behavior differ, so select a supported pattern deliberately.","Do not put restartPolicy: Always on an ordinary init container without understanding native-sidecar support. Job completion behavior also matters.","How would a helper affect readiness, resource totals and shutdown order?","Count its memory/CPU, decide whether failure affects readiness, and test process termination order."],["Q015",2,"What are Pod phases and CrashLoopBackOff?","Pod phases are broad states. CrashLoopBackOff means a container keeps failing and restarting.","kubectl get pod POD -n interview -o jsonpath='{.status.phase}'\nkubectl describe pod POD -n interview\nkubectl logs POD -n interview -c api --previous","A Pod can be in Running phase while one container repeatedly crashes or the Pod is not Ready. Inspect per-container state, exit cause, restart count and previous logs.","The STATUS column from kubectl is not always the literal phase field.","What evidence distinguishes an application exception from a failed liveness probe?","Read prior logs and exit reasons; a probe failure appears in events, while an exception appears in app logs."],["Q016",3,"How do Deployment, ReplicaSet and Pod relate?","Deployment manages ReplicaSets; each ReplicaSet creates and replaces matching Pods.","kubectl get deploy,rs,pods -n interview\nkubectl rollout status deployment/orders -n interview\nkubectl rollout history deployment/orders -n interview","A template update creates or reuses an appropriate ReplicaSet and moves replica ownership through a rollout. You normally manage the Deployment rather than hand-editing its ReplicaSets.","Direct Pod edits can be replaced by the controller and may not change the desired template.","Which object should you edit to change the image for every future replica?","Edit the Deployment's Pod template, not a running Pod or generated ReplicaSet."],["Q017",3,"What triggers a Deployment rollout?","Changing the Pod template starts a rollout; changing replicas only scales it.","kubectl set image deployment/orders \\\napi=TEAM/APP:NEW_TAG -n interview\nkubectl scale deployment/orders --replicas=4 -n interview","The image change alters the template. Scaling changes how many replicas are requested. Updating an external ConfigMap may leave the template unchanged unless your delivery process deliberately changes a checksum or restarts it.","Reapplying identical YAML does not force every Pod to restart.","How do you roll out an environment-variable configuration update?","Use a controlled restart or a template checksum/version change for environment values that Pods read at startup."],["Q018",3,"How do maxSurge and maxUnavailable work?","maxSurge allows extra Pods; maxUnavailable sets how many may be unavailable during an update.","strategy:\ntype: RollingUpdate\nrollingUpdate:\nmaxSurge: 1\nmaxUnavailable: 0","For a three-replica workload, this policy can temporarily need a fourth replica while retaining available capacity. Readiness and sufficient node resources determine whether the rollout can progress.","The policy is not an end-to-end zero-error guarantee. Terminating Pods can consume resources beyond a simple replica calculation.","What happens if there is no room for the surge Pod?","The rollout waits for spare capacity, unless you safely adjust surge/ unavailability or add capacity."],["Q019",3,"Does Kubernetes automatically roll back a failed Deployment?","Kubernetes marks a stalled rollout; it does not automatically undo every failed release.","kubectl rollout status deployment/orders -n interview --timeout=120s\nkubectl describe deployment orders -n interview\n# After reviewing compatibility and intent:\nkubectl rollout undo deployment/orders -n interview","A progress deadline helps surface a stalled rollout. undo restores a retained template revision; it does not restore database state or all external configuration. Delivery systems can enforce additional rollback rules.","A timeout from your kubectl client is not itself a completed server-side rollback.","What must be checked before rolling application code back after a migration?","Check database backward compatibility, the migration's rollback path and whether old code understands new rows."],["Q020",3,"Why are Deployment selectors important?","Selectors tell a Deployment which Pod template it owns and must match the template labels.","selector:\nmatchLabels:\napp: orders\ntemplate:\nmetadata:\nlabels:\napp: orders","Matching labels establish ownership. A stable app selector avoids making release version changes into ownership changes. A changed immutable selector needs a deliberate replacement or new Deployment plan.","Avoid overlapping ownership selectors between independent controllers. Service selectors have a separate traffic role.","How can a correct Deployment still receive no traffic from its Service?","Service labels may not match, Pods may be unready, or targetPort may not reach the listener."],["Q021",4,"What does a Kubernetes Service provide?","A Service gives clients a stable name and port while its matching Pods change.","apiVersion: v1\nkind: Service\nmetadata: {name: orders}\nspec:\nselector: {app: orders}\nports:\n- {port: 80, targetPort: 8080}","Clients use orders:80 while selected backend Pods listen on 8080. Pod replacement does not require clients to memorize the new Pod IP.","A Service does not start an application or make a wrong listener port valid.","What would you inspect if the Service exists but connections fail?","Check selectors, Ready Pods, EndpointSlices, targetPort, listener address, DNS and network rules."],["Q022",4,"How do port, targetPort, containerPort and nodePort differ?","Service port is the caller's port; targetPort is the Pod's listener; nodePort exposes a node port.","Client -> Service port 80 -> Pod targetPort 8080\nNodePort client -> reachable node IP:NODE_PORT -> Service backend\n# containerPort: 8080 does not make Java listen on 8080.","The application must bind the correct address and port. A named targetPort can refer to a named container port. Host access and cluster-internal access use different endpoints.","Do not confuse a Service port with the node-level port or a port-forward's local port.","Why could port-forward work while a NodePort URL fails on a laptop?","Port-forward uses an API tunnel. NodePort needs a reachable node address and permitted network path."],["Q023",4,"How do ClusterIP, NodePort, LoadBalancer and headless Services differ?","ClusterIP is internal, NodePort opens a node port, LoadBalancer needs provider support, and headless gives backend DNS.","ClusterIP:    cluster-facing virtual endpoint\nNodePort:     reachable node address plus allocated port\nLoadBalancer: integration with a supporting provider/controller\nHeadless:     clusterIP: None; backend discovery without a VIP","A headless Service is useful for discovering individual StatefulSet members. LoadBalancer provisioning depends on the environment; a local cluster may need tunnel or another integration.","A pending external address does not necessarily mean the Pods are broken. Provider policy and internal/external settings matter.","Which type would you use for a private database and why?","Use ClusterIP for an internal database entry point; use headless DNS when individual stable members are required."],["Q024",4,"How does Kubernetes Service DNS work?","Cluster DNS translates Service names into network addresses, usually with namespace-based search rules.","# Same namespace:\njdbc:postgresql://db:5432/orders\n# Another namespace:\njdbc:postgresql://db.data.svc.cluster.local:5432/orders\n# cluster.local is a common default, not a universal cluster domain.","The Pod's DNS configuration and search domains influence lookup. Resolve the name, then test the required protocol. A successful lookup is not evidence of database readiness or authorization.","localhost normally refers to the calling Pod, including its sidecars, not a different database Pod.","How would you distinguish DNS failure from a refused TCP connection?","Test name resolution first, then TCP connection separately; a refused connection means DNS likely worked."],["Q025",4,"What are EndpointSlices useful for in troubleshooting?","EndpointSlices list backend Pod addresses and their readiness conditions for a Service.","kubectl get svc orders -n interview -o yaml\nkubectl get pods -n interview -l app=orders --show-labels\nkubectl get endpointslices -n interview \\\n-l kubernetes.io/service-name=orders -o yaml","An empty backend set can mean the selector matches nothing. Not- ready endpoints point toward Pod readiness. Correct ready endpoints shift attention toward the listener, policy or traffic implementation.","Special settings such as publishNotReadyAddresses change assumptions. Prefer EndpointSlices over relying on legacy Endpoints output for modern diagnosis.","What check comes after a ready endpoint with the correct target port?","Test the actual listener and network policy from a client Pod, then inspect packet routing if needed."],["Q026",5,"What is the difference between a Service and an Ingress?","A Service names backends; an Ingress declares HTTP routes implemented by an installed controller.","External request -> ingress controller -> Service -> ready Pod\n# Rules can select a backend by host and path.\nkubectl get ingress -n interview\nkubectl get ingressclass","An ingress object without a supporting controller does not create a working proxy. Its backend references a Service port, which then maps to the Pod listener.","Ingress is not a general protocol gateway for every TCP/UDP workload. Its API is frozen; Gateway API supports newer routing models.","Which controller and class own a specific routing object?","Inspect ingressClassName/IngressClass and the controller's status, events and logs."],["Q027",5,"How do Exact and Prefix paths work, and who rewrites paths?","Exact matches a whole path; Prefix matches a path prefix. Rewriting is a separate controller feature.","paths:\n- path: /reviews/v1\npathType: Prefix\nbackend:\nservice:\nname: reviews-v1\nport: {number: 80}","This routes matching requests but does not universally remove / reviews/v1 before forwarding. The backend must support that path or the chosen controller must apply a supported rewrite policy.","Controller-specific annotations are not portable Kubernetes semantics. Avoid assuming all controllers interpret one annotation identically.","Why could routing reach the right Pod but return an application 404?","The upstream may receive /reviews/v1 while the app only serves /; verify forwarded path and rewrite rules."],["Q028",5,"Why does a host-based route fail when called by raw IP?","A host rule needs the correct HTTP Host header; requesting by IP may select another route.","curl -H 'Host: reviews.local' http://CONTROLLER_IP/reviews/v1\n# Or configure local DNS/hosts so reviews.local reaches the controller.\n# HTTPS additionally requires correct SNI and certificate identity.","HTTP host matching selects the rule. A raw-IP request can hit a default backend instead. For HTTPS, use a client setup that preserves the intended hostname for TLS validation and routing.","Disabling TLS verification is not a proper production fix for a hostname mismatch.","How would curl --resolve help test HTTPS before updating DNS?","Use curl --resolve to connect to a test IP while preserving the hostname for HTTPS and SNI."],["Q029",5,"What is Gateway API, and how is it organized?","Gateway API separates traffic infrastructure from application-owned routes.","Platform team: GatewayClass and Gateway policy\nApp team:     HTTPRoute attached to an allowed Gateway\n# Requires installed Gateway API CRDs and a supporting controller.","The separation helps teams delegate routes while retaining listener and attachment policy. Read resource status to confirm acceptance and backend resolution. Controller support and feature conformance still matter.","These are not automatically installed on every Kubernetes cluster. API presence alone does not prove traffic implementation.","What must be allowed before a route can attach across namespaces?","Check listener allowedRoutes plus cross-namespace ReferenceGrant where required, then inspect route status."],["Q030",5,"How do you troubleshoot an external HTTP 503?","Trace the 503 from ingress controller through Service and endpoints to the application.","kubectl describe ingress ROUTE -n interview\nkubectl get svc,pods -n interview\nkubectl get endpointslices -n interview\n# Inspect controller logs and test backend reachability separately.","503 can arise because no healthy upstream is available, but controller-specific behavior differs. A backend request returning 503 itself is a different cause from a proxy generating it. Use response and log evidence.","Recreating every Pod can erase evidence and worsen an outage. First identify the layer generating the response.","How would you compare proxy access logs with application request logs?","Match request IDs and timestamps; see whether the proxy generated 503 or forwarded an app response."],["Q031",6,"When should you use a ConfigMap versus a Secret?","ConfigMaps hold regular settings; Secrets hold sensitive values with restricted access.","env:\n- name: SPRING_PROFILES_ACTIVE\nvalueFrom:\nconfigMapKeyRef: {name: app-config, key: profile}\n- name: DB_PASSWORD\nvalueFrom:\nsecretKeyRef: {name: db-auth, key: password}","The values enter the container at startup. The Secret object type supports dedicated handling but does not automatically make every consumer or operator safe.","Secret data encoded as base64 is not encrypted by that encoding. Restrict API access, logs and backup exposure.","How would you rotate a credential without rebuilding the image?","Update the Secret through approved delivery, allow credential overlap, then restart/reload Pods safely."],["Q032",6,"Do ConfigMap and Secret updates immediately update application behavior?","Environment variables are read at startup; mounted files may update later, but apps must reload them.","Environment injection -> recreate/restart workload for new values\nProjected volume -> file update can propagate eventually\nApplication binding -> may still need explicit reload/restart\n# subPath mounts do not receive the ordinary projected update behavior.","A refreshed file is not proof that a Spring bean re-bound its configuration. A controlled rollout can be simpler than a hot-reload design when changes are infrequent.","Immutable objects and subPath use change the update plan. Coordinate credential overlap with live connection pools.","What happens if a database revokes the old password before every replica reconnects?","Replicas still using the old credential may lose connections. Rotate with overlap and confirm all replicas first."],["Q033",6,"Why is base64 not encryption, and how should Secrets be protected?","Base64 only changes the representation. Secret protection needs real access rules and encryption.","printf 'ZGVtbw==' | base64 -d\n# Produces demo with no decryption key.\nkubectl auth can-i get secrets -n interview","Knowing how values are represented prevents a false security assumption. Verify the cluster's encryption policy and who can read Secrets or create Pods that consume them.","Pod-creation authority can expose namespace secrets indirectly. A deny on get secrets is not the entire threat model.","How would you review service-account and developer access separately?","Review human identities and service-account RBAC independently, plus who can create Pods reading Secrets."],["Q034",6,"What is the Downward API used for?","Downward API gives a container selected Pod details without broad API permissions.","env:\n- name: POD_NAME\nvalueFrom:\nfieldRef: {fieldPath: metadata.name}\n- name: POD_NAMESPACE\nvalueFrom:\nfieldRef: {fieldPath: metadata.namespace}","The app can add instance identity to logs. This avoids giving the process broad API credentials just to learn its own name. Supported field choices and update behavior depend on the injection form.","Pod names are not stable business identifiers. Avoid using them as durable order or customer keys.","Which identity should remain stable across Pod replacement?","Business IDs such as order ID, tenant ID or customer ID must not depend on replaceable Pod names."],["Q035",6,"How can Spring Boot read mounted secret files?","Spring can read a directory of mounted secret files as configuration properties.","SPRING_CONFIG_IMPORT=configtree:/run/secrets/\n# Example file: /run/secrets/spring.datasource.password\n# Use a projected Secret volume at that directory.","The app reads the property at startup under the chosen Spring configuration contract. A required import helps detect missing deployment inputs instead of silently starting with incomplete configuration.","File replacement does not automatically refresh all bound values. Secret names, mount permissions and app UID must agree.","When would optional:configtree be appropriate, and when would it hide an error?","Use optional only for truly optional config; required passwords must fail startup if missing."],["Q036",7,"How do startup, readiness and liveness probes differ?","Startup gives an app time to boot; readiness controls traffic; liveness decides whether to restart.","startupProbe:\nhttpGet: {path: /livez, port: 8080}\nperiodSeconds: 5\nfailureThreshold: 24\nreadinessProbe:\nhttpGet: {path: /readyz, port: 8080}\nlivenessProbe:\nhttpGet: {path: /livez, port: 8080}","With a startup probe configured, normal readiness and liveness probing wait for startup success. The example gives about two minutes of failure tolerance at the specified interval; actual timing includes execution details.","Paths must exist and have a correct access policy. Probe configuration does not create endpoints.","Which probe should fail while a service deliberately drains traffic?","Readiness should fail during drain, while liveness may remain healthy until the process stops."],["Q037",7,"Why should liveness usually avoid checking a shared database?","If the database is down, restarting every healthy JVM usually makes the outage worse.","Database unavailable -> possibly unready or degraded API\nJVM deadlocked -> liveness failure may justify restart\n# Decide from the recovery action, not merely the dependency list.","Readiness may include dependencies needed for the intended traffic, but that choice must consider whether removing every instance is useful. Liveness should target failures where restarting this instance helps.","A trivial always-200 liveness endpoint may miss a stuck request subsystem. Choose a meaningful but stable contract.","How would your API behave during a short database failover?","Fail or degrade database-dependent requests, retry carefully, and recover connections without a restart storm."],["Q038",7,"Does a successful readiness probe guarantee no requests fail?","Readiness is a useful sample, not a guarantee that every request succeeds.","Probe interval -> observed readiness\nEndpoint/controller update -> traffic propagation\nRequest handling -> current application and dependency state","Readiness helps reduce avoidable routing to unsuitable instances. It does not prove all routes, payloads or dependencies work at every instant. Monitor request outcomes and test transitions.","Existing connections and external load balancers can have independent drain behavior.","What would you test during rollout beyond waiting for Ready Pods?","Test HTTP behavior, error rate, latency, graceful drain, database access and new/old version compatibility."],["Q039",7,"How does terminationGracePeriodSeconds interact with preStop and SIGTERM?","preStop and Spring shutdown share one termination grace period before forced kill.","spec:\nterminationGracePeriodSeconds: 45\ncontainers:\n- name: api\nlifecycle:\npreStop:\nexec: {command: [\"sh\", \"-c\", \"sleep 5\"]}","A brief delay can help with traffic propagation only when the image includes sh and the measured deployment needs it. The hook consumes the budget, leaving less time for application drain.","Do not add a shell-based hook to a shell-free image. A sleep is not proof that traffic has stopped, and exact termination behavior has version details.","How would you budget a 20-second Spring drain plus propagation time?","Budget measurable propagation delay, at least 20s drain time, plus margin; e.g. 45s after testing."],["Q040",7,"How should Spring Boot health endpoints be exposed for probes?","Expose a real application-port probe that reflects the running Spring HTTP server.","management.endpoint.health.probes.enabled=true\nmanagement.endpoint.health.probes.add-additional-paths=true\nserver.shutdown=graceful\n# Supported Boot baseline supplies /livez and /readyz on the main port.","Probing the main server can catch failures hidden by a separate healthy management listener. Verify endpoint availability with the actual Actuator dependency, Spring version and Security configuration.","Avoid exposing sensitive diagnostic endpoints publicly while enabling probe access. A passing health group is not a full business transaction test.","What would a separate management port fail to detect?","A separate healthy management listener can miss a stuck or unbound main application listener."],["Q041",8,"What is the difference between resource requests and limits?","Requests reserve scheduling capacity; limits cap CPU and memory behavior at runtime.","resources:\nrequests: {cpu: \"250m\", memory: \"256Mi\"}\nlimits: {cpu: \"1\", memory: \"512Mi\"}","The scheduler accounts for the requested budget. CPU use can be throttled by a limit, while exceeding memory constraints can cause termination. 250m means a quarter CPU unit; Mi is binary memory sizing.","Requests are not a promise of unlimited throughput or independent physical cores. Defaults can be injected by namespace policy.","Why can a Pod remain Pending even while a node looks mostly idle?","Scheduling uses requested CPU/memory and placement rules, not current dashboard idle percentages alone."],["Q042",8,"How do CPU throttling and memory OOM termination differ?","CPU throttling slows a process; memory exhaustion can kill it.","kubectl describe pod POD -n interview\nkubectl top pod POD -n interview\nkubectl logs POD -n interview --previous\n# Combine with cgroup and JVM time-series telemetry.","High tail latency can reflect throttling even without an application exception. A kernel memory kill may prevent Java from emitting a heap dump. Use termination reason and resource history to separate them.","Exit 137 is evidence to investigate, not a universal proof of memory exhaustion. Metrics Server snapshots can miss spikes.","What evidence would distinguish GC pressure from CPU quota pressure?","Compare CPU throttling time, heap/GC logs, CPU quota and termination state together."],["Q043",8,"What are Guaranteed, Burstable and BestEffort QoS classes?","QoS depends on how all containers' CPU and memory requests and limits are declared.","# Traditional per-container Guaranteed pattern:\nrequests: {cpu: \"500m\", memory: \"512Mi\"}\nlimits:   {cpu: \"500m\", memory: \"512Mi\"}\n# Every relevant container must meet the class requirements.","Without relevant requests or limits, a traditional Pod may be BestEffort. Partial or unequal configuration generally leads to Burstable. Inspect the actual qosClass instead of inferring from one container.","Newer resource features can affect details. Priority and consumption also matter in eviction decisions; Guaranteed does not mean never killed.","How can a sidecar change the Pod's class and total budget?","A helper container adds resources and can change the Pod's QoS classification."],["Q044",8,"How should Java heap relate to a container memory limit?","Leave memory for JVM heap plus threads, metaspace, direct buffers and native code.","# Illustrative 512 MiB limit, not a universal sizing rule:\nenv:\n- {name: JAVA_TOOL_OPTIONS, value: \"-Xms128m -Xmx320m\"}\n# Measure peak total use with realistic traffic and thread counts.","The remaining space is a starting hypothesis, not established safety. Modern supported JDKs on Linux detect container limits, but the exact update and cgroup setup must be verified.","MaxRAMPercentage sizes heap ergonomically; it does not cap total process memory. Probe subprocesses and agents can consume additional memory.","When would you choose explicit Xmx rather than a percentage?","Use explicit Xmx when workloads need a tested fixed heap budget; leave safety room under memory limit."],["Q045",8,"How do ResourceQuota and LimitRange differ?","ResourceQuota limits a namespace total; LimitRange sets defaults and bounds for individual resources.","kubectl get resourcequota,limitrange -n interview\nkubectl describe resourcequota -n interview\n# Inspect effective admitted Pod requests and limits.","A quota can block a new replica even when nodes have free capacity. A LimitRange can supply missing defaults that change scheduling or runtime behavior. Compare the rendered input with the admitted object.","These policies do not provision capacity or automatically scale nodes. Runtime memory tuning still belongs to the workload team.","Why might the same manifest be accepted in one namespace and rejected in another?","Namespaces can have different quota, security or admission settings, so the same YAML may be rejected."],["Q046",9,"How do nodeSelector and node affinity differ?","nodeSelector requires exact labels; node affinity supports richer scheduling rules.","nodeSelector:\nworkload.example.com/pool: java\n# Verify the eligible nodes:\nkubectl get nodes --show-labels","Only nodes with the declared label are eligible for this selector. Required affinity constrains placement; preferred affinity influences scoring without the same absolute gate. Resources and other constraints still apply.","User-controllable labels are not automatically trusted isolation evidence. Choose secured label practices for sensitive placement.","What happens if every eligible node lacks memory for the request?","The Pod remains Pending until an eligible node gains enough allocatable memory or constraints change."],["Q047",9,"What is the difference between a taint and a toleration?","Taints repel Pods unless tolerations allow them; tolerations do not force placement.","tolerations:\n- key: dedicated\noperator: Equal\nvalue: java\neffect: NoSchedule\n# Pair with deliberate node selection if a dedicated pool is required.","This Pod can tolerate that NoSchedule taint. It may still land elsewhere if no selection rule constrains it. NoExecute has eviction-related behavior beyond scheduling.","Tolerating all taints can expose workloads to nodes they were not intended to use. Avoid modifying shared node taints as a casual exercise.","How do you make a dedicated node pool both eligible and exclusive?","Use node affinity to target the pool and taints/tolerations to keep unrelated Pods out."],["Q048",9,"How do Pod affinity, anti-affinity and topology spread differ?","Affinity groups or separates Pods; topology spread distributes them across failure domains.","topologySpreadConstraints:\n- maxSkew: 1\ntopologyKey: kubernetes.io/hostname\nwhenUnsatisfiable: DoNotSchedule\nlabelSelector: {matchLabels: {app: orders}}","The rule tries to distribute matching Pods across eligible node domains under the specified constraint. Zone-level spreading needs accurate zone labels and enough eligible capacity.","A strict spread rule can deliberately leave replicas Pending. Distribution across nodes is not distribution across independent zones.","Which failure domain matters for your availability requirement?","Choose the zone for zone-failure resilience and the node for a single- machine failure."],["Q049",9,"Why can a Pod be Pending despite apparent free CPU?","Free CPU alone is not enough: requests, storage, taints and topology must all fit.","kubectl describe pod POD -n interview\nkubectl get nodes\nkubectl describe node CANDIDATE_NODE\nkubectl get pvc -n interview","Events can report insufficient requested resources, unmatched affinity, taints or unbound storage. Prioritize the actual scheduler message before changing resource settings.","Lowering requests to force scheduling can create unstable oversubscription. A PVC with delayed binding can have an intentional scheduling dependency.","What evidence justifies adding nodes rather than changing the workload?","Events showing insufficient capacity across eligible nodes justify adding nodes after checking requests."],["Q050",9,"What do PriorityClass and preemption provide?","Priority affects which pending Pods get preference and may allow lower- priority Pod preemption.","priorityClassName: TEAM_APPROVED_PRIORITY\n# Use an approved class rather than inventing a cluster-wide value.\n# Inspect Pending Pod Events for preemption-related evidence.","Preemption can free resources but cannot make an incompatible node label or storage constraint disappear. Priority should reflect business importance and team policy.","Raising every workload's priority does not create capacity and can harm other services. PDB interaction does not make preemption an absolute disruption-free guarantee.","How would you allocate priority to APIs, batch jobs and critical platform services?","Protect cluster essentials first, then customer-facing APIs, then batch tasks; avoid unnecessary evictions."],["Q051",10,"How do a PersistentVolume and PersistentVolumeClaim relate?","A PVC asks for storage; a PV is the allocated storage object to which it binds.","apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata: {name: data}\nspec:\naccessModes: [ReadWriteOnce]\nresources:\nrequests: {storage: 1Gi}","An eligible StorageClass can dynamically provision the backend. The Pod mounts the claim, not a guessed node directory. Binding depends on class, capacity, access mode and topology.","An accepted claim can remain Pending if no suitable provisioner or volume is available.","What would you inspect before changing a stuck claim's requested size?","Inspect StorageClass resize support, volume mode, binding state, capacity, events and current data first."],["Q052",10,"What does a StorageClass control?","StorageClass chooses the provisioner and storage behavior, including when binding waits.","kubectl get storageclass\nkubectl describe storageclass CLASS\nkubectl describe pvc data -n interview\n# WaitForFirstConsumer can delay binding until placement is known.","Delayed binding helps choose storage compatible with the Pod's topology. Different classes can have different performance and durability contracts. Select a class intentionally rather than assuming all persistent storage is equivalent.","Setting an expansion flag does not make an unsupported backend resize correctly. Provider and filesystem behavior matter.","Why can immediate provisioning place a volume in the wrong zone?","Immediate binding can create storage before a node/zone is chosen, making the Pod unschedulable."],["Q053",10,"What do RWO, ROX, RWX and RWOP mean?","Access modes describe how a volume can be mounted; they do not make an application multi-writer safe.","ReadWriteOnce:     read/write from one node\nReadOnlyMany:      read-only from multiple nodes\nReadWriteMany:     read/write from multiple nodes\nReadWriteOncePod:  supported CSI single-Pod access","Multiple Pods on one node can sometimes share an RWO volume. The storage driver must support the requested mode. Access modes do not design database locking or make concurrent writers safe.","RWX does not mean arbitrary applications can concurrently modify the same data safely. RWOP has driver/version requirements.","Why is a shared database data directory unsafe despite successful mounts?","Two database writers can corrupt files even when mounted successfully; use a database replication protocol."],["Q054",10,"How do emptyDir, hostPath and PVC-backed storage differ?","emptyDir lasts for a Pod, hostPath uses node files, and a PVC follows storage's own lifecycle.","volumes:\n- name: scratch\nemptyDir: {sizeLimit: 64Mi}\n# Mount scratch at an application temp path.","emptyDir survives a container restart within the Pod but disappears with Pod removal. A hostPath ties data and access to a node, creating portability and security concerns. A PVC can preserve data across Pod replacement under its backend policy.","Memory-backed emptyDir contributes to memory use; disk-backed scratch still has node and ephemeral-storage limits.","What is a safe temp-storage choice for a replaceable Java API?","Use size-limited emptyDir for disposable temporary Java files, with a controlled memory/disk budget."],["Q055",10,"Does deleting a PVC always preserve or always delete the data?","Deleting a PVC can delete or retain backing storage depending on reclaim policy.","kubectl get pv\nkubectl get pv VOLUME -o yaml\n# Inspect persistentVolumeReclaimPolicy and provider policy.\n# Test restore before retiring real business storage.","Delete can request backend removal, while Retain leaves an administrative recovery and cleanup task. A retained backend is not automatically safe, backed up or reusable without review.","Deleting a lab namespace can delete its PVC and trigger backend deletion. StatefulSet claim retention has additional configuration.","Which recovery objectives should guide your backup and reclaim policy?","Set recovery-point and recovery-time goals, backups and tested restores independently from reclaim policy."],["Q056",11,"When should you choose StatefulSet instead of Deployment?","Use StatefulSet for stable Pod identities and ordered stateful lifecycle, not as a substitute for replication.","orders-api replicas -> Deployment\ndb-0, db-1 identities -> possible StatefulSet\nPer-member PVCs -> explicit stable storage ownership","Stable ordinals and suitable discovery can support a clustered application. The database software still needs explicit replication, membership and failover configuration.","StatefulSet does not automatically make a database highly available or synchronize its data.","What would a database operator add beyond a bare StatefulSet?","An operator can handle backups, leader changes, upgrades, repair and application-aware failover."],["Q057",11,"What is a headless Service's role with StatefulSet?","Headless Service exposes individual stable members instead of a single virtual IP.","spec:\nclusterIP: None\nselector: {app: db}\nports: [{port: 5432, targetPort: 5432}]\n# StatefulSet serviceName must follow the intended discovery contract.","Clients or peer nodes can discover particular members through supported DNS patterns. Readiness publication and startup membership requirements must be designed for the application.","A stable DNS name does not guarantee the member is ready or holds the leader role. Do not hard-code a current Pod IP.","How would Kafka member identity and advertised endpoints fit this model?","Use stable member DNS in Kafka configuration, with correct advertised listener addresses and broker identities."],["Q058",11,"What does a DaemonSet do?","DaemonSet ensures a node-level agent runs on each eligible node.","Node A -> log agent Pod\nNode B -> log agent Pod\nNode C -> log agent Pod\n# Eligibility can be restricted by selection and tolerations.","Adding an eligible node can add another agent automatically. Resource usage is multiplied by eligible node count, and required host access must be reviewed carefully.","A DaemonSet is not a general API horizontal-scaling strategy. Node agents can have substantial privileges.","How would you safely roll out an agent that reads host logs?","Roll out gradually, limit host permissions, monitor agent overhead and verify log ingestion."],["Q059",11,"How is a Job different from a Deployment?","A Job finishes bounded work; a Deployment keeps service replicas running.","spec:\nbackoffLimit: 2\nactiveDeadlineSeconds: 60\ntemplate:\nspec:\nrestartPolicy: Never\ncontainers:\n- {name: task, image: busybox:1.37, command: [\"echo\", \"done\"]}","The Job can retry failed attempts within its policy. Limits bound the exercise, but a retry can repeat effects already performed before failure. Build idempotency into real work.","A successful Pod exit does not prove the business operation was correct unless the job verifies it.","How would you make a payment reconciliation job safe to retry?","Use unique reconciliation IDs, durable checkpoints and deduplication so a retry does not pay twice."],["Q060",11,"Does a CronJob guarantee exactly-once execution?","A CronJob schedules Jobs but cannot guarantee that the business effect happens exactly once.","schedule: \"*/5 * * * *\"\nconcurrencyPolicy: Forbid\nstartingDeadlineSeconds: 120\n# Use a supported timeZone field if explicit timezone policy is required.","Forbid prevents certain overlaps for that CronJob but does not establish a distributed business lock across unrelated jobs or clusters. Deadline and scheduling policy define what happens after a delay.","A trigger every five minutes is not a transaction guarantee. Track business windows and completed work durably.","How would you recover a missed daily settlement without double processing?","Track settlement date in durable state, reconcile missed dates and reject duplicate processing."],["Q061",12,"How do authentication, authorization and admission differ?","Authentication proves identity; authorization checks permission; admission validates or changes a request.","Identity -> permission decision -> admission -> stored object\nkubectl auth can-i create deployments -n interview\nkubectl auth can-i get secrets -n interview","A caller may have permission to create a Pod yet be rejected by resource or security policy. Separating these gates makes Forbidden and admission errors easier to explain.","A Kubernetes API identity does not automatically define the logged-in user for your HTTP application.","How would you debug an allowed action whose manifest is rejected?","Check admission webhook messages or namespace policy after confirming RBAC allowed the API action."],["Q062",12,"How do Role, ClusterRole, RoleBinding and ClusterRoleBinding differ?","Role/RoleBinding scope permissions in a namespace; ClusterRole may define broader rules.","# Role rule fragment:\nrules:\n- apiGroups: [\"\"]\nresources: [configmaps]\nverbs: [get, list]","A RoleBinding can grant a ClusterRole within one namespace. A ClusterRoleBinding grants its permissions cluster-wide. The example allows ConfigMap reads, not Secret reads or Deployment changes.","Wildcards and broad bindings expand authority as APIs grow. Review what a subject can indirectly do, not only explicit Secret reads.","Can a RoleBinding give access to cluster-scoped nodes?","A namespaced RoleBinding cannot grant access to cluster-scoped nodes, even if it references a ClusterRole."],["Q063",12,"What is a ServiceAccount used for?","A ServiceAccount gives a workload its Kubernetes identity when API access is needed.","serviceAccountName: orders-api\nautomountServiceAccountToken: false\n# Use false when the application does not need the Kubernetes API.","An ordinary order API may need no API token at all. If access is required, give its own account narrowly scoped permissions and use supported short-lived projected-token behavior.","Namespace default accounts are not a least-privilege design by themselves. Cloud workload identity also needs provider configuration.","How would you let a job read one configuration object without granting cluster-admin?","Bind a narrow Role allowing get on only the named ConfigMap to that job's ServiceAccount."],["Q064",12,"How do securityContext and Pod Security Admission work together?","SecurityContext sets process security; admission policy rejects Pods that violate required controls.","securityContext:\nrunAsNonRoot: true\nrunAsUser: 10001\nseccompProfile: {type: RuntimeDefault}\n# Container settings also include allowPrivilegeEscalation: false.","Runtime identity and syscall policy constrain execution. A non-root declaration must match the image contract, file permissions and mount access. Pod-level and container-level settings apply to different fields.","Passing admission does not prove the application is secure or that a mounted host path is harmless.","What writable path does your Java image need under a read-only root filesystem?","Mount a writable /tmp emptyDir and avoid writing to the read-only root filesystem."],["Q065",12,"Why are Pod creation, exec and cluster- admin sensitive permissions?","Pod creation, exec and admin privileges can expose data or control other workloads.","Review subjects that can:\ncreate Pods consuming Secrets\nexec into credential-bearing workloads\nbind/escalate privileged roles or alter policy","A subject denied direct get secrets may still access a Secret through an allowed Pod. Exec permission can reach an application's files and process environment. Use separate operational identities and audit sensitive actions.","A namespace is not a sufficient boundary when a subject can gain node or cluster authority.","How would you provide production diagnosis access with a reviewed escalation path?","Use read-only diagnostics by default and time-limited, audited escalation with approval."],["Q066",13,"What does NetworkPolicy control?","NetworkPolicy selects Pod traffic allowed by an enforcing network implementation.","apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata: {name: deny-incoming}\nspec:\npodSelector: {}\npolicyTypes: [Ingress]","This selects Pods in its namespace and allows no ingress under this policy. It leaves egress unchanged unless other egress-isolating policies apply. Verify the CNI's actual support with traffic tests.","Creating a policy object on a non-enforcing network does not prove isolation.","How would you distinguish policy parsing from policy enforcement?","Create the policy, then run allowed and denied traffic tests; a parsed policy may not be enforced."],["Q067",13,"Are NetworkPolicy allow rules ordered firewall rules?","Matching policies add allowed traffic together; they are not ordered deny/allow firewall rules.","Policy A allows app=api to database TCP 5432.\nPolicy B allows an approved maintenance client.\nTheir allowed ingress sets combine for selected destinations.","A broad extra policy can reopen access that a narrow policy was meant to restrict. Review all policies selecting each endpoint, including the source's egress isolation.","NetworkPolicy is not evaluated as first matching deny/allow lines in a conventional ordered ACL.","Why might adding a second policy unexpectedly make a blocked client work?","A second policy may permit traffic already denied by the first because allow results are additive."],["Q068",13,"How do namespaceSelector and podSelector combine?","Combining namespaceSelector and podSelector in one rule selects labeled Pods within selected namespaces.","ingress:\n- from:\n- namespaceSelector:\nmatchLabels: {kubernetes.io/metadata.name: apps}\npodSelector:\nmatchLabels: {role: api}\nports: [{protocol: TCP, port: 5432}]","The peer must be a role=api Pod in the apps namespace. Splitting the two selectors into separate entries would allow a broader union. This rule fragment needs the destination selection and policy declaration.","Label-management authority matters because labels can affect network eligibility.","What would separate entries allow that this combined entry does not?","Separate peer entries allow either matching namespaces or matching Pods, a wider traffic set."],["Q069",13,"Why does deny-all egress often break otherwise healthy applications?","Denying egress also blocks DNS and required upstream connections unless allowed.","Required egress may include:\nDNS queries: UDP and TCP 53 to the actual resolver path\nDatabase: approved destination and port\nHTTPS dependencies: architecture-specific controlled access","DNS failure can hide the true policy issue behind an unknown-host exception. Resolver placement, host networking and CNI behavior affect a correct rule. Standard NetworkPolicy does not provide portable domain-name authorization.","Do not permit all egress merely to make tests pass. IP-based controls for changing external services need a deliberate design.","How would you verify DNS, TCP connection and application authentication separately?","Resolve DNS, test TCP to the destination, then check TLS and application credentials independently."],["Q070",13,"How are NetworkPolicy, TLS, mTLS and application authorization different?","NetworkPolicy limits reachability, TLS encrypts traffic, mTLS verifies peers, and authorization checks users.","Reachability: may this Pod connect to this port?\nTransport:   is this encrypted and who is the peer?\nApplication: may this caller cancel this order?","An allowed TCP connection is not authorization to read customer data. A service mesh can automate some transport policy but still needs identity, certificate and operational controls.","Kubernetes does not provide every layer merely because Pods are in separate namespaces.","Which controls protect an internal Spring endpoint containing personal data?","Use restricted network paths, TLS/mTLS and app-level object authorization with audited access."],["Q071",14,"What does the Horizontal Pod Autoscaler do?","HPA changes desired replicas using metrics; it does not directly add nodes.","apiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\n# Resource metric: CPU utilization relative to requests.\n# Custom/external metrics require the relevant metrics integration.","CPU-based scaling usually requires Metrics Server and meaningful requests for the relevant containers. HPA controls replicas; it does not itself provision nodes or solve a saturated database.","Missing or stale metrics can prevent the intended decision. Inspect HPA conditions and events.","What would you inspect when the HPA reports an unknown utilization value?","Check metrics-server/custom metrics availability, Pod requests and HPA conditions/events."],["Q072",14,"How is CPU utilization calculated for a typical HPA target?","Typical CPU HPA usage compares measured CPU to requested CPU for eligible Pods.","CPU request: 250m\nObserved use: 150m\nUtilization: 150 / 250 = 60 percent","Changing the request changes the metric denominator and scheduling budget. Keep resource tuning and autoscaling policy coordinated. The actual controller also accounts for readiness, missing data, tolerance and policy limits.","Do not interpret 60 percent as 60 percent of an entire physical machine.","Why could lowering CPU requests unexpectedly trigger more replicas?","Reducing the request raises utilization percentage for identical CPU usage and may scale sooner."],["Q073",14,"When is a queue or demand metric better than CPU?","Queue size/age can show overload when CPU does not match work waiting.","Kafka worker: lag plus processing rate and partition parallelism\nHTTP API:    concurrency, latency and CPU under measured demand\nBatch work:  queued work with bounded downstream capacity","A CPU-idle consumer can still be blocked on a dependency while lag grows. More workers may help only until partition and downstream limits are reached. Any external metric needs a trusted adapter and meaningful stale-data behavior.","Lag alone can be misleading during rebalances or long tasks. Scaling must not create unbounded database or API concurrency.","What caps useful replicas for a Kafka consumer group?","Kafka consumer-group partition count and downstream capacity cap useful consumer parallelism."],["Q074",14,"How do HPA, VPA and node autoscaling differ?","HPA changes replica counts, VPA recommends/adjusts Pod resources, and node autoscaling adds compute.","HPA:  more/fewer application replicas\nVPA:  resource sizing for workload execution\nNodes: capacity for eligible scheduled workloads","Vertical updates can use different rollout or resize modes depending on the installed implementation and feature support. Coordinate CPU-resource recommendations with CPU-utilization HPA to avoid a moving denominator.","None of these guarantees storage compatibility, instant startup or a responsive dependency.","What happens if HPA requests more Pods but no eligible nodes can fit them?","Extra Pods wait Pending until a node scaler adds eligible capacity or resource constraints change."],["Q075",14,"How do you prevent autoscaling from causing oscillation or overload?","Keep scale decisions stable and protect databases, queues and other shared services.","API replicas: 8\nDB pool per replica: 20\nPotential API connections: 160, plus other clients\n# Reserve dependency and node headroom for failure and rollout.","A scale-up can stress the database before it reduces HTTP pressure. Scale-down needs connection and worker drain. Test spike response, recovery and sustained load rather than only steady throughput.","Adding replicas is not a repair for a shared lock, schema issue or external outage.","Which metrics would stop a harmful scale-up and guide a different mitigation?","Watch connection saturation, p99 latency, error rate and throttling; cap growth and fix shared bottlenecks."],["Q076",15,"How do you diagnose CrashLoopBackOff?","Find why containers are restarting using events, previous logs, probes and exit codes.","kubectl describe pod POD -n interview\nkubectl logs POD -n interview -c api --previous\nkubectl get pod POD -n interview -o yaml","A missing secret, JVM flag error, permission denial or failing liveness probe can cause repeated restarts. Backoff describes retry pacing, not the root cause. Check the exact image and admitted configuration.","Deleting the Pod can remove useful local evidence without repairing its template.","How would you prove the next Pod will start with corrected inputs?","Compare new image digest, config, Secret mount, runtime command and probe behavior before rollout."],["Q077",15,"How do you diagnose ImagePullBackOff?","ImagePullBackOff means the node could not fetch an image; inspect registry, tag and credentials.","kubectl describe pod POD -n interview\nkubectl get secret REGISTRY_SECRET -n interview\n# Inspect imagePullSecrets names without printing secret data.","Not-found and unauthorized errors require different repairs. A private-registry Secret must be accessible in the workload namespace under the intended reference. A local minikube image has a separate loading and pull-policy contract.","Retrying an invalid tag does not fix it. Avoid exposing credentials while collecting evidence.","Why might an image visible to Docker on the laptop be invisible to minikube?","Minikube may use a separate container runtime/image store from laptop Docker; load into the correct node."],["Q078",15,"What should you check for a Service with no working traffic?","Trace client name, Service selector, ready endpoints, targetPort and Pod listener.","kubectl get svc orders -n interview -o yaml\nkubectl get pods -n interview -l app=orders -o wide\nkubectl get endpointslices -n interview \\\n-l kubernetes.io/service-name=orders","If no Pod matches the selector, network debugging is premature. If the direct Pod port works but Service access fails, investigate the Service datapath and policy. Compare clients from the intended namespace.","A ping does not verify HTTP readiness, database login or Kafka metadata reachability.","What does an HTTP 401 prove about the network path?","HTTP 401 proves a response reached an HTTP endpoint; authentication still denied the request."],["Q079",15,"How do you debug a minimal image without a shell?","Use logs, describe, metrics and authorized ephemeral debugging instead of assuming bash exists.","kubectl logs POD -n interview -c api\nkubectl debug POD -n interview -it \\\n--image=APPROVED_DEBUG_IMAGE --target=api\n# Support, privileges and process visibility depend on the environment.","A diagnostic container can supply tools without baking them into the application image. Targeted process visibility and attach permissions require checking. Use the least authority appropriate to the incident.","An ephemeral container is not a normal restartable application sidecar. Do not assume it can read every target filesystem or collect every JVM artifact automatically.","How would you collect a thread dump while respecting production access policy?","Use policy-approved JVM diagnostics or a debug image/process with audit and minimal permissions."],["Q080",15,"What is the difference between monitoring and observability in practice?","Monitoring checks chosen signals; observability uses logs, metrics and traces to explain failures.","Metrics: request rate, errors, duration, throttling, heap, queueing\nLogs:    events with request and instance context\nTraces:  request flow and dependency latency\nEvents:  scheduling, pull, probe and lifecycle transitions","Correlate timestamps and release identity across signals. Infrastructure Ready status can coexist with high user error rates. Alerts should lead to a tested investigation or recovery action.","kubectl top is not a substitute for historical telemetry. Avoid recording sensitive payloads while adding context.","Which user-facing signal would detect a broken order flow that health probes miss?","Measure completed orders and checkout errors, not just Pod readiness or CPU."],["Q081",16,"How do Helm and Kustomize differ?","Helm templates and packages app resources; Kustomize patches/ combines YAML without its own templates.","helm template orders ./chart -f values-prod.yaml\nkubectl kustomize overlays/prod\n# Review rendered objects before applying them.","Both can create environment-specific manifests. Helm also tracks release operations; Kustomize is integrated into kubectl workflows. Choose conventions your team can audit and maintain.","Rendering success does not prove API admission, policy compliance or application health.","What should CI check after rendering a production overlay?","Run rendering, schema checks, policy validation, secrets scans and intended-diff checks in CI."],["Q082",16,"Why use bases and overlays instead of copying whole manifests?","Shared bases avoid duplicating manifests; overlays add differences for each environment.","# kustomization.yaml sketch\nresources: [../../base]\nnamespace: orders-prod\nreplicas:\n- {name: orders, count: 3}","The overlay can adjust the desired replica count and namespace while inheriting common labels and runtime settings. Inspect the output to ensure patches target the intended resources.","Overly clever patches can be harder to review than explicit configuration. Keep secret material outside plain committed files.","How would you verify that a patch changed only the intended container image?","Render both old and new manifests and inspect container image, selectors and resource diffs."],["Q083",16,"What does server-side apply field ownership mean?","Server-side apply tracks which manager owns fields so controllers can share object updates safely.","kubectl apply --server-side --field-manager=delivery \\\n-f rendered.yaml\nkubectl get deployment orders -n interview -o yaml\n# Inspect managedFields when ownership conflicts occur.","Ownership helps multiple controllers or tools coexist intentionally. Resolve the intended owner rather than blindly forcing every conflict. An autoscaler and a delivery tool can disagree over replica management.","--force-conflicts changes ownership and can override another actor's intent. It is not a universal deployment fix.","How should a GitOps definition handle replicas managed by HPA?","Let HPA own replica count; avoid GitOps repeatedly enforcing conflicting spec.replicas."],["Q084",16,"What is GitOps reconciliation?","GitOps controllers compare the cluster with reviewed Git configuration and reconcile drift.","Git change -> review -> rendered desired objects\nDelivery controller -> compare -> authorized synchronization\nLive health and drift -> observable status","Version history can explain a deployment change and support reproducible rollback decisions. Automatic synchronization, pruning and self-healing are policy choices, not identical defaults across products.","A manual production edit may be reverted by reconciliation. A healthy sync status alone does not prove business behavior.","How would you make an emergency change persistent and reviewable?","Commit the approved emergency change into Git, or it may be reverted by reconciliation."],["Q085",16,"Does helm rollback or a Git revert undo every release effect?","Helm rollback or Git revert changes manifests; it cannot undo every changed database row or side effect.","Artifact rollback -> reviewed earlier image/template\nSchema rollback  -> separate compatibility/recovery decision\nExternal effects -> durable compensation or reconciliation","Use backward-compatible migration sequencing where possible. Check hooks, retained revisions, secret versions and data compatibility before treating rollback as safe. Observe restored user behavior after the change.","Pruning or reverting a storage object can be destructive. A packaging tool is not an application-consistent backup system.","What would block a rollback after a data transformation?","Backward-incompatible transformed data may need a forward fix, compatible reader or restored data."],["Q086",17,"What should a production Spring Boot Deployment define?","A production Java Deployment needs secure identity, resources, probes, traffic, config and graceful shutdown.","Image: approved registry digest\nHTTP: main listener 8080 with /livez and /readyz\nRuntime: non-root, bounded memory/CPU, explicit /tmp\nInputs: database endpoint and protected runtime credentials","The manifest is the contract between delivery, platform and application teams. Test the image under the same settings rather than adding them only in production. Record supported Spring and JDK versions.","Copying a template without checking the app's endpoint and filesystem behavior can prevent startup.","Which checks would you run before promoting the digest?","Confirm digest and signatures, manifest/policy checks, staging behavior and business smoke tests."],["Q087",17,"Why should database pool size account for replica count?","Every new API Pod opens database connections, so total pool size must fit database capacity.","Steady replicas: 6\nPool maximum per replica: 20\nSurge allowance: 1 replica\nPossible API pool connections during rollout: 7 x 20 = 140","Add jobs, administration and other services before comparing with the database's budget. A small per-instance pool can collectively exceed the safe capacity. Tie HPA bounds to downstream limits.","Virtual threads do not make database connections or CPU unlimited. Idle connections and active query capacity are different concerns.","How would you choose a safe replica maximum for the order service?","Compute max replicas x per-Pod maximum connections, include surge and other apps, then leave headroom."],["Q088",17,"How should a Kafka consumer shut down during Pod replacement?","Stop new consumption, finish or cancel safely, and close Kafka clients during graceful shutdown.","Pod terminating -> consumer drain policy\nSuccessful durable processing -> corresponding offset policy\nInterrupted processing -> safe redelivery and deduplication","Kafka group rebalancing and a forced termination can lead to redelivery. Application transactions and external side effects must be designed for that possibility. Measure worst-case processing and use idempotent business operations.","Kubernetes does not make external payments exactly once. More consumer replicas are useful only within partition and downstream constraints.","What happens if the database commits but the offset is not committed?","The message may be processed again; dedupe the effect using a stable event ID or database transaction."],["Q089",17,"Why can a Java image fail only on some cluster nodes?","The chosen CPU architecture, kernel and native dependencies may vary by node.","kubectl get nodes -L kubernetes.io/arch\nkubectl get pod POD -n interview -o wide\nkubectl describe pod POD -n interview\n# Verify image index variants and any JNI/native-agent requirements.","Portable bytecode does not make an AMD64 native library work on ARM64. Select appropriate image variants or constrain placement when a supported runtime requirement demands it. Compare the actual admitted inputs.","Architecture labels are not a substitute for testing each published variant. Kernel and storage behavior can also matter.","How would you test the ARM variant before allowing ARM node placement?","Build/test the ARM64 image on an ARM-capable runner, verify digest and JNI dependencies, then permit ARM nodes."],["Q090",17,"How should business readiness differ from an alive JVM?","Being alive means the JVM responds; being ready means this instance can serve its assigned work.","Alive JVM -> process and local progress\nReady API -> required initialization and traffic contract\nCorrect order flow -> transaction, authorization and event behavior","Warm-up, schema compatibility or intentional drain can make an alive instance unready. A synthetic business check can verify more than health groups, but it needs safe test data and side-effect policy.","Putting a slow full transaction in a frequent liveness probe can create load and restart storms.","Which readiness condition would you use after loading a required reference- data cache?","Mark ready only when essential reference data has loaded and required local startup steps finished."],["Q091",18,"What does a PodDisruptionBudget protect?","PDB limits eligible voluntary evictions that would reduce available replicas below its rule.","apiVersion: policy/v1\nkind: PodDisruptionBudget\nmetadata: {name: orders}\nspec:\nminAvailable: 2\nselector: {matchLabels: {app: orders}}","With three healthy matching Pods, one voluntary eviction may be allowed. With only two healthy Pods, maintenance can be blocked. Rollout strategy has its own availability controls.","PDB does not stop a node crash, every direct Pod delete or Deployment- controlled rolling-update deletion.","Why can a safe drain be blocked while an application rollout still replaces Pods?","Draining uses the eviction API and honors the PDB; rollout replacement can follow separate controller rules."],["Q092",18,"Why are three replicas on one node not sufficient high availability?","Three copies on one node all fail together if that node fails.","Replicas -> spread across eligible nodes\nAvailability requirement -> consider zone placement\nShared database -> independent failure and recovery design","Use supported spread or anti-affinity policy with sufficient capacity. Node diversity is only one layer: shared storage, network and database failures can still affect every API replica.","Strict placement without enough eligible domains can reduce running capacity. Design and test the capacity tradeoff.","What would happen if the largest node or one zone disappeared?","Spread across nodes/zones and test losing one node or zone while preserving minimum capacity."],["Q093",18,"How do rolling, blue-green and canary deployment differ?","Rolling swaps Pods gradually, blue-green switches environments, and canary shifts small traffic fractions.","Rolling:    old/new versions overlap during replacement\nBlue-green: switch traffic between prepared groups\nCanary:     measure limited candidate traffic before expansion","Controllers and routing integrations implement the chosen strategy. Standard Deployment rolling updates do not alone provide every precise traffic-weight policy. Database compatibility must cover coexistence and rollback.","A Service selector switch may not instantly end all old connections. Canary evidence needs representative traffic and user-impact signals.","Which metric would stop promotion despite healthy Pods?","Stop promotion if customer error rate, latency or business success worsens, even if Pods are Ready."],["Q094",18,"How do you design graceful HTTP rollout?","Withdraw traffic, allow in-flight work to finish, and stop safely before the grace deadline.","New replica ready -> traffic admitted\nOld replica terminating -> stop new admission and drain\nGrace expiry -> possible forced termination\n# Observe request errors and completion during the transition.","Direct Java startup helps signals reach the JVM. The load balancer and clients can still retain connections or stale backend state briefly. Test a realistic long request and dependency interaction during replacement.","A healthy rollout status is not proof of no dropped requests. preStop and Spring shutdown work share the total time available.","How would you test drain without generating real customer side effects?","Send synthetic requests in staging while terminating Pods; check dropped connections and duplicate effects."],["Q095",18,"How should schema migrations be handled during overlapping versions?","Keep old and new app versions compatible with the database while a rolling deployment overlaps them.","Expand compatible schema -> deploy interoperable versions\nBackfill and verify -> close rollback window -> contract old schema\n# Run controlled migration work with observable completion.","One job or approved migration controller can own the change while APIs check the required compatible state. Retries must be safe. Separate code rollback from data recovery.","Running a destructive migration from every replica's init step can create contention or irreversible effects.","What is your recovery plan if migration succeeds but the new API fails?","Use expand-migrate-contract, feature flags and a forward recovery plan when rollback is impossible."],["Q096",19,"What is the difference between cordon, drain and uncordon?","Cordon blocks new scheduling, drain evicts supported workloads, and uncordon reopens scheduling.","kubectl cordon NODE\n# Review workload and data impact before an authorized drain.\nkubectl drain NODE --ignore-daemonsets\nkubectl uncordon NODE","Cordon alone does not move existing Pods. Drain respects applicable eviction constraints and has special handling for DaemonSets, local data and unmanaged workloads. Review failed preconditions rather than adding force blindly.","These are operator commands, not exercises against an unknown cluster. Do not add delete-emptydir-data without understanding disposable-data loss.","How could a PDB or node-local volume block maintenance?","PDB minAvailable or node-local storage may prevent eviction; inspect and plan maintenance accordingly."],["Q097",19,"What happens when a node becomes unavailable?","A lost node may trigger Pod replacement elsewhere after control-plane detection and timeouts.","kubectl get nodes\nkubectl describe node NODE\nkubectl get pods -A -o wide\n# Correlate node health with network, runtime and storage signals.","Recovery is not instantaneous. A process on an isolated node might still execute while the control plane sees failure, so stateful software needs fencing or equivalent safeguards. Replacements need eligible resources and storage.","Restarting an API elsewhere does not restore a failed database or local file.","What prevents two apparent database leaders from writing during a partition?","Use fencing/leases with storage or database consensus; Kubernetes Pod restarts do not prevent split-brain writes."],["Q098",19,"Why is disk or ephemeral-storage pressure different from application heap pressure?","Disk pressure is node-storage exhaustion, not necessarily JVM heap failure.","kubectl describe node NODE\nkubectl describe pod POD -n interview\n# Inspect node disk, container logs and ephemeral-storage policy.","Unbounded logs or temp files can affect neighboring workloads. Volume-backed data has a separate backend capacity contract. Apply rotation and bounded scratch storage, then verify retention and incident evidence.","More heap is not a repair for a full node disk. An Evicted Pod and OOMKilled container describe different paths.","Which application write paths can consume node-local storage?","Container logs, emptyDir, writable layers, temp uploads, heap dumps and image layers can fill node storage."],["Q099",19,"How should Kubernetes upgrades be planned?","Upgrade control plane and nodes using compatibility checks, staged node pools and safe workload drains.","Inventory: control plane, nodes, CNI, CSI, controllers and CRDs\nReview: supported skew and removed/deprecated APIs\nRehearse: backup/restore plus workload and traffic checks\nUpgrade: approved staged sequence with observation","Version compatibility covers more than kubectl and the API server. Webhooks, operators, storage drivers and network controllers can affect admission or workload operation. Use the official policy for the exact versions.","Do not invent a universal safe upgrade order for every managed or self- hosted product. A downgrade may not be a supported rollback.","Which application tests should gate a node-pool upgrade?","Gate on API compatibility, CNI/CSI checks, Java smoke tests, disruption budget and user SLIs."],["Q100",19,"What should a disaster-recovery plan include?","Disaster recovery must restore cluster configuration and business data within tested goals.","Control plane: supported state recovery\nApplication:   reproducible images and manifests\nData:          consistent backups/replication and restore\nTraffic:       routing, identity and observed business checks","A restored Deployment can still fail because its secret, storage class or database is missing. Recovery evidence should include elapsed time and data correctness. Keep backups in an appropriate independent failure domain.","Replica count and retained PVCs are not substitutes for a recovery rehearsal.","How would you prove that a recovered order service preserves committed orders?","Restore a backup into isolation, replay required logs and compare committed order IDs and totals."],["Q101",20,"How should you establish a local practice cluster?","Choose a disposable cluster, confirm contexts, and keep lab resources isolated.","minikube start -p interview-lab --driver=docker\nkubectl config current-context\nkubectl get nodes\nminikube status -p interview-lab","The command requires a working supported Docker environment and can select a context. Confirm that commands target the practice cluster before creating or deleting resources. Driver and host resources affect capabilities.","These setup commands were not executed here. Do not reset an existing useful profile to repair an unrelated context issue.","How would you confirm where a kubectl command will run?","Run kubectl config current-context and kubectl cluster-info before any create/delete action."],["Q102",20,"Why is a locally built Docker image unavailable to a Pod?","A Pod uses the image store on its Kubernetes node, not necessarily the laptop's Docker images.","docker build -t orders-api:local .\nminikube image load orders-api:local -p interview-lab\nminikube image ls -p interview-lab\n# Alternative: minikube image build -t orders-api:local . -p interview-lab","Load or build into the intended profile and verify node-side availability. Then use the exact tag and a compatible pull policy. With multiple nodes, confirm the required image distribution.","A successful host docker build does not prove Kubernetes can fetch or find the image. Native architecture still matters.","What would ImagePullBackOff tell you after loading the image?","If pull still fails, inspect tag/policy, node image cache, registry access and Pod events."],["Q103",20,"How do Always, IfNotPresent and Never image pull policies differ?","Always requests the image each start; IfNotPresent pulls only if missing; Never uses local only.","image: orders-api:local\nimagePullPolicy: IfNotPresent\n# Use an explicitly loaded image for this local exercise.\n# Never requires the needed image to be present on the target node.","Always can still reuse cached content after resolving the required image identity. IfNotPresent can reuse a node's local tag, so mutable tag updates can produce confusing results. Prefer new tags or digests for repeatable delivery.","Pull-policy defaulting occurs when the object is created; changing the image tag does not automatically imply a new default policy.","Why can two nodes run different bytes behind one reused local tag?","Different nodes may keep different bytes under one mutable tag; use immutable tags or digests."],["Q104",20,"Why does NodePort access sometimes fail on Windows/WSL or Docker Desktop?","Desktop/WSL node addresses or routing may be hidden behind a VM/ NAT layer.","minikube service orders --url -p interview-lab -n interview\n# Or a stable local development endpoint:\nkubectl port-forward -n interview svc/orders 18080:80\n# Keep the port-forward process running; test localhost:18080.","minikube may print a temporary proxy URL depending on the driver and platform. Service port-forward uses a local listener while selecting a backend Pod through the Kubernetes path; it is a development diagnostic route.","The generated proxy URL can change and may require its process to stay alive. Port-forward success does not test the normal Service datapath or Ingress.","How would you compare host access with a same-namespace Pod client?","Test through host port-forward and through a same-namespace Pod; differences localize the broken route."],["Q105",20,"How do you debug kubectl connection refused on a local cluster?","Check the selected context and API endpoint before diagnosing workload resources.","minikube status -p interview-lab\nkubectl config current-context\nkubectl config view --minify\nkubectl cluster-info\n# Redact sensitive data when sharing configuration output.","A stale endpoint or stopped local runtime can make every API request fail. Repair the cluster access path first. Missing image or Service errors are later application-layer concerns.","Deleting the cluster can destroy local workloads and data; it is not the first diagnostic step. Avoid sharing raw credential-bearing kubeconfig.","How do you distinguish API connectivity failure from a missing namespace?","Connection refused means API transport fails; a missing namespace is an API response from a working server."],["Q106",21,"A Spring API is Running but Ingress returns 503. How do you investigate?","A Running Pod can be unready or have a wrong Service/Ingress route.","kubectl get ingress,svc,pods -n orders\nkubectl get endpointslices -n orders \\\n-l kubernetes.io/service-name=orders\nkubectl logs API_POD -n orders --tail=100","Running is not Ready. An empty or unready backend set explains many failures before proxy tuning. If a direct backend test works, compare the controller route and logs. A backend-generated 503 needs application diagnosis.","Preserve the exact request host/path and release identity. Deleting all Pods can worsen availability without repairing selection.","What observation would shift attention from readiness to path rewriting?","If direct Service access succeeds and returns 404 only on ingress, inspect path rewrite and Host rules."],["Q107",21,"A rollout stalls when readiness is enabled. What is your approach?","Check exact probe path, port, startup time, dependencies and events without removing protection.","kubectl describe deployment orders -n orders\nkubectl describe pod NEW_POD -n orders\nkubectl logs NEW_POD -n orders\n# Verify /readyz on the configured port and security policy.","A 401, nonexistent endpoint and slow initialization need different fixes. With maxUnavailable=0, an unready new Pod can deliberately preserve old capacity while blocking progress. An unschedulable surge Pod needs placement diagnosis.","Disabling readiness can expose users to a broken version. Fix the contract rather than hiding the gate.","When would a startup probe solve the issue without weakening readiness?","Startup probe helps when healthy apps need extra initialization time before readiness/liveness checks."],["Q108",21,"HPA adds API replicas, but latency gets worse. What could cause it?","More API Pods can overload a shared database or connection pool, making latency worse.","Compare: replicas, pool totals, DB latency, queue depth\nInspect: CPU throttling, request rate, GC and readiness\nCheck:   scale timing and deployment overlap","Use a timeline to connect scale decisions with symptoms. A saturated database may need bounded API concurrency and query repair rather than more consumers. Verify metric meaning and prevent oscillation.","A correlation alone is not proof; compare workload changes and controlled test evidence.","What safe mitigation would you choose while investigating the shared bottleneck?","Cap replicas/pools and apply admission or backpressure while measuring and fixing the shared limit."],["Q109",21,"A database Pod cannot move after node failure. Why?","Persistent storage may be pinned to a failed node or zone, or require detach before attachment.","kubectl describe pod DB_POD -n data\nkubectl describe pvc DB_CLAIM -n data\nkubectl get pv VOLUME -o yaml\nkubectl get nodes","A stable identity does not guarantee storage is portable. Inspect supported failover and attachment recovery procedures. Ensure the old writer is safely excluded before forcing another writer to use the data.","Do not delete the PVC or force-detach storage as an unexplained first response. Provider operations can risk data integrity.","How does your recovery design handle a partitioned node that is still writing?","Fence stale writers and ensure the storage/db recovery protocol allows one active owner."],["Q110",21,"How would you design Kubernetes delivery for an order service?","Ship one reviewed image digest, set secure resource and health contracts, then test rollout and restore.","Artifact: approved multi-platform digest and release evidence\nRuntime:  non-root, bounded JVM budget, writable temp only\nTraffic:  Service, route policy, readiness and graceful drain\nState:    database durability, event outbox/idempotency, restore test","Select replicas and topology from availability requirements. Bound DB and consumer concurrency, make migration ownership explicit and observe business outcomes during rollout. A platform manifest is one part of the system design.","Kubernetes does not guarantee exactly-once external effects or recovery from lost business data.","What failure rehearsal would demonstrate the design to an architect interviewer?","Kill one API Pod during an in-flight order, repeat its request and prove no duplicate order or payment."]],"labs":[["L01 · Declare and scale a Deployment","Goal: The controller maintains Pods for its updated replica goal. Scaling changes the","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l01-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\nkubectl apply -n \"$K_NS\" -f web.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\nkubectl scale deployment/web -n \"$K_NS\" --replicas=3\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\ntest \"$(kubectl get deploy web -n \"$K_NS\" -o jsonpath='{.spec.replicas}')\" = 3\ntest \"$(kubectl get deploy web -n \"$K_NS\" -o jsonpath='{.status.readyReplicas}')\" = 3\nprintf 'PASS: Deployment desired and ready replicas are three\\n'\nWatch for: Needs capacity for three small nginx Pods. Image-pull access and namespace admission must\nwork.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L02 · Running versus Ready","Goal: The main process runs continuously. Creating the probe file changes traffic","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l02-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > pod.yaml <<'YAML'\napiVersion: v1\nkind: Pod\nmetadata: {name: worker}\nspec:\ncontainers:\n- name: worker\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"sleep 600\"]\nreadinessProbe:\nexec: {command: [\"test\", \"-f\", \"/tmp/ready\"]}\nperiodSeconds: 2\nYAML\nkubectl apply -n \"$K_NS\" -f pod.yaml\nkubectl wait pod/worker -n \"$K_NS\" --for=jsonpath='{.status.phase}'=Running --timeout=120s\nkubectl wait pod/worker -n \"$K_NS\" --for=condition=Ready=false --timeout=30s\nkubectl exec -n \"$K_NS\" worker -- touch /tmp/ready\nkubectl wait pod/worker -n \"$K_NS\" --for=condition=Ready --timeout=60s\ntest \"$(kubectl get pod worker -n \"$K_NS\" -o jsonpath='{.status.containerStatuses[0].restartCount}')\"\n= 0\nprintf 'PASS: readiness changed without restarting the container\\n'\nWatch for: This is an artificial probe fixture. A production readiness check must represent the actual\nadmission contract.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L03 · Service DNS and ready backends","Goal: The client uses the Service name and port. EndpointSlices provide a backend-","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l03-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\ncat > service.yaml <<'YAML'\napiVersion: v1\nkind: Service\nmetadata: {name: web}\nspec:\nselector: {app: web}\nports: [{name: http, port: 80, targetPort: http}]\nYAML\nkubectl apply -n \"$K_NS\" -f web.yaml -f service.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\nkubectl run client -n \"$K_NS\" --image=busybox:1.37 --restart=Never \\\n--command -- sh -c 'sleep 600'\nkubectl wait pod/client -n \"$K_NS\" --for=condition=Ready --timeout=120s\nkubectl exec -n \"$K_NS\" client -- sh -ec \\\n'wget -qO /tmp/page http://web; grep -q \"Welcome to nginx\" /tmp/page'\nkubectl get endpointslices -n \"$K_NS\" -l kubernetes.io/service-name=web\nprintf 'PASS: namespace Service DNS routed HTTP to a ready backend\\n'\nWatch for: Depends on cluster DNS and working service networking. The nginx page check belongs to this\ndisposable fixture.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L04 · ConfigMap environment snapshot versus file","update","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l04-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > config.yaml <<'YAML'\napiVersion: v1\nkind: ConfigMap\nmetadata: {name: settings}\ndata: {MODE: old}\nYAML\ncat > pod.yaml <<'YAML'\napiVersion: v1\nkind: Pod\nmetadata: {name: worker}\nspec:\ncontainers:\n- name: worker\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"sleep 600\"]\nenv:\n- name: MODE\nvalueFrom:\nconfigMapKeyRef: {name: settings, key: MODE}\nvolumeMounts:\n- {name: settings, mountPath: /config}\nvolumes:\n- name: settings\nconfigMap: {name: settings}\nYAML\nkubectl apply -n \"$K_NS\" -f config.yaml -f pod.yaml\nkubectl wait pod/worker -n \"$K_NS\" --for=condition=Ready --timeout=120s\ntest \"$(kubectl exec -n \"$K_NS\" worker -- printenv MODE)\" = old\nkubectl patch configmap settings -n \"$K_NS\" --type=merge \\\n-p '{\"data\":{\"MODE\":\"new\"}}'\nK_UPDATED=0\nfor K_N in $(seq 1 36); do\nif test \"$(kubectl exec -n \"$K_NS\" worker -- cat /config/MODE)\" = new; then\nK_UPDATED=1; break\nfi\nsleep 5\ndone\ntest \"$K_UPDATED\" = 1\ntest \"$(kubectl exec -n \"$K_NS\" worker -- printenv MODE)\" = old\nprintf 'PASS: projected file updated; environment remained old\\n'\nWatch for: Propagation timing is cluster-dependent. The bounded wait can fail on unusually slow settings.\nThis does not test application hot reload.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L05 · Narrow RBAC scope for a ServiceAccount","Goal: The Role contains only selected ConfigMap read verbs, and the namespaced","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l05-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\nkubectl create serviceaccount reader -n \"$K_NS\"\nkubectl create role config-reader -n \"$K_NS\" --verb=get,list --resource=configmaps\nkubectl create rolebinding reader -n \"$K_NS\" --role=config-reader \\\n--serviceaccount=\"$K_NS:reader\"\nK_SUBJECT=\"system:serviceaccount:$K_NS:reader\"\ntest \"$(kubectl auth can-i get configmaps -n \"$K_NS\" --as=\"$K_SUBJECT\")\" = yes\nif kubectl auth can-i get secrets -n \"$K_NS\" --as=\"$K_SUBJECT\"; then\nprintf 'FAIL: unexpected Secret access\\n' >&2; exit 1\nfi\nprintf 'PASS: account can read ConfigMaps but not Secrets\\n'\nWatch for: The caller needs permission to create these objects and impersonate the account for auth can-\ni. Existing broad grants or group bindings can change the result.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L06 · Bounded Job completion","Goal: The Job records successful completion rather than maintaining a permanent server.","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l06-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > job.yaml <<'YAML'\napiVersion: batch/v1\nkind: Job\nmetadata: {name: task}\nspec:\nbackoffLimit: 1\nactiveDeadlineSeconds: 120\ntemplate:\nspec:\nrestartPolicy: Never\ncontainers:\n- name: task\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"printf 'complete\\n'\"]\nYAML\nkubectl apply -n \"$K_NS\" -f job.yaml\nkubectl wait job/task -n \"$K_NS\" --for=condition=Complete --timeout=150s\ntest \"$(kubectl logs -n \"$K_NS\" job/task)\" = complete\ntest \"$(kubectl get job task -n \"$K_NS\" -o jsonpath='{.status.succeeded}')\" = 1\nprintf 'PASS: Job completed once with the expected output\\n'\nWatch for: This observed success does not prove exactly-once execution for a real business task. Retryable\njobs need durable idempotency.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L07 · PVC persistence across Pod replacement","Goal: The second Pod mounts the same claim. Pod deletion removes its ephemeral","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l07-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > claim.yaml <<'YAML'\napiVersion: v1\nkind: PersistentVolumeClaim\nmetadata: {name: data}\nspec:\naccessModes: [ReadWriteOnce]\nresources:\nrequests: {storage: 1Gi}\nYAML\ncat > pod.yaml <<'YAML'\napiVersion: v1\nkind: Pod\nmetadata: {name: worker}\nspec:\ncontainers:\n- name: worker\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"sleep 600\"]\nvolumeMounts:\n- {name: data, mountPath: /data}\nvolumes:\n- name: data\npersistentVolumeClaim: {claimName: data}\nYAML\nkubectl apply -n \"$K_NS\" -f claim.yaml -f pod.yaml\nkubectl wait pod/worker -n \"$K_NS\" --for=condition=Ready --timeout=180s\nkubectl exec -n \"$K_NS\" worker -- sh -c 'echo retained > /data/note'\nkubectl delete pod worker -n \"$K_NS\" --wait=true\nkubectl apply -n \"$K_NS\" -f pod.yaml\nkubectl wait pod/worker -n \"$K_NS\" --for=condition=Ready --timeout=180s\ntest \"$(kubectl exec -n \"$K_NS\" worker -- cat /data/note)\" = retained\nprintf 'PASS: retained file survived Pod replacement\\n'\nWatch for: Needs a usable default StorageClass and storage permissions. Namespace cleanup deletes the\ndisposable claim; backend retention follows reclaim policy. This is not a database backup test.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L08 · Verify ingress NetworkPolicy enforcement","Goal: Both clients first have an accessible Service path. The applied ingress policy permits","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l08-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\ncat > service.yaml <<'YAML'\napiVersion: v1\nkind: Service\nmetadata: {name: web}\nspec:\nselector: {app: web}\nports: [{name: http, port: 80, targetPort: http}]\nYAML\ncat > policy.yaml <<'YAML'\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata: {name: allow-approved}\nspec:\npodSelector: {matchLabels: {app: web}}\npolicyTypes: [Ingress]\nScript continues on the next page. Save both code blocks as one script.\ningress:\n- from:\n- podSelector: {matchLabels: {access: approved}}\nports: [{protocol: TCP, port: 80}]\nYAML\nkubectl apply -n \"$K_NS\" -f web.yaml -f service.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\nkubectl run approved -n \"$K_NS\" --image=busybox:1.37 --restart=Never \\\n--labels=access=approved --command -- sh -c 'sleep 600'\nkubectl run blocked -n \"$K_NS\" --image=busybox:1.37 --restart=Never \\\n--command -- sh -c 'sleep 600'\nkubectl wait pod/approved pod/blocked -n \"$K_NS\" --for=condition=Ready --timeout=120s\nkubectl exec -n \"$K_NS\" blocked -- wget -qO- -T 5 http://web >/dev/null\nkubectl apply -n \"$K_NS\" -f policy.yaml\nK_DENIED=0\nfor K_N in $(seq 1 12); do\nif ! kubectl exec -n \"$K_NS\" blocked -- wget -qO- -T 3 http://web >/dev/null 2>&1; then\nK_DENIED=1; break\nfi"],["L09 · Diagnose an unsatisfiable node selector","Goal: The lab first confirms that no node has the requested label. The scheduler cannot","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l09-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > pod.yaml <<'YAML'\napiVersion: v1\nkind: Pod\nmetadata: {name: worker}\nspec:\nnodeSelector:\ninterview.example.com/eligible: never-match\ncontainers:\n- name: worker\nimage: busybox:1.37\ncommand: [\"sh\", \"-c\", \"sleep 600\"]\nYAML\ntest -z \"$(kubectl get nodes -l interview.example.com/eligible=never-match -o name)\"\nkubectl apply -n \"$K_NS\" -f pod.yaml\nkubectl wait pod/worker -n \"$K_NS\" --for=jsonpath='{.status.phase}'=Pending --timeout=30s\ntest -z \"$(kubectl get pod worker -n \"$K_NS\" -o jsonpath='{.spec.nodeName}')\"\nkubectl describe pod worker -n \"$K_NS\"\n# Verify scheduler evidence rather than changing shared node labels.\nprintf 'PASS: Pod is Pending and has no assigned node\\n'\nWatch for: Pending alone does not prove the cause. Read Events for the actual scheduling message;\nadmission or cluster failure can produce other symptoms.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L10 · Observe a stalled rollout and explicit undo","Goal: A missing nginx path makes new replicas unready while the previous template can","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l10-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\nkubectl apply -n \"$K_NS\" -f web.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\nK_PATCH='{\"spec\":{\"template\":{\"spec\":{\"containers\":[\n{\"name\":\"web\",\"readinessProbe\":{\n\"httpGet\":{\"path\":\"/missing-lab-path\",\"port\":\"http\"}}}\n]}}}}'\nkubectl patch deployment web -n \"$K_NS\" --type=strategic -p \"$K_PATCH\"\nif kubectl rollout status deployment/web -n \"$K_NS\" --timeout=30s; then\nprintf 'FAIL: broken readiness unexpectedly passed\\n' >&2; exit 1\nfi\nkubectl describe deployment web -n \"$K_NS\"\nkubectl rollout undo deployment/web -n \"$K_NS\"\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\ntest \"$(kubectl get deploy web -n \"$K_NS\" -o jsonpath='{.status.readyReplicas}')\" = 2\nprintf 'PASS: rollout stalled; explicit undo restored ready replicas\\n'\nWatch for: The 30-second client timeout is not an automatic rollback or necessarily the Deployment\nprogress deadline. Real rollbacks require schema/config compatibility review.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L11 · Kustomize a base for one replica","Goal: The Kustomization transforms a base that declared two replicas. The rendered file","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l11-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\ncat > kustomization.yaml <<'YAML'\napiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources: [web.yaml]\nreplicas:\n- name: web\ncount: 1\nYAML\nkubectl kustomize . > rendered.yaml\nkubectl apply -n \"$K_NS\" -f rendered.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\ntest \"$(kubectl get deploy web -n \"$K_NS\" -o jsonpath='{.spec.replicas}')\" = 1\ntest \"$(kubectl get deploy web -n \"$K_NS\" -o jsonpath='{.status.readyReplicas}')\" = 1\nprintf 'PASS: rendered overlay requested one ready replica\\n'\nWatch for: The v1beta1 version belongs to the Kustomization configuration format, not to a Deployment API\nversion. Rendering does not validate every cluster policy.\nStatus: Bash syntax passed; cluster result remains to be tested."],["L12 · Temporary host access with port-forward","Goal: An omitted local port requests an available one. The script discovers the reported","set -eu\ntest -z \"$(ls -A)\"\nkubectl config current-context\nK_NS=\"k8s-l12-$$\"\n! kubectl get namespace \"$K_NS\" >/dev/null 2>&1\nkubectl create namespace \"$K_NS\"\ntrap 'kubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\ncat > web.yaml <<'YAML'\napiVersion: apps/v1\nkind: Deployment\nmetadata: {name: web}\nspec:\nreplicas: 2\nselector: {matchLabels: {app: web}}\ntemplate:\nmetadata: {labels: {app: web}}\nspec:\ncontainers:\n- name: web\nimage: nginx:stable\nports: [{name: http, containerPort: 80}]\nreadinessProbe:\nhttpGet: {path: /, port: http}\nperiodSeconds: 2\nYAML\ncat > service.yaml <<'YAML'\napiVersion: v1\nkind: Service\nmetadata: {name: web}\nspec:\nselector: {app: web}\nports: [{name: http, port: 80, targetPort: http}]\nYAML\nkubectl apply -n \"$K_NS\" -f web.yaml -f service.yaml\nkubectl rollout status deployment/web -n \"$K_NS\" --timeout=120s\nkubectl port-forward -n \"$K_NS\" svc/web :80 > forward.log 2>&1 &\nK_FORWARD_PID=$!\ntrap 'kill \"$K_FORWARD_PID\" >/dev/null 2>&1 || true;\nkubectl delete namespace \"$K_NS\" --wait=false >/dev/null 2>&1 || true' EXIT\nK_PORT=\"\"\nfor K_N in $(seq 1 30); do\nK_PORT=$(sed -n 's/.*127.0.0.1:\\([0-9]*\\) -> 80.*/\\1/p' forward.log | head -n 1)\nif test -n \"$K_PORT\"; then break; fi\nsleep 1\ndone\ntest -n \"$K_PORT\"\ncurl -fsS \"http://127.0.0.1:$K_PORT\" -o page.html\ngrep -q 'Welcome to nginx' page.html\nprintf 'PASS: temporary local port reached the selected backend\\n'\nWatch for: Requires host curl and standard sed/head. Port-forward uses a Kubernetes diagnostic\nconnection, not the ordinary Service virtual-IP or external-ingress path.\nStatus: Bash syntax passed; cluster result remains to be tested."]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>
