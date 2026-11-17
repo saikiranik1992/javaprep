@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AWS Cloud Architecture (Java &amp; Spring Boot) — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #f59e0b;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">AWS Cloud Architecture (Java &amp; Spring Boot)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 8 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Handwritten Interview Notebook · AWS · IAM · VPC · ECS · SQS · DynamoDB
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (8)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Cloud &amp; Infrastructure</span>
+              <span>•</span>
+              <span>146 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              AWS Cloud Architecture (Java &amp; Spring Boot) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Handwritten Interview Notebook (AWS · IAM · VPC · ECS · SQS · DynamoDB). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">AWS Cloud Architecture (Java &amp; Spring Boot)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">AWS Cloud Architecture (Java &amp; Spring Boot) — Hands-On Labs &amp; Reference Guides (8)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of AWS Cloud Architecture (Java &amp; Spring Boot).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">AWS Cloud Architecture (Java &amp; Spring Boot) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"aws-cloud","title":"AWS Cloud Architecture (Java & Spring Boot)","subtitle":"Zero to Hero Handwritten Interview Notebook","category":"Cloud & Infrastructure","badge":"AWS · IAM · VPC · ECS · SQS · DynamoDB","color":"#f59e0b","pages":146,"chapters":["Cloud foundations and interview thinking","IAM, STS and authorization","VPC and network controls","EC2, Auto Scaling and instance operations","S3 and storage choices","Load balancing, DNS and edge delivery","ECS, EKS and Java containers","Lambda and API Gateway","RDS, Aurora and relational reliability","DynamoDB data modeling","Caching and ElastiCache","SQS, SNS and EventBridge","Streaming and workflow orchestration","Observability and incident diagnosis","KMS, secrets and application security","Infrastructure as code and CI/CD","Resilience, retries and disaster recovery","Cost, quotas and performance","Senior architecture scenarios","Troubleshooting and interview traps"],"questions":[["Q001",0,"What is AWS and what does cloud computing change?","AWS lets teams rent computing, storage, and managed services when needed instead of buying all the hardware first.","Traditional: buy server -> install OS -> deploy app\nAWS option: provision capacity -> deploy -> measure\nManaged option: use service API -> manage data and access","AWS supplies on-demand infrastructure and managed services. You trade some infrastructure ownership for service contracts, usage-based costs and API-driven operations. Your application correctness, access controls and architecture still need deliberate engineering. A Spring service can run on a VM, a managed container platform or a function. The programming model and operating responsibilities differ.","Calling every managed service serverless hides meaningful capacity and billing differences.","Which responsibilities would you keep when moving a Java API from EC2 to ECS?","You still own Java code, application configuration, IAM access, data protection, monitoring, deployments, and recovery. ECS manages container scheduling, not business correctness."],["Q002",0,"What is the shared responsibility model?","AWS secures the cloud infrastructure. You secure the way your application uses cloud services and customer data.","EC2: customer patches guest OS and application\nRDS: customer controls DB access, schema and queries\nS3: customer controls object access and retention","AWS protects the underlying cloud infrastructure. Customers protect their use of it, including identities, data and configuration. The boundary moves by service: an EC2 guest OS needs your patching, while a managed database removes much of that host administration. Using a managed service changes the boundary rather than eliminating your duties.","An encrypted bucket can still expose data through an overly broad policy.","How would you explain this boundary for Lambda?","For Lambda, AWS manages the hosts and runtime infrastructure; you still control function code, dependencies, IAM role, secrets, input checks, data, and observability."],["Q003",0,"What is the difference between a Region, Availability Zone and edge location?","A Region is a geographic area, an AZ is an isolated location inside a Region, and an edge location brings selected content closer to users.","Region: application and primary data location\nAZ A + AZ B: independent deployment failure domains\nEdge: cache selected HTTP responses near users","A Region is a geographic AWS service area. An Availability Zone is an isolated infrastructure location within a Region, built from one or more data centers. Edge locations serve functions such as content delivery close to users; they are not interchangeable with application AZs. Choose Regions for latency, residency, service availability and disaster recovery. Choose AZs for in-Region resilience.","Two instances in one AZ do not protect against that AZ failing.","When would two Regions be justified instead of two AZs?","Choose two Regions when a whole-Region outage, residency rule, or global latency target demands it. Multi-AZ is usually simpler for routine failure recovery within one Region."],["Q004",0,"Is high availability the same as disaster recovery?","High availability reduces ordinary outages. Disaster recovery gets the business running again after a major incident or data loss.","HA scenario: one task or AZ fails\nDR scenario: Region unavailable or data corrupted\nRTO: time to recover service\nRPO: acceptable amount of lost data, expressed as time","High availability limits interruption from expected component failures. Disaster recovery restores business capability after a larger disruption. Both require explicit failure assumptions; DR additionally depends on recovery procedures, independent copies and tested recovery objectives. A multi-AZ database can keep serving through a host failure while propagating accidental deletion to its replicas.","Replica availability is not an independent recoverable backup.","How do you test recovery from a destructive schema migration?","Rehearse restoring a backup to a separate environment, apply or reverse migration steps, confirm key records and application compatibility, then measure RTO and RPO. Never test only backup creation."],["Q005",0,"How should a senior candidate approach an AWS design question?","Start with requirements and risks, then pick AWS services. Tell the interviewer how you would test the design.","Given: 500 requests/s, 200 ms target p95\nAsk: peak factor, payload, transactions, residency\nDesign: ingress -> compute -> durable data\nValidate: load, failure, restore, cost per request","Clarify users, traffic, data, consistency, security and recovery objectives before choosing services. Explain an initial architecture, identify its bottleneck and failure boundary, and show how measurements would justify changes. An interviewer learns more from your assumptions and tradeoffs than from a long service list.","Treating illustrative traffic numbers as measured capacity leads to unsupported promises.","What new requirement would force you to change your first design?","A stricter recovery target, greater peak traffic, new data residency law, or critical cross-Region availability need can change the network, storage, or compute design. Say which assumption changed."],["Q006",1,"What are IAM users, roles and policies?","IAM users represent identities, roles offer assumable temporary identity, and policies say which API actions are allowed or denied.","Human -> identity provider -> temporary role session\nECS task -> task role -> S3 API\nPolicy -> Action + Resource + optional Condition","A user is an identity that can have long-lived credentials. A role is an assumable identity normally used with temporary credentials. Policies describe permitted or denied actions. Prefer federation for people and workload roles for applications over distributing static access keys. The application uses a credential provider to obtain and refresh temporary credentials.","A role's existence does not grant every caller permission to assume it.","Why are static keys especially risky inside a container image?","A leaked image or registry layer can expose a static key to anyone who can read it; rotation is hard once images are copied. Give containers short-lived workload- role credentials."],["Q007",1,"How does IAM evaluate access?","IAM considers the caller, requested action, resource, and all applicable policies. An applicable explicit deny wins.","Identity Allow: s3:GetObject on reports/*\nBoundary: permits the same action\nApplicable explicit Deny: blocks the request\nNo relevant permission: implicit deny","Authorization considers applicable identity and resource policies and relevant limiting controls. An applicable explicit deny takes precedence. Boundaries and organization policies limit authority rather than grant it. Evaluation details vary with the principal, account relationship and service. For diagnosis, identify the actual principal, API action, resource ARN and request context, then inspect every applicable control.","Same-account resource grants to users, roles and sessions have different implicit-deny interactions; avoid a universal 'all policies intersect' rule.","What changes for a cross-account request?","Cross-account calls generally require permission on the caller side and trust or resource authorization on the target side, with SCPs and other controls also applied. Check both accounts and the actual role session."],["Q008",1,"What is the difference between a trust policy and a permissions policy?","A trust policy decides who can assume a role. A permissions policy decides what that role may do afterward.","Trust: allow ecs-tasks.amazonaws.com to assume role\nPermission: allow s3:GetObject on one object prefix\nAssumeRole: returns temporary session credentials","A role trust policy controls who may assume the role and under what conditions. Its permissions policies control what the resulting role session may do. Cross- account access generally needs authorization in the caller account and trust or resource authorization in the target account. A trusted caller gets only the permissions of the session, subject to applicable restrictions.","Adding S3 permissions does not fix a role's missing trust relationship.","Where would you enforce an external ID for a third-party integration?","Put the external ID as an sts:ExternalId condition in the target role's trust policy for the third party. Also restrict the trusted principal and grant only the needed operations."],["Q009",1,"What do SCPs and permissions boundaries do?","SCPs and permissions boundaries cap possible permissions; they do not grant access by themselves.","Role policy: allow a deployment action\nBoundary: exclude IAM privilege escalation\nSCP: restrict allowed Regions for member accounts\nEffective access: evaluate grants and restrictions","A service control policy restricts the permissions available to affected principals in organization member accounts. A permissions boundary sets a maximum for an IAM user or role. Neither is an independent permission grant. SCP scope and exceptions, including management-account behavior, matter. Use organization controls for guardrails and role policies for operational permissions.","'AdministratorAccess' does not bypass an applicable organizational explicit deny.","How would you safely delegate role creation to a deployment team?","Let deployment teams create only roles with a required permissions boundary. Limit iam:PassRole, role paths, and policy changes; test that created roles cannot escape the guardrails."],["Q010",1,"What is least privilege for an application?","Least privilege means giving an application only the actions and resource paths it actually needs.","{\n\"Effect\":\"Allow\", \"Action\":\"s3:GetObject\",\n\"Resource\":\"arn:aws:s3:::EXAMPLE_BUCKET/reports/*\"\n}","Grant the smallest practical actions and resource scope that satisfy observed business operations. Use conditions where supported and separate unrelated workloads. Review real access, test denied paths and revise policies when the workload changes. This statement covers object reads under one prefix, not bucket listing or KMS decryption.","An action can require a bucket ARN, object ARN, other service permission or a resource policy; ARN shape is not interchangeable.","How would you add prefix-restricted ListBucket access?","Add a separate s3:ListBucket statement against the bucket ARN and restrict s3:prefix with a condition such as reports/*. Object reads still need a separate object ARN statement."],["Q011",2,"What are a VPC, subnet and route table?","A VPC is your AWS network, subnets are AZ-specific IP ranges, and route tables decide where packets should go.","VPC: 10.20.0.0/16\nAZ A app subnet: 10.20.10.0/24\nAZ B app subnet: 10.20.20.0/24\nRoute: destination CIDR -> target","A VPC is an isolated network boundary. A subnet occupies one AZ and defines an address range. A route table chooses destinations for traffic leaving the subnet. Route reachability and security rules are separate concerns. A multi-AZ service uses subnets in multiple AZs within the intended network.","A route allowing reachability does not authorize an application connection.","Why must subnet address ranges avoid overlap?","Overlapping addresses make routing ambiguous and complicate VPC peering, Transit Gateway, VPN, or on-prem connectivity. Plan CIDR ranges before connecting networks."],["Q012",2,"What makes a subnet public or private?","A public subnet routes toward an internet gateway. A private subnet does not provide that direct route and can use NAT for outbound IPv4.","Public route: 0.0.0.0/0 -> internet gateway\nPrivate route: 0.0.0.0/0 -> NAT gateway\nPrivate task: private IP, no public IP\nDatabase: private subnet, bounded inbound rule","A public subnet has a route to an internet gateway. Direct IPv4 internet communication also requires an appropriate public address and permissive controls. A private subnet lacks that direct internet-gateway route; it may use a NAT gateway for outbound IPv4 access. A task in a private subnet can call public APIs through an established outbound path without accepting unsolicited inbound connections through that NAT.","Assigning a public IP alone does not create a working internet route.","How would you handle IPv6 egress differently?","For private IPv6 outbound traffic, evaluate an egress-only internet gateway and correct IPv6 routes and security controls. NAT Gateway is primarily an IPv4 solution; verify the specific setup."],["Q013",2,"How do security groups differ from network ACLs?","Security groups are stateful allow rules around resources. Network ACLs are stateless ordered subnet rules that can also deny traffic.","ALB SG: inbound HTTPS from intended clients\nTask SG: inbound 8080 from ALB SG\nDB SG: inbound 5432 from task SG\nNACL: evaluate inbound and outbound separately","Security groups are stateful allow-rule controls on supported resources or network interfaces. Network ACLs are stateless subnet controls with ordered allow and deny rules. Stateless controls need explicit allowance for both directions, including return traffic ports. Referencing another security group expresses the permitted traffic source for supported networking arrangements.","A security-group reference does not copy the referenced group's rules.","Why can an allowed inbound connection still fail with a restrictive NACL?","The inbound NACL rule may permit the request while an outbound rule blocks the response's ephemeral port, or vice versa. Inspect both directions and rule order."],["Q014",2,"When should you use VPC endpoints instead of NAT?","Use VPC endpoints for private access to supported AWS services. NAT supports general outbound internet access.","S3 traffic -> gateway endpoint route\nSecrets Manager -> supported interface endpoint\nExternal payment API -> outbound internet path\nEndpoint policy + IAM + resource policy -> evaluate","Use endpoints when private access to a supported service meets the routing, security and cost requirements. Gateway endpoints are available for S3 and DynamoDB; interface endpoints use private network interfaces for supported services. NAT supports broader outbound destinations. An endpoint reduces reliance on public service paths but does not automatically grant service access.","Interface endpoint security groups, DNS settings and endpoint policies can still block requests.","How would you compare endpoint and NAT costs for your traffic?","Estimate traffic volume, number of AZs, endpoint hourly charges, data- processing charges, NAT transfer charges, and operational needs. Gateway endpoints for S3/DynamoDB may have different pricing from interface endpoints."],["Q015",2,"What are VPC peering, Transit Gateway, VPN and Direct Connect?","Peering connects VPCs, Transit Gateway provides a routing hub, VPN uses encrypted tunnels, and Direct Connect gives dedicated connectivity.","Two VPCs: peering may be enough\nMany VPCs + on premises: evaluate a routing hub\nVPN: encrypted tunnel\nDirect Connect: dedicated connectivity path","Peering links VPCs without transitive routing. Transit Gateway provides a managed hub for multiple networks. Site-to-Site VPN uses encrypted tunnels over network paths. Direct Connect supplies dedicated connectivity, with encryption requiring an explicit design. Select connectivity from scale, throughput, latency, routing and resilience needs.","Direct Connect alone should not be described as automatically encrypted or a complete resilient network.","What redundancy would you add to hybrid connectivity?","Use redundant customer gateways, VPN tunnels or Direct Connect links in separate locations, diverse devices and paths, monitored BGP failover, and a tested recovery path."],["Q016",3,"What is EC2 and how do you choose an instance?","EC2 rents virtual machines. Choose the CPU, memory, networking, storage, and processor type that match your measured Java workload.","Task memory estimate:\nheap + metaspace + thread stacks + native buffers\nMeasure: CPU, allocation rate, GC, RSS, throughput\nCheck: x86_64 or arm64 dependencies","EC2 provides virtual compute instances. Select an instance family and size using CPU, memory, network, storage and architecture needs, then measure the workload. Java heap alone is not the whole memory budget. A larger machine may postpone a bottleneck without fixing database contention or poor queries.","Assuming equal vCPU counts produce identical performance ignores generation and workload differences.","How would you benchmark a memory-heavy Java service?","Load-test with realistic payloads and concurrency; measure RSS, heap, GC pauses, native memory, thread count, p95/p99 latency, CPU, and throughput. Check behavior near the memory ceiling."],["Q017",3,"What happens when an EC2 instance stops or terminates?","Stopping EC2 ends compute but can keep EBS volumes. Termination may remove volumes depending on their settings; instance-store files are temporary.","Instance stopped: process gone, EBS retained\nInstance terminated: inspect DeleteOnTermination\nInstance store: do not depend on persistent recovery\nExternal data: database or object storage","Stopping a supported EBS-backed instance stops its compute execution while preserving attached EBS data. Termination ends the instance and removes volumes configured for deletion. Instance-store data has a temporary lifecycle and should not be treated as durable application storage. Storage retention depends on the storage type and attachment configuration.","Stopped instances can still incur charges for retained storage and other resources.","How would you recover a replacement service without local mutable state?","Build replacement machines from versioned images and infrastructure code. Keep configuration and secrets external and business state in RDS, S3, or durable services; run a failover test."],["Q018",3,"What is an Auto Scaling group?","An Auto Scaling group keeps the requested number of EC2 instances and can raise or lower capacity using policies.","Minimum: 2 instances\nDesired: 3 instances\nMaximum: 8 instances\nMetric: suitable demand per serving instance","An Auto Scaling group maintains desired instance capacity across configured locations and can adjust it using policies. Launch templates define instance configuration. Health assessment and replacement help restore compute capacity but do not prove that application dependencies are healthy. Scaling policies need capacity headroom, initialization time and sensible signals.","Scaling CPU-bound workers using request count alone may miss uneven processing cost.","How would you scale a queue worker using backlog per instance?","Estimate acceptable queue wait and processing time, then scale from backlog per healthy worker or oldest-message age. Add limits for worker startup and database capacity."],["Q019",3,"What is the difference between On-Demand, Spot and commitment discounts?","On-Demand gives flexible capacity, Spot is cheaper but interruptible, and commitments discount eligible long-term usage.","API baseline: availability-sensitive capacity\nBatch overflow: interruption-tolerant Spot workers\nStable measured usage: evaluate commitment coverage\nEvery option: compare utilization and constraints","On-Demand suits flexible capacity without a long-term usage commitment. Spot uses spare capacity with interruption risk. Savings Plans and Reserved Instances are discount mechanisms with specific terms and coverage. Capacity reservations are a separate concern and must be evaluated explicitly. Design Spot workloads to checkpoint, retry and move work when interrupted.","A discount commitment should not be described as universally guaranteeing capacity.","Which parts of a payment service would you place on Spot?","Put no irreplaceable payment decision on Spot alone. Spot can host replayable, idempotent reconciliation or analytics workers with checkpoints and durable queues."],["Q020",3,"How do you operate EC2 securely without exposing SSH?","Use controlled management access, instance roles, patching, logs, and IMDSv2 rather than keeping SSH open to the world.","Operator -> authorized management session\nInstance role -> required service actions\nMetadata access -> controlled and IMDSv2-aware\nLogs -> centralized audit and diagnostics","Use Systems Manager Session Manager where its prerequisites and policies are satisfied, restrict administrative access, use instance roles and protect metadata access. Maintain patching and auditability. Enforce IMDSv2 for compatible workloads and avoid passing instance credentials to unrelated processes. Removing inbound SSH simplifies one access path, but management agents, service reachability and operator permissions still need configuration.","IMDSv2 does not replace IAM least privilege or workload isolation.","How would you investigate an instance that cannot establish its management connection?","Check instance SSM agent status, IAM instance profile, Systems Manager permissions, VPC endpoints or internet path, DNS, proxy, and regional agent support. Inspect managed-node connection status."],["Q021",4,"What is the difference between S3, EBS and EFS?","S3 is object storage, EBS is a disk-like block volume, and EFS is a shared network filesystem.","Reports and images -> S3 objects\nDatabase disk on EC2 -> EBS blocks\nShared POSIX-style files -> evaluate EFS\nDurability requirement -> include backup and restore","S3 stores objects accessed through APIs. EBS supplies block storage associated with EC2 availability-zone placement. EFS provides shared file storage using NFS with deployment options and mount targets. Choose from access semantics, sharing, latency and failure requirements. Replacing a filesystem with S3 normally changes the application interface.","S3 key prefixes resemble directories but are not general filesystem directories.","Which choice would you make for uploaded documents in a replicated API?","Store uploaded documents in S3 and put ownership, upload status, and object keys in a database. Let multiple API replicas read through scoped permissions or presigned URLs."],["Q022",4,"Is S3 strongly consistent?","S3 has strong consistency for supported object reads and listings after writes, but it does not provide a database transaction across objects.","PUT invoice-42.json succeeds\nGET same key sees the successful write\nTwo writers overwrite one key: app needs coordination\nCDN copy: governed by its separate cache behavior","S3 provides strong read-after-write consistency for object writes, overwrites and deletes, including listings. This does not create multi-object transactions or eliminate independent caches, replication delays and application races. A client can observe a completed object write without using an old eventual- consistency workaround.","Strong object consistency does not make a read-modify-write sequence atomic.","How would conditional requests protect an update from a lost write?","Use an ETag-based condition such as If-Match when updating an object so a stale writer fails instead of overwriting a newer version. Handle conflicts explicitly."],["Q023",4,"What do S3 versioning and lifecycle rules provide?","S3 versioning saves separate object versions; lifecycle rules control when objects or versions move or expire.","Version 1: original invoice\nVersion 2: corrected invoice\nDelete marker: current key appears deleted\nRecovery: choose a retained prior version","Versioning preserves distinct versions and changes deletion behavior. Lifecycle rules transition or expire eligible objects and versions according to a policy. Together they support retention management, but protection from deletion needs explicit permissions and possibly Object Lock controls. Version history helps recover overwritten data when the prior version remains available.","Expiring noncurrent versions or broad delete permissions can defeat your recovery plan.","How would you test a retention policy before enabling it broadly?","Apply the rule to a test bucket with test versions, preview the selected objects, verify Object Lock and retention expectations, and confirm restore before changing production rules."],["Q024",4,"How do presigned URLs work?","A presigned URL grants temporary permission for a specific S3 operation; anyone holding it can use it while valid.","API validates customer ownership\nAPI presigns PUT for uploads/customer-42/object-id\nClient uploads directly to S3\nAPI verifies the completed object before publishing","A presigned URL authorizes a specific supported operation using the signer's credentials and signature conditions for a limited validity period. It acts as a bearer capability. Actual usability can end sooner if credentials expire or applicable permissions change. Direct upload can reduce traffic through your Java application.","A presigned URL can be reused during its usable period; it is not inherently a one-time token.","How would you constrain upload size, type and downstream trust?","Authorize the caller first, use a narrow key, short expiry and signed conditions where supported. Verify the stored object's actual size and magic bytes, scan it, and publish only after validation."],["Q025",4,"How do you secure an S3 bucket?","Keep buckets private, scope IAM access, encrypt objects, log sensitive operations, and plan retention and recovery.","Private bucket -> no public grants\nObject prefix -> tenant-aware authorization\nSSE-KMS -> evaluate S3 and KMS permissions\nAudit -> record relevant data access events as needed","Use bounded IAM and bucket policies, appropriate Block Public Access settings, encryption, audit signals and retention controls. Prefer explicit ownership and access policies over unnecessary ACLs. Validate both intended access and unintended public or cross- account paths. Encryption at rest protects one threat surface; authorization decides who may retrieve plaintext.","Blocking public access is not a complete defense against an overprivileged internal principal.","What would you inspect after an unexpected AccessDenied on an encrypted object?","Check the real principal, bucket and object ARN, bucket policy, SCP, VPC endpoint policy, key ownership, and KMS key policy or grants. SSE-KMS often needs kms:Decrypt too."],["Q026",5,"What is the difference between ALB and NLB?","ALB understands HTTP paths and hosts. NLB routes lower-level TCP/UDP/ TLS traffic.","ALB: /orders -> order target group\nALB: /catalog -> catalog target group\nNLB: TCP traffic -> transport-level targets\nTLS termination: choose listener and trust boundary","An Application Load Balancer routes HTTP and HTTPS traffic using application-level rules such as paths and hosts. A Network Load Balancer handles transport-level traffic such as TCP and UDP and TLS listeners. Choose from protocol behavior, addressing, traffic scale and target needs. For a typical Spring REST API, ALB routing and health checks are often a useful fit.","A load balancer does not repair an unhealthy application or add database capacity.","When would a non-HTTP protocol push you toward NLB?","Choose NLB for supported raw TCP or UDP protocols, certain fixed-address needs, or applications where HTTP-aware routing is not appropriate. Check protocol and target requirements."],["Q027",5,"What do load-balancer health checks prove?","A health check tests a configured endpoint, not every user action or database invariant.","GET /actuator/health/readiness -> serving readiness\nStartup incomplete -> return non-ready status\nDependency incident -> controlled degradation policy\nShutdown -> stop new traffic, drain existing work","They determine target health according to configured requests, thresholds and timings. Design a fast endpoint that reflects traffic readiness. Separate startup and readiness from deep diagnostics so a dependency incident does not cause harmful replacement or admission behavior. Probe design affects routing and recovery. ALB can fail open when all registered targets are unhealthy, so health status alone is not a hard security or traffic- isolation boundary.","A health check that merely reports process existence misses deadlocked request handling.","What should readiness return during a brief database failover?","Choose readiness based on whether the instance can serve useful requests. During brief failover it may temporarily return unavailable; avoid restarting healthy instances and test the load balancer's all-unhealthy behavior."],["Q028",5,"What does Route 53 do?","Route 53 turns names into addresses and supports different routing policies. DNS caches can delay failover.","api.example.com -> intended service endpoint\nPolicy -> simple, weighted, latency or failover design\nTTL -> cache guidance for recursive resolvers\nClient pool -> may retain existing connections","Route 53 provides DNS functionality and routing policies, with associated health-check capabilities. DNS resolves names; clients and resolvers cache responses. DNS failover therefore depends on health detection, TTLs, caches and client behavior rather than an instantaneous global switch. Plan failover for new resolution and existing connections.","Lower TTL does not force every client to reconnect immediately.","How would you verify a regional failover from multiple client networks?","Test from different networks and Regions, resolve the name repeatedly, compare actual endpoint IPs, send application requests, and check recovery time for both new and existing connections."],["Q029",5,"What is CloudFront and what can be cached?","CloudFront caches eligible content near users. Cache keys and privacy settings decide which response can be reused.","Static /assets/app-HASH.js -> long immutable cache\nProduct page -> bounded TTL and correct key\nPersonal invoice -> explicit protected delivery policy\nInvalidation or new object key -> update strategy","CloudFront delivers content through edge locations and can cache eligible responses from origins. Configure cache keys and policies around the response's true variation: path, selected headers, query parameters and cookies. Authenticated personalized content needs particular care. A cache hit avoids some origin work but may serve an older permitted representation.","Omitting a tenant-dependent header from a shared cache key can expose one tenant's response to another.","When would versioned object names be preferable to invalidation?","Use content-hashed file names for static JavaScript, images, and assets so old and new releases can coexist and long cache lifetimes are safe. Invalidate when names cannot change."],["Q030",5,"How do WAF, Shield and TLS differ?","TLS encrypts transport, WAF filters selected web traffic, and Shield helps defend against DDoS.","TLS -> secure connection to intended endpoint\nWAF -> reject selected suspicious HTTP patterns\nApp -> authenticate user and authorize invoice access\nRate policy -> protect bounded backend capacity","TLS protects data in transit and authenticates endpoints according to certificate validation. AWS WAF evaluates web requests against rules on supported integrations. AWS Shield addresses DDoS protection with different service tiers. These solve overlapping operational concerns but do not replace application authorization. Layer edge controls with correct identity and resource ownership checks.","A WAF rule cannot guarantee that every request is safe or that business- level abuse is prevented.","How would you distinguish credential stuffing from a large legitimate sale?","Compare account-level failed logins, IP/device patterns, bot indicators, conversion rates, and authenticated activity. Apply user-aware limits without blocking legitimate demand only because traffic is high."],["Q031",6,"How do ECS, EKS and Fargate differ?","ECS runs AWS-managed container workloads. EKS runs Kubernetes workloads. Fargate is a compute choice available for supported workloads.","ECS + Fargate -> managed task scheduling and compute\nECS + EC2 -> customer-managed container host capacity\nEKS -> Kubernetes APIs and ecosystem\nChoose -> skills, platform needs, operations and cost","ECS is AWS container orchestration. EKS provides managed Kubernetes control-plane capabilities. Fargate supplies a managed compute option for supported ECS and EKS workloads. Orchestration choice and compute choice are separate decisions. Fargate removes much host administration while leaving task configuration, permissions and application operation with you.","Describing Fargate as a replacement for every Kubernetes capability misses workload restrictions.","What would justify EKS for a team already productive on ECS?","Choose EKS when standard Kubernetes APIs, operators, custom scheduling, or an established K8s platform justify its extra operational work; not just because it sounds more advanced."],["Q032",6,"What are ECS task definitions, tasks and services?","An ECS task definition is a blueprint, a task is one running copy, and a service maintains desired tasks.","Task definition revision: orders:17\nTask: one launched instance of orders:17\nService desired count: 3\nNew revision: deployment replaces eligible old tasks","A task definition describes a workload configuration, including containers and resources. A task is a running instance of that definition. A service maintains desired task count and manages deployment and optional load-balancer integration. The service is responsible for ongoing reconciliation rather than a single task launch.","Registering a task definition does not start a service or move production traffic.","How would you roll back a failed service deployment?","Deploy a known-good task-definition revision or enable an appropriate deployment circuit breaker and rollback. Validate database compatibility and user- facing metrics after restoration."],["Q033",6,"How do the ECS task role and execution role differ?","The ECS task role is for application AWS calls. The execution role is for supported ECS startup actions such as image pulls and logs.","taskRoleArn -> application reads reports and sends SQS\nexecutionRoleArn -> image pull and log delivery\nsecrets injection -> execution-role permission path\nSDK secret fetch -> application task-role path","The task role supplies application permissions to AWS APIs. The execution role supplies permissions used by ECS or Fargate agents for supported startup and execution activities, such as pulling images, sending logs and resolving configured secrets. Keep these identities separate. Who retrieves a value determines which principal needs permission.","Adding an S3 permission only to the execution role does not grant the application's SDK that permission.","Which role needs KMS access for a secret retrieved by Java at runtime?","If Java itself calls Secrets Manager and then KMS is needed, the task role and relevant key policy must allow that action. Execution-role access applies to ECS- managed secret injection."],["Q034",6,"How do you make Spring Boot ready for container deployment?","Use an immutable Java image, external configuration, limited JVM memory, readiness checks, graceful shutdown, and workload credentials.","server.shutdown=graceful\nspring.lifecycle.timeout-per-shutdown-phase=20s\nmanagement.endpoint.health.probes.enabled=true\n# Select exposure and access controls deliberately.","Build an immutable reviewed image, externalize configuration, budget total JVM memory, expose bounded health endpoints and implement graceful shutdown. Tune startup, request timeouts and connection pools for platform limits. Use workload credentials through the SDK provider chain. The platform and application must agree on admission and shutdown timing.","Heap size equal to the container memory limit leaves no room for native allocations and threads.","How would you detect memory pressure before task replacement?","Watch container RSS and memory utilization, GC activity, native memory and thread count, JVM heap usage, and OOM kills. Alert before approaching task memory limits."],["Q035",6,"Who is responsible for security in EKS?","AWS operates the managed EKS control plane, while your team must secure workloads, identities, data, and supported node configuration.","Cluster -> control-plane service boundary\nWorkloads -> image, RBAC, secrets, network policy\nCompute -> EC2 nodes or supported managed option\nAWS access -> workload identity, bounded IAM role","AWS manages the EKS control-plane responsibilities defined by the service. Customers manage application code, workload identity and access, policies and data. Responsibilities for nodes and OS maintenance depend on the selected compute option and EKS mode. The managed control plane does not make every pod trustworthy or every network policy effective.","Giving all pods the node's broad IAM authority destroys workload separation.","How would you keep one namespace from reading another application's AWS data?","Give each workload a dedicated service account and scoped IAM role, plus namespace RBAC and network policies. Enforce tenant ownership in the application's data layer."],["Q036",7,"What is Lambda and when is it a good fit?","Lambda runs short-lived event or API logic without operating servers directly. Compare its execution limits with your workload.","S3 event -> thumbnail function\nScheduled event -> bounded cleanup job\nHTTP integration -> short API operation\nLong continuous process -> evaluate other compute","Lambda runs functions on managed compute in response to supported invocations. It suits event-driven work and APIs that fit its execution constraints. Compare startup behavior, duration, resource needs, concurrency and integration costs against containers or other compute. There is no application server fleet for you to operate, but functions still need resource budgets and deployment discipline.","'Serverless' does not mean unlimited duration or zero operations.","What makes a streaming socket service a poor fit for a simple function model?","A continuously connected socket needs long-lived state, session routing, and connections. Simple Lambda invocation is usually a poor match without an additional managed connection service and state layer."],["Q037",7,"What is a cold start and how do you reduce its effect for Java?","A cold start is the extra startup work before Lambda handles a request. Keep Java initialization lean and measure it.","Initialization: load classes, construct clients\nInvocation: validate input, perform business operation\nWarm reuse: retain safe reusable clients\nRestore-aware features: validate initialization state","A cold start includes creating and initializing an execution environment before useful handling. Reduce avoidable initialization, use suitable packaging and evaluate provisioned concurrency or supported SnapStart configurations. Measure end-to-end latency under actual traffic and deployment patterns. Sharing SDK clients across invocations can avoid repeated setup. SnapStart needs special care with uniqueness, credentials and restore-safe connections.","Cached mutable request data can leak between invocations in a reused environment.","How would you measure cold and warm p99 separately?","Tag invocation metrics by cold versus warm path using init indicators and tracing, then compare separate p99 distributions under representative traffic. Do not average different p99 values."],["Q038",7,"How does Lambda concurrency affect downstream services?","Lambda can rapidly run many copies, but each copy may put pressure on a limited database or API.","Example: 100 executions x 1 DB connection = 100\nDatabase safe application budget: 60 connections\nControls: cap concurrency, pool/proxy, queue work\nMeasure: throttles, duration, backlog and DB saturation","Concurrency is the number of simultaneous executions. Reserved concurrency can bound a function's use and reserve part of account capacity; provisioned concurrency prepares execution environments. Downstream connection and rate budgets must fit the admitted concurrency. A highly elastic function tier can overwhelm a comparatively fixed database.","Provisioned concurrency and reserved concurrency solve different problems.","How would you choose a safe concurrency limit during a traffic spike?","Measure maximum safe database connections and execution time; reserve downstream capacity, set concurrency limits, use queues or RDS Proxy where suitable, then load-test expected bursts."],["Q039",7,"How are Lambda failures retried?","Lambda retry rules depend on whether calls are synchronous, asynchronous, or read from an event source such as SQS.","HTTP caller timeout -> caller decides next action\nAsync event -> inspect retry and destination settings\nSQS mapping -> message visibility and batch handling\nEvery path -> business operation must tolerate replay","Retry behavior depends on the invocation path. Synchronous callers own their retry decisions. Asynchronous invocation has service-managed retry and failure- handling settings. Event-source mappings such as SQS have their own processing and retry contracts. Configure retry duration and failure destinations for the selected path.","One universal 'Lambda retries twice' claim is incorrect across invocation modes.","How would partial batch failure reporting change SQS processing?","Report only failed item IDs in the batch response when supported, allowing successful items to stay complete. Keep each item's effect idempotent because retries still happen."],["Q040",7,"What does API Gateway add to an API?","API Gateway provides API ingress features such as routing and authorization, depending on its API type.","Client -> API route -> authorizer -> integration\nBackend -> status and payload mapping\nControls -> supported throttling and access logs\nApplication -> resource ownership and invariants","API Gateway provides managed API ingress capabilities, with features varying between HTTP, REST and WebSocket APIs. It can integrate with functions or other backends and support authentication, routing and traffic controls. Select an API type from required capabilities. Gateway authentication establishes who calls; the backend still needs business authorization.","Throttling is not a transaction-level guarantee against abuse or unlimited spend.","Why might an ALB be preferable for an existing container REST service?","An existing ECS REST API may use ALB when straightforward HTTP routing, familiar health checks, and suitable cost/performance are enough. Compare authorization and throttling needs first."],["Q041",8,"What do RDS and Aurora manage?","RDS manages supported relational database infrastructure; Aurora is a managed relational family with its own storage architecture.","Java service -> JDBC -> relational endpoint\nCustomer: indexes, transactions, migrations, access\nService: managed infrastructure within its contract\nDesign: availability, backup, read/write requirements","RDS provides managed relational database offerings with engine- specific capabilities. Aurora is a compatible managed database family with its own distributed storage and topology. AWS manages service infrastructure; you still own schema design, SQL performance, access and application transaction behavior. Choose from engine compatibility, operational requirements, topology and measured workload rather than branding.","Managed databases do not automatically fix inefficient queries or lock contention.","Which parts of a PostgreSQL migration would you verify before choosing Aurora?","Test PostgreSQL extensions, SQL behavior, version support, transaction isolation, parameter settings, replication, networking, failover, and query plans with production-like data."],["Q042",8,"How do Multi-AZ and read replicas differ?","Multi-AZ is mainly for availability; read replicas primarily add read capacity. Exact RDS topologies have different rules.","Traditional Multi-AZ instance -> primary + standby\nRead replica -> async read copy, lag may exist\nMulti-AZ DB cluster -> different readable topology\nApplication -> choose writer and reader endpoints","Multi-AZ deployment options support availability, while read replicas support read scaling and other workflows. A traditional RDS Multi-AZ DB instance uses a standby that does not serve reads. Multi-AZ DB clusters have readable instances; Aurora has its own cluster architecture. Always identify the exact RDS deployment type before describing behavior.","'Every Multi-AZ standby serves reads' and 'no Multi-AZ instance can ever serve reads' both hide topology distinctions.","Where should a read immediately after a critical write go?","Send a critical read-after-write to the writer or another path with a proven fresh-read guarantee. An asynchronous read replica may still contain the old value."],["Q043",8,"What happens to a Java application during database failover?","During DB failover, old connections can break and an in-flight commit may have an unknown outcome.","Connection lost before commit -> likely retryable path\nConnection lost during commit -> outcome may be unknown\nClient request key -> resolve previous outcome\nConnection pool -> evict broken connections","Connections may fail, transactions may abort or outcomes may become uncertain. Clients must resolve the appropriate endpoint, refresh invalid connections and retry only operations whose semantics permit it. Failover completion at the service level is not identical to application recovery. Use bounded reconnects and idempotency for operations that might have committed.","Retrying a payment after any connection exception can charge twice.","How would you determine whether the first transaction committed?","Query a durable request ID or unique transaction record at the new writer to see if the effect exists. Only retry with the same idempotency identity after checking the outcome."],["Q044",8,"How do you size connection pools and use RDS Proxy?","The total database connection demand is the sum across all tasks and jobs, not just one HikariCP pool.","20 tasks x pool max 15 = up to 300 connections\nDatabase budget for app: 220\nAdjust: task count, pool, proxy and query duration\nMeasure: wait time, active sessions, pinned sessions","Budget connections across all replicas and jobs, leaving operational headroom. RDS Proxy can pool and manage connections for supported engines, but session state, pinning and transaction behavior affect benefits. Query optimization and concurrency control remain necessary. A local pool configuration multiplies across the deployment.","A proxy does not increase the database's ability to execute unlimited concurrent work.","What happens when autoscaling doubles the number of Java tasks?","Doubling 20 tasks with pool 15 raises possible connections from 300 to 600. Limit task scaling, reduce pool sizes, and reserve capacity for maintenance; RDS Proxy is not infinite capacity."],["Q045",8,"How do you handle backups and schema migrations?","Backups protect recoverable data; expand-and-contract schema changes let old and new app versions coexist during rollout.","Expand: add nullable column and compatible readers\nMigrate: backfill and verify\nSwitch: use new column after compatibility checks\nContract: remove old column in a later release","Use recovery mechanisms appropriate to the database, retention and independence requirements. Test restores into an isolated environment. Deploy backward- compatible expand-and-contract migrations so old and new application versions can coexist during rollout. Rollback must account for data changes, not just application images.","A successful backup job without a restore test does not demonstrate a usable recovery path.","How would you roll back an application after a destructive migration?","A destructive migration may make code rollback unsafe. Restore a tested snapshot or use a compatible forward correction and reconciled data plan; define the rollback boundary before deploying."],["Q046",9,"How does DynamoDB differ from a relational database?","DynamoDB uses keys and access patterns for fast lookups; relational databases are better for many joined queries and constraints.","Access pattern: get one order by customer and ID\nPK = CUSTOMER#42\nSK = ORDER#2026-10-09#123\nQuery -> bounded key range, not whole-table scan","DynamoDB is a managed key-value and document database built around explicit keys and access patterns. Model efficient queries and distribution before writing application code. It supports conditional operations and transactions, but general joins and arbitrary relational querying are not its core model. Key design makes the requested operation predictable and bounded.","Translating every SQL table directly into a DynamoDB table can miss the workload's actual query needs.","How would you list a customer's last 20 orders?","Partition by customer and sort by order time plus a unique tie-breaker; Query the customer's key in descending order with Limit 20, avoiding a full table scan."],["Q047",9,"What causes a hot partition or hot key?","A hot DynamoDB key receives much more traffic than others, even if overall capacity looks fine.","Poor key: PK = STATUS#OPEN for every new order\nBetter starting point: tenant/customer-based keys\nHigh-volume tenant: evaluate controlled sharding\nQuery fan-out: account for the new read cost","Skewed access concentrates work on a limited key space even when aggregate capacity appears sufficient. Choose keys and access patterns that distribute demand. Caching, sharding or write aggregation may help, but each changes application behavior. Distribution must match real traffic, including a single unusually large customer.","High cardinality alone does not guarantee evenly distributed requests.","How would you detect and relieve a single celebrity-item hot key?","Use per-key metrics and throttling patterns, cache popular reads, and split safe write counters or workloads when business semantics permit. Do not shard exact stock decisions without coordination."],["Q048",9,"Which DynamoDB reads can be strongly consistent?","Some DynamoDB table and LSI reads may be strongly consistent; GSI reads are eventually consistent.","Table GetItem: request ConsistentRead where supported\nGSI query: eventual consistency\nCritical write result: return known committed data\nProjection query: tolerate or detect freshness lag","Tables and local secondary indexes support strongly consistent reads where applicable. Global secondary indexes support eventually consistent reads. Global tables have consistency modes and Region constraints that must be selected and verified; do not assume all multi-Region configurations behave alike. Select consistency per operation and index, and consider its capacity consequences.","Reading a GSI immediately after writing the base table can return a stale projection.","How would you prevent a stale projection from authorizing an action?","Do not authorize a sensitive action using a possibly stale GSI alone. Recheck the item or permission against the authoritative table or dedicated trusted store at decision time."],["Q049",9,"How do conditional writes support idempotency?","A conditional write accepts a change only if the stored condition is true; this can guard a durable request key.","Key: REQUEST#client-key\nCondition: attribute_not_exists(PK)\nState: IN_PROGRESS -> COMPLETED with result\nDuplicate: read state and return resolved outcome","A conditional write applies only when its condition is satisfied. Use a durable request key and a state model to distinguish a first attempt, an in-progress attempt and a completed result. Keep related effects inside an appropriate transaction where supported. The conditional claim must be combined with a recovery policy for abandoned processing.","Claiming a key and then charging an external payment provider is not one atomic transaction.","How would you recover after a crash between the charge and saving the result?","Treat charge outcome as unknown, then query the payment provider using the same stable idempotency key or reconcile transaction ID. Store the result durably before responding and never issue an unrelated second charge."],["Q050",9,"What do DynamoDB TTL and Streams provide?","DynamoDB TTL expires eligible items asynchronously. Streams exposes ordered item changes within defined scopes and retention limits.","expiresAt: epoch seconds in configured TTL attribute\nRead path: exclude logically expired data immediately\nStream event: update projection or publish workflow\nConsumer: deduplicate and handle failed batches","TTL enables eventual removal of eligible expired items; it is not a precise deletion timer. Streams capture item-change records for consumers, with defined retention and processing behavior. Consumers need replay tolerance and monitoring for lag or failures. Application validity checks can take effect before physical deletion.","TTL is unsuitable as an exact-time security revocation mechanism by itself.","What recovery plan do you need if a stream consumer falls behind retention?","Track checkpoint age and alarm before retention expiry. If events are lost, rebuild state using source-of-truth records, exports/backups, or a re-scan and reconcile before resuming."],["Q051",10,"When would you add ElastiCache to a Java service?","ElastiCache stores useful temporary data in memory to reduce latency or database reads; the database usually remains the source of truth.","Request -> look up product key\nCache hit -> return permitted cached representation\nCache miss -> load durable source and populate\nSource remains authority for product data","Add a compatible managed cache when repeated reads or expensive calculations dominate latency or load and the application can define acceptable freshness. ElastiCache offers engine and deployment choices; verify the selected engine's API, persistence and availability features. A cache can reduce database work but introduces stale data and new failure paths.","Adding a cache before measuring query and index performance may complicate a solvable database issue.","Which data in a payment application should you avoid treating as cache- authoritative?","Do not make cached balances, confirmed payment states, or scarce inventory authoritative. Read and update those with a durable transactional owner; cache only safe views."],["Q052",10,"What is cache-aside and how do you invalidate entries?","Cache-aside first checks a cache and loads from the database on a miss; writes need a safe invalidation plan.","Read miss -> DB read -> cache value with TTL\nWrite -> DB commit -> invalidate affected key\nRace -> old reader may repopulate an old value\nMitigation -> versioning or stronger coordination","In cache-aside, the application loads missing data from the source and populates the cache. After updates, invalidate or refresh affected entries. Define a freshness budget and handle races between readers and writers; TTL bounds some staleness but is not instant coherence. Invalidation must consider all derived keys, including lists and aggregates.","Deleting a key after a commit is not automatically a proof of zero stale reads.","How would you cache customer-specific prices safely?","Key the cache by tenant and customer context, authorize before returning a price, and include pricing rules or version in the key. Never reuse a shared key for private quotes."],["Q053",10,"What is a cache stampede?","A cache stampede happens when many users miss the same hot key together and overload the source database.","1,000 callers -> same expired product key\nWithout coordination -> 1,000 DB loads\nWith coalescing -> one loader, bounded waiters\nAdd jitter -> spread unrelated expirations","A stampede occurs when many requests simultaneously rebuild a missing or expired value and overwhelm the source. Use request coalescing, TTL jitter, controlled refresh or bounded stale serving according to the business contract. Protect both loader concurrency and waiting request resources.","A distributed lock without a timeout or correct ownership release can turn a stampede into an outage.","When would stale-while-revalidate be unacceptable?","Do not serve stale values for a one-time password, permission revocation, payment authorization, or final inventory decision. Those need current authoritative checks."],["Q054",10,"What happens when the cache fails?","A cache outage should not create unlimited new database requests; use bounded fallback and protect essential operations.","Cache timeout budget: small part of request deadline\nFallback: concurrency-limited DB query\nOver budget: reject or degrade selected endpoints\nRecovery: avoid synchronized cache refill","Choose a deliberate degraded mode: fall back within a bounded database budget, serve allowed stale data, shed load or fail selected operations. Circuit breakers and timeouts prevent the cache failure from holding all application threads. A healthy cache can hide how little database capacity remains for an all-miss event.","Unlimited fallback can transform a cache outage into a database outage.","What failure test would verify your fallback budget?","Disable or simulate Redis failure under representative peak load. Verify database CPU, connection pools, fallback rate limits, p99 latency and error behavior stay within stated budgets."],["Q055",10,"Can Redis-based locks guarantee exactly- once work?","Redis locks coordinate work but do not alone prove an external effect happens exactly once.","Worker A holds lease, then pauses\nLease expires; worker B starts\nWorker A resumes with stale authority\nFencing or durable invariant rejects stale effect","A lease-style lock can coordinate attempts under stated assumptions, but expiration, pauses and network failures can allow an old holder to continue. Use durable invariants, idempotency and fencing where necessary. The underlying resource must enforce the correctness boundary. Mutual exclusion during normal conditions is weaker than a durable business guarantee.","A lock is not a substitute for a database uniqueness constraint or payment idempotency key.","Where would you validate a fencing token?","The protected database or resource must store the highest accepted fencing token and reject stale tokens in the write path. An unchecked token offers no safety."],["Q056",11,"How do SQS, SNS and EventBridge differ?","SQS holds tasks for workers, SNS fans out published messages, and EventBridge routes matching events by rules.","Order service -> event routing or notification\nSubscriber A queue -> email worker\nSubscriber B queue -> analytics worker\nIndependent queues -> independent retry and lag","SQS buffers messages for consumers that poll and acknowledge them. SNS publishes to subscribers for fan-out. EventBridge routes events using rules and supported integrations. They can be combined; choose based on buffering, routing, subscriber ownership and failure handling. A queue decouples consumer availability from producer timing.","A topic by itself does not define the same consumer-controlled acknowledgement workflow as an SQS queue.","Why might every subscriber need its own queue?","Give each independent subscriber its own queue so one slow consumer cannot block another and each group gets independent retries, retention, dead-letter handling, and scaling."],["Q057",11,"What guarantees do SQS Standard and FIFO queues provide?","SQS Standard can deliver duplicates and has best-effort ordering. FIFO offers scoped ordering and deduplication rules, not universally once-only business effects.","Standard: tolerate duplicate and out-of-order events\nFIFO group: order-42 -> sequence for that group\nDeduplication ID: stable ID for a producer retry\nConsumer: durable business-key deduplication","Standard queues support at-least-once delivery and best-effort ordering. FIFO queues provide ordering within message groups and producer deduplication under the documented rules. Neither makes an external business side effect exactly once without application coordination. A FIFO message can become visible again after an unacknowledged processing attempt.","Service-level deduplication does not atomically combine 'charge card' and 'delete message'.","What grouping key gives useful parallelism without breaking required ordering?","Group by an entity requiring order, such as orderId, so independent orders can run in parallel. A single global group would create a processing bottleneck."],["Q058",11,"What is the SQS visibility timeout?","Visibility timeout temporarily hides a received SQS message while a worker processes it; failure to delete can lead to redelivery.","Receive -> receipt handle H1 -> hidden interval\nProcess and commit durable effect\nDeleteMessage(H1) after successful commit\nCrash before delete -> message can return","After receipt, visibility timeout temporarily hides a message from other consumers. It does not delete the message. Successful processing must be followed by deletion using the receipt handle. Extend visibility for longer work within service constraints and tolerate redelivery. Size the timeout for realistic processing and retries rather than only average duration.","A short visibility timeout can create concurrent processing; a very long one can delay recovery after a crash.","What is a safe heartbeat strategy for variable-length jobs?","Extend visibility periodically only while the worker holds valid ownership, with a maximum run time, progress checks, and a recovery policy. Set timeout above normal work with margin."],["Q059",11,"What are DLQs and redrive policies?","A dead-letter queue keeps messages that repeatedly fail, giving operators a way to investigate and replay.","Main queue -> repeated processing failure\nRedrive threshold -> dead-letter queue\nOperator -> classify cause and repair\nControlled replay -> verify duplicate tolerance","A dead-letter queue captures eligible messages that exceeded configured processing attempts. It supports diagnosis and controlled recovery. Decide retention, alerting and redrive procedures so failed work is neither silently lost nor endlessly replayed. A DLQ is an operational backlog with ownership and an SLA. For FIFO workflows, removing a failed message can affect the intended business sequence.","Automatically replaying every poison message can recreate the incident.","How would you distinguish transient failure from invalid business input?","Retry network timeouts with bounded backoff; reject schema-invalid or impossible business messages without endless retries. Record event ID, reason, attempts, and repair owner."],["Q060",11,"How do you publish an event reliably after a database commit?","Write the business update and an outbox event in the same database transaction, then publish events asynchronously.","BEGIN\ninsert order row\ninsert outbox(order_id, event_id, payload)\nCOMMIT\nPublisher -> send -> mark published with recovery","Use a transactional outbox: write the business row and an outbox record in one local transaction, then publish asynchronously. The publisher may repeat delivery, so consumers use idempotent processing. Monitor outbox age and replay safely. The outbox closes the gap between a committed business change and a missing publish attempt.","It does not create one distributed transaction spanning the database and queue.","What happens if sending succeeds but marking the outbox row fails?","The event may be sent again after restart because the row still looks pending. Consumers must deduplicate the business effect using a durable event ID."],["Q061",12,"When would you choose Kinesis or MSK instead of SQS?","SQS is great for task distribution; Kinesis or MSK fits streaming workloads needing retained ordered records and independent readers.","Work item completed -> queue acknowledgement\nEvent history -> stream offsets/checkpoints\nKafka ecosystem requirement -> evaluate MSK\nAWS-native stream pipeline -> evaluate Kinesis","Choose a stream or Kafka-based log when partitioned ordering, replay and multiple independent readers are core needs. SQS fits work distribution with message acknowledgements. Kinesis and MSK have different operational and capacity models; evaluate ecosystem and access patterns. The unit of ordering and consumer progress differs between a queue and a partitioned log.","Managed Kafka does not remove partition planning, client configuration or data-retention decisions.","How would you replay historical events without repeating external side effects?","Replay with an event ID and an idempotent consumer effect stored transactionally. For external payments/emails use provider keys, result tracking, or controlled replay filters."],["Q062",12,"What is partition-key design in streaming?","Partition keys decide both event ordering scope and how streaming load spreads across partitions.","Key = orderId -> per-order ordering\nKey = constant -> severe concentration risk\nKey = random -> distributes but loses entity grouping\nConsumers -> checkpoint after safe processing","A partition key groups related events onto an ordering boundary and distributes traffic. Balance required order against hot partitions and consumer parallelism. Within-partition order does not establish a global order across all producers and partitions. Choose the smallest business entity that needs sequential processing.","Increasing consumer count cannot always overcome a single hot partition's serial workload.","How would you preserve customer ordering while scaling a very large customer?","Keep per-customer sequence numbers at the owner, partition a large customer's independent substreams, and coordinate or reorder when those streams must later become one ordered view."],["Q063",12,"What does Step Functions add to a workflow?","Step Functions tracks workflow state and transitions across multiple service calls and retries.","Reserve inventory -> authorize payment -> confirm order\nOn payment rejection -> release inventory\nOn timeout -> inspect outcome before compensation\nWorkflow state -> correlate business operation ID","Step Functions models workflow state, branching, retries and service integrations. Workflow types have different execution and delivery semantics. Keep activities idempotent, use bounded retries and represent compensation explicitly for multi-service business operations. An explicit workflow improves visibility into progress and recovery.","State-machine execution semantics do not make each external API effect magically transactional.","When would you choose a Standard workflow over an Express workflow?","Use Standard for durable long-running workflows with their required audit and execution semantics; use Express for suitable high-volume shorter workflows after checking limits and delivery behavior."],["Q064",12,"What is a saga and how does it differ from a transaction?","A saga coordinates several local transactions with recovery or compensation. A single ACID transaction cannot cover arbitrary remote services.","Inventory reservation -> local commit\nPayment authorization -> local commit\nFailure -> release or refund where appropriate\nCustomer view -> show pending, completed or failed","A saga coordinates local transactions and compensating actions across services. It exposes intermediate states and compensation failures. A local ACID transaction protects one database boundary; a saga handles a wider business process with weaker atomicity. Compensation is a business action, not always a perfect reversal.","Sending an email cannot generally be undone by rolling back another database.","How would you reconcile a payment that succeeded after the workflow timed out?","Query the provider by stable payment key, match it to order/reservation state, then settle, refund, or compensate according to a documented state machine. Never assume timeout means failure."],["Q065",12,"How do you evolve event schemas safely?","Keep event changes backward-compatible during a rolling migration, and test old consumers against new producers.","Event: type=OrderCreated, schemaVersion=2\nAdd: optional deliveryPreference\nDo not reuse: existing field with changed meaning\nReplay: old events remain interpretable","Use explicit versioning, compatible additions and consumer-tolerant parsing. Validate contracts in tests and keep replay requirements in mind. Deprecate fields only after proving that live and recovery consumers no longer depend on them. Event retention makes compatibility a historical concern, not just a rollout concern.","Updating every live consumer does not guarantee an old event can still be replayed correctly.","How would you migrate an enum value that older consumers cannot parse?","Add a compatible fallback or new field/version, teach consumers to handle the new value before producers emit it, and retire legacy behavior after measured adoption."],["Q066",13,"How do CloudWatch, CloudTrail and AWS Config differ?","CloudWatch tracks operations and metrics, CloudTrail records supported AWS API activity, and AWS Config tracks resource configuration changes.","CloudWatch: did API latency increase?\nCloudTrail: who changed the security group?\nConfig: how did the resource configuration evolve?\nTrace: where did one request spend its time?","CloudWatch supports operational telemetry such as metrics, logs and alarms. CloudTrail records supported account activity and API events. AWS Config records supported resource configuration history and evaluates rules. These answer different questions and require appropriate configuration. Combine signals to connect a change with its operational consequences.","CloudTrail data events and other detailed coverage are not all enabled simply because a default event history exists.","Which signal would investigate unexpected S3 object reads?","Check CloudTrail S3 data events if enabled for object access, plus relevant CloudWatch logs and access telemetry. Management events alone may not show every GetObject."],["Q067",13,"Which metrics matter for a Spring Boot API?","Track real API success, p95/p99 latency, throughput, saturation, JVM pressure, and downstream delays.","API: rate, p95/p99, error ratio\nJVM: allocation, GC pause, threads, memory\nDB: pool wait, query latency, active sessions\nQueue: age, backlog, processing failures","Measure customer-facing request rate, errors and latency along with saturation and dependency signals. Track JVM, pool and queue behavior to explain symptoms. Use percentiles and realistic traffic segmentation rather than averages alone. A rising p99 with normal average latency can indicate a subset of stalled requests.","A CPU alarm alone may miss thread starvation or a saturated connection pool.","Which metric separates database execution time from pool acquisition wait?","Measure HikariCP connection acquisition wait separately from query execution timer or database traces. A long checkout wait with short SQL means the pool may be exhausted."],["Q068",13,"How should you design alerts and SLOs?","An SLI measures user-visible service behavior; an SLO is its target. Alert on rapid error-budget loss rather than arbitrary noise.","SLO example: 99.9% eligible requests succeed\nWindow: chosen business measurement period\nAlert: excessive error-budget burn\nRunbook: diagnosis, mitigation and escalation","Define a service-level objective around customer outcomes and use alerts that demand an actionable response. Monitor error-budget consumption and relevant dependencies. Distinguish immediate paging from lower-urgency capacity or configuration investigation. An SLO includes explicit eligibility and measurement definitions.","A high dashboard uptime can hide broken critical business operations.","Would an expected validation error count against your availability objective?","An expected 400 validation response normally should not count as unavailable when it is correct behavior. Define eligibility and failures clearly; 500s or overload errors usually do count."],["Q069",13,"How do correlation IDs and distributed tracing help?","Correlation IDs connect an API call with downstream logs and traces so one user journey is easier to debug.","HTTP request -> trace context\nOutbox event -> eventId and business operation ID\nWorker -> linked trace or propagated context\nLogs -> timestamp, service, operation, outcome","They connect work across service boundaries and asynchronous stages. Propagate trace context through supported mechanisms and carry business operation identifiers for durable diagnosis. Keep sensitive data out of logs and control metric label cardinality. A trace identifies timing relationships; a business ID connects retries and delayed workflow work.","Customer IDs as unbounded metric labels can create high cardinality and cost.","How would you correlate a queue retry with the original API request?","Include the original trace/correlation ID in event metadata, preserve message ID and attempt count, and start a linked consumer span on each retry. Do not use the trace ID as an idempotency key."],["Q070",13,"How would you investigate a sudden production latency increase?","Diagnose latency by finding where time grew: network, load balancer, JVM, database, or external APIs.","1. Check error ratio and latency by endpoint\n2. Compare deploy, config and traffic changes\n3. Inspect traces, pools, GC and DB waits\n4. Mitigate; validate; preserve evidence","Establish the impact and time window, compare recent changes, then localize delay using ingress, application and dependency evidence. Apply a bounded mitigation and verify customer recovery before deeper optimization. Evidence distinguishes a capacity issue from a regression or dependency failure.","Restarting every task before collecting diagnostics can erase the information needed to prevent recurrence.","What would you do if rollback does not reduce the latency?","If rollback has no effect, look for shared dependency saturation, regional incidents, queueing, a hot DB query, DNS issues, and network changes. Use traces and time-series evidence before scaling."],["Q071",14,"What is KMS and what is envelope encryption?","KMS manages cryptographic keys. Envelope encryption encrypts data with a data key and protects that key using a KMS key.","Plain data -> encrypt with data key\nData key -> encrypt under KMS key\nStore ciphertext + encrypted data key\nRead -> authorized key access -> decrypt data","KMS manages keys and cryptographic operations under policy controls. Envelope encryption encrypts data with a data key, then protects that key with a higher-level key. Service integrations can manage this workflow, while authorization controls who can use the key. Protecting encrypted data requires both secure key use and secure data access.","Key rotation is not the same as rewriting every old object with a new data key.","What happens if an application's S3 access works but KMS decrypt is denied?","S3 permission may succeed but downloading a KMS-encrypted object can fail because the caller lacks effective kms:Decrypt rights or the key policy/conditions reject it."],["Q072",14,"How do Secrets Manager and Parameter Store differ?","Secrets Manager specializes in managed secrets and rotation; Parameter Store stores configuration and can hold protected values.","Nonsecret feature setting -> configuration parameter\nDatabase password -> managed secret workflow\nApplication retrieval -> IAM + KMS where applicable\nCache -> controlled refresh and failure behavior","Secrets Manager provides secret management features including supported rotation workflows. Systems Manager Parameter Store stores hierarchical configuration with supported encrypted SecureString values. Compare rotation, integration, throughput, size and cost requirements rather than treating them as identical products. Choose a lifecycle that matches how the value changes and how applications consume it.","A stored encrypted password does not automatically rotate the database credential.","How would you keep a connection pool working during rotation?","Allow old and new credentials to overlap, update the secret, reconnect or refresh existing pool connections, verify success, then revoke old credentials after all replicas transition."],["Q073",14,"Should secrets be injected at startup or retrieved at runtime?","Startup secret injection is simple but needs restart for changes. Runtime retrieval permits refresh but adds an API and caching contract.","ECS configured secret -> resolved for task startup\nJava SDK retrieval -> application fetches and caches\nRotation -> update consumer at defined time\nFallback -> use only a still-valid allowed value","Startup injection is simple but normally requires a new workload deployment to consume a changed value. Runtime retrieval can support refresh but adds dependency, cache and authorization behavior. Select the strategy from rotation timing and failure requirements. The consumer must know when a retrieved secret stops being valid.","Rotating the source does not automatically update an already injected environment value.","How would you prevent credentials from appearing in startup logs?","Never print environment dumps, command-line credentials, connection URLs with passwords, or exception values containing secrets. Redact known keys and test logs during startup failures."],["Q074",14,"How do Cognito and IAM differ for a web application?","Cognito can authenticate application users; IAM secures AWS API actions by principals. Neither automatically applies your business ownership rules.","User login -> identity provider -> access token\nSpring API -> validate token -> authorize resource\nJava workload -> IAM role -> S3 or SQS\nUser identity != workload service credentials","Cognito can provide application user authentication and token-related capabilities. IAM governs access to AWS resources. For a Spring resource server, validate the intended token type, issuer, signature, expiry and audience or client-related constraints appropriate to the token contract. An authenticated user still needs ownership or role checks for each business operation.","Accepting an ID token as an API access token can confuse authentication purpose and authorization.","How would you ensure customer A cannot read customer B's invoice?","Validate the user token and then check invoice owner or tenant ID in your database before issuing a scoped S3 download. A valid token alone does not authorize another person's invoice."],["Q075",14,"How do you secure a multi-tenant AWS application?","Secure tenants at the API, identity, data query, storage, and observability layers.","Token tenant -> trusted authorization context\nSQL -> predicate includes tenant_id\nS3 -> bounded tenant prefix access design\nAudit -> tenant, actor, operation, result","Enforce tenant identity at trusted boundaries and in data access. Scope object keys, queries and credentials appropriately, and verify negative tests. Choose shared or isolated infrastructure based on compliance, noisy-neighbor, operational and cost requirements. Infrastructure boundaries complement application-level ownership checks.","A tenant ID supplied only in a request body must not override the authenticated authorization context.","What requirement would justify a separate account per tenant?","Use separate accounts when isolation, regulatory boundaries, independent keys, audit ownership, quota separation, or customer contracts require stronger blast- radius boundaries than pooled tenancy."],["Q076",15,"What is infrastructure as code?","Infrastructure as code stores reviewed cloud configuration in versioned files instead of unmanaged console clicks.","Commit -> review -> validation -> change preview\nApply -> service deployment -> verification\nRecord -> resource identity and artifact digest\nDrift -> compare actual state with intended state","Infrastructure as code describes resources and changes in versioned definitions. CloudFormation, CDK and other tools offer different authoring and state models. Review generated plans, validate security and detect drift; declarative definitions do not remove deployment risk. Repeatability depends on parameters, permissions, external dependencies and tool behavior.","A template that parses is not proof that deployment will succeed or be safe.","Which changes would you prevent from being automatically applied?","Require manual approval for destructive data changes, broad IAM permission increases, production network exposure, key deletion, and other high-impact changes. Preview the proposed change set."],["Q077",15,"How do CloudFormation and CDK differ?","CloudFormation runs declarative resource templates; CDK generates those templates from general-purpose code.","CDK source -> synthesize template\nCloudFormation template -> change set -> stack update\nParameters and context -> deployment-specific inputs\nApplication image -> separate immutable artifact","CloudFormation deploys AWS resource templates through stacks and managed lifecycle operations. CDK lets you author infrastructure using programming languages and synthesizes CloudFormation templates for its common deployment model. Both require reviewing the actual resource changes. Higher-level constructs can accelerate authoring while producing resources that still need inspection.","A short CDK construct can create many resources and permissions.","Why should a reviewer inspect synthesized IAM policies?","Synthesized templates show the actual IAM actions, resources, wildcards, and trust conditions. Reviewers should not trust friendly source-code constructs without inspecting the effective policy."],["Q078",15,"How should a Java container pipeline work?","A delivery pipeline should test Java, build once, scan and sign the image as needed, publish its digest, and deploy that exact artifact.","Source -> unit/integration tests -> image candidate\nCandidate -> security and runtime checks -> registry\nDigest -> stage -> approval policy -> production\nObserve -> compare error, latency and business result","Build and test one immutable candidate, scan and verify it, publish its digest, deploy that digest and run health and business smoke checks. Keep environment configuration separate from the binary and capture the identity needed for rollback. Promoting the same digest reduces accidental differences between stages.","Rebuilding separately for production can change dependencies while keeping the same source commit.","What should a production smoke test verify beyond HTTP 200?","Smoke-test representative authenticated business paths, database connectivity, permission boundaries, real writes with safe fixtures, telemetry, and failure handling— not just a health URL."],["Q079",15,"How do rolling, blue-green and canary deployments differ?","Rolling replaces instances gradually, blue-green swaps between separate fleets, and canary exposes a small share to the new version.","Rolling -> mixed old/new versions\nBlue-green -> switch target set\nCanary -> limited traffic -> evaluate -> expand\nEvery approach -> compatible schema and events","Rolling replaces portions of existing capacity. Blue-green prepares a separate environment or target set and switches traffic. Canary exposes a small share of traffic to the new version before expansion. Each needs spare capacity, compatibility and a measurable rollback decision. Traffic switching alone cannot reverse incompatible database writes.","A canary without enough representative requests may miss a critical regression.","Which signals would stop an automated rollout?","Stop rollout if customer-visible error rate, p99, dependency pressure, or critical business invariant alerts breach guardrails. Consider a minimum sample size and observation period."],["Q080",15,"How should CI authenticate to AWS?","CI should obtain temporary workload credentials using an approved federation or role assumption flow, not store permanent AWS keys.","CI identity token -> STS federation -> deploy role\nTrust conditions -> intended workflow identity\nRole policy -> required deployment operations\nSession -> temporary credentials and audit trail","Use a supported identity federation mechanism to obtain temporary deployment-role credentials. Restrict role trust to the expected repository, workflow, environment or equivalent claims, and bound deployment permissions. Keep build and production roles separate where practical. Trust claims protect who can obtain the role, while permissions restrict what it can do.","A wildcard trust condition can let an unintended workflow deploy even with no stored access key.","How would you separate pull-request builds from production deployment authority?","Do not give untrusted pull requests production-role trust. Separate build identity from release identity and require reviewed branch, protected environment and tightly scoped deploy role."],["Q081",16,"How do timeouts, retries and circuit breakers work together?","Timeouts bound waiting; retries address likely temporary failures; circuit breakers reject calls when a dependency is unhealthy.","Total request deadline: 1,000 ms\nAttempts: at most 2 with bounded backoff\nPer-attempt timeout: fit remaining budget\nRetry eligibility: transient + idempotent or resolvable","A timeout bounds waiting. A retry starts another attempt where semantics allow it. A circuit breaker temporarily avoids a failing dependency based on a policy. Combine an end-to-end deadline, limited attempts, jitter and concurrency bounds. Multiple layers of retry can multiply attempts and overload a recovering service.","A timeout does not prove that the downstream operation did not complete.","How would you prevent SDK retries and service retries from exceeding the caller's deadline?","Set one end-to-end deadline and pass remaining time to each layer. Limit total retries, use jitter, and align SDK settings with the caller's budget to avoid retry storms."],["Q082",16,"What is idempotency in an AWS application?","Idempotency means repeating a request has one intended business effect when the caller reuses the same durable key.","Client key -> unique durable operation row\nFirst request -> execute and record outcome\nRepeat -> return outcome or in-progress status\nDifferent payload with same key -> reject conflict","Idempotency means repeating a logical operation has the same intended effect as one successful execution. Implement it with a stable operation key, durable state and recovery for uncertain outcomes. Include result replay and key-retention policy. The request key must cover the business operation rather than one network attempt.","A randomly generated key on every retry removes the deduplication benefit.","How long should payment idempotency records remain available?","Retain payment keys longer than your maximum realistic client and provider retry/reconciliation window, considering delayed messages and business records. Document scope and expiry explicitly."],["Q083",16,"What are common AWS disaster recovery strategies?","Disaster recovery choices range from backup-and-restore to warm standby and active-active, with different RTO, RPO, and cost.","Backup/restore -> rebuild and recover copies\nPilot light -> essential foundations retained\nWarm standby -> reduced running environment\nMulti-site -> coordinated serving and data design","Common patterns include backup-and-restore, pilot light, warm standby and multi-site designs. They trade operational cost and complexity against achievable recovery objectives. Verify data replication, infrastructure readiness, dependencies and traffic cutover through rehearsals. Architecture labels do not guarantee a recovery time; measured drills establish evidence.","An active application in another Region is not useful if its critical secrets or data cannot be recovered.","Which dependencies belong in your DR checklist?","Include DNS, IAM/KMS keys, secrets, certificates, ECR images, app config, VPC, database, S3 data, event queues, client integrations, and runbooks in the DR inventory."],["Q084",16,"Why is multi-Region active-active difficult?","Active-active across Regions is hard because state, ordering, failover, identity, and conflicts become distributed problems.","Catalog reads -> distributed copies may be sufficient\nInventory decrement -> bounded global invariant\nPayment -> external authority and idempotent outcome\nFailover -> prevent unintended competing writers","Serving from multiple Regions adds data-conflict handling, routing, identity, capacity and operational coordination. Decide which operations can be independent and which require a single authority or a suitable consistency mechanism. Higher availability can come with harder correctness tradeoffs. Business invariants determine whether stale or conflicting writes are acceptable.","'Use global tables' is not a complete answer to global stock correctness.","How would you prevent overselling a scarce product across Regions?","Assign scarce stock to one authority or divide stock into region-specific allocations whose sum never exceeds real stock. A stale global cache must not decide the last item."],["Q085",16,"What failure experiments would you run before production?","Failure tests prove whether timeouts, queues, recovery, and rate limits behave as designed rather than only on paper.","Kill one task -> target recovery without lost invariant\nDuplicate message -> one business effect\nDB failover -> bounded errors and eventual recovery\nRestore -> validated data and working application","Test the stated failure model with bounded experiments and recovery assertions. Include task loss, dependency slowdown, cache loss, database failover, duplicate events and restore. Measure customer impact, backlog recovery and operational response. A good experiment includes a stop condition, observations and cleanup of only its own test resources.","Testing only happy-path load provides no evidence of recovery behavior.","Which experiment would expose an unlimited fallback from cache to database?","Cut the cache during peak replay traffic and watch DB connections, admission limits, rejection rate, pool wait and latency. The test fails if fallback traffic overwhelms the database."],["Q086",17,"How should you estimate AWS cost?","Estimate AWS cost from realistic usage, including data transfer, requests, runtime, retention, and management overhead.","Monthly model = baseline + variable usage + resilience\nExample drivers: task hours, DB hours, S3 bytes\nOften missed: NAT processing, cross-AZ traffic, logs\nCompare: cost per successful business operation","Model measured usage and architecture-specific cost components. Include compute, storage, requests, data transfer, logs, backup, networking and managed-service charges. Use current regional pricing and forecast ranges rather than memorized totals. A low compute bill can hide expensive transfer and telemetry paths.","Free-tier assumptions and old prices should not drive production budgets.","Which component could become the dominant cost for large uploads?","Large uploads can be dominated by data transfer, S3 storage and requests, replication, image processing, or outbound CDN traffic depending on direction and scale. Measure bytes by path."],["Q087",17,"What is the difference between vertical and horizontal scaling?","Vertical scaling makes one machine bigger. Horizontal scaling runs more machines while shared resources may remain fixed.","Vertical: larger database or task\nHorizontal: more API tasks behind load balancer\nConstraint: DB connections and write contention\nMeasure: throughput gain versus extra cost","Vertical scaling increases resources of a unit; horizontal scaling adds units. Horizontal compute scaling needs shared or externalized state and bounded downstream capacity. Neither strategy fixes an invariant that serializes every request. Stateless application replicas are easier to add and replace than stateful singleton workloads.","Doubling replicas does not guarantee doubled end-to-end capacity.","How would you recognize that the database is now the limiting tier?","Watch database CPU, active sessions, connection waits, lock time, query latency, and flat throughput as API replicas grow. More servers may amplify a database bottleneck."],["Q088",17,"What are service quotas and why do they matter?","AWS services have regional and account quotas that can block a scale-out or recovery plan.","Review: compute, IP addresses, concurrency and APIs\nRequest increases early where supported\nLoad test: throttling and backpressure behavior\nDR: target Region needs sufficient headroom too","Quotas limit supported resources or request rates and vary by service, account and Region. Some can be adjusted, others are fixed. Include quota review and capacity validation in planning, especially for traffic spikes and recovery into another Region. Operational capacity includes the ability to create replacement resources under stress.","Having a quota increase approved does not guarantee instant underlying capacity in every AZ.","Which quota could prevent a failover from launching enough tasks?","Check Fargate vCPU quotas, ECS or ELB capacity and IP availability for the failover Region and desired scale. Request quota changes before a drill, not during an outage."],["Q089",17,"How do you reduce observability and storage cost safely?","Keep enough logs and metrics to investigate incidents without paying to retain everything forever.","Keep: security and critical business audit evidence\nReduce: noisy debug logs and repeated payload dumps\nRetain: defined time windows by data purpose\nVerify: incident diagnosis and restore still work","Control log volume and retention, sample traces appropriately, avoid high-cardinality metrics and apply storage lifecycle policies consistent with recovery requirements. Keep the audit and diagnostic evidence that the business actually needs. Cost reduction should preserve required visibility and recoverability.","Deleting all old backups to save money can destroy a recovery objective.","How would you choose a log-retention period for incident investigation?","Start from incident detection lag, regulatory needs and forensic lookback. Use different retention for hot logs, archives, traces and sensitive audit events; test that evidence remains searchable."],["Q090",17,"When is serverless more expensive or less suitable?","Serverless can cost more for high steady traffic, high concurrency, long runtimes, or unsuitable runtime behavior.","Low idle usage + bursts -> evaluate functions\nSteady CPU-heavy processing -> compare containers\nHeavy DB access -> include connection and proxy cost\nDecision -> measured workload and full cost model","Serverless value depends on workload shape, latency, duration, concurrency and integrations. Bursty or intermittent workloads can benefit from reduced idle capacity. Sustained compute, expensive invocation patterns or special runtime needs may favor another model. Compare the whole system, including queue, gateway, networking and monitoring.","Invocation price alone is not the total architecture cost.","What measurements would you gather before migrating a busy Java API to Lambda?","Measure real request rate, duration, cold/warm latency, memory, concurrency, existing container utilization, API Gateway fees, network costs, and required operations."],["Q091",18,"Design a resilient Spring Boot order API on AWS.","For an order system, route requests through managed ingress to multi-AZ Java tasks; save orders and outbox events in one transaction; process side effects asynchronously.","Route 53 -> ALB -> ECS Fargate tasks in two AZs\nTasks -> RDS writer -> order + outbox transaction\nPublisher -> SQS -> idempotent fulfilment workers\nS3 -> private invoices, authorized downloads","Use managed ingress, multi-AZ stateless compute, a durable relational store for transactional invariants, and an outbox-driven asynchronous path. Add least-privilege identities, controlled secrets, telemetry and tested recovery. Choose service variants based on explicit traffic and recovery targets. The synchronous response acknowledges the database outcome; asynchronous fulfilment has separate state and latency.","Do not claim that this topology alone guarantees zero downtime or zero lost orders.","What do you return if the client times out after the order committed?","Use a client-supplied request key: when the retry arrives, find the already- committed order and return its stored status or resource. A timeout does not prove rollback."],["Q092",18,"Design a secure file-upload and processing workflow.","Issue a narrow S3 upload URL, store upload intent, validate the object, then process it asynchronously and publish a safe result.","API -> upload intent and scoped key\nClient -> S3 upload\nEvent -> queue -> scan and transform worker\nStatus -> pending, accepted, rejected or failed","Authorize the uploader, allocate a scoped object key, issue a suitable presigned upload capability and validate the resulting object before use. Trigger bounded processing through a replay-tolerant event path and publish a result only after validation succeeds. The object should remain untrusted until validation, size/type checks and business ownership are confirmed.","Treating Content-Type from a client as proof of file content is unsafe.","How would you avoid reprocessing the same uploaded object version twice?","Deduplicate on bucket, object key, and immutable version ID or verified content identity, committing that marker with the processing result. Redeliveries then return the stored outcome."],["Q093",18,"Design a flash-sale inventory system.","Reserve scarce stock with an atomic database update, put payment in a recoverable state, and use durable request IDs.","Attempt reserve -> atomic invariant check\nReservation -> pending with expiry and ownership\nPayment outcome -> confirm or release\nDuplicate request -> resolve stored outcome","Make inventory reservation a durable conditional operation or transaction at the chosen authority. Queue bounded downstream work, use stable request IDs and release expired reservations safely. Cache product views while keeping scarce-stock invariants out of ordinary stale caches. Admission control keeps backend work within tested capacity even when public demand is much larger.","A cache count followed by a database decrement can oversell under concurrent requests.","How would you reconcile a late successful payment after a reservation expired?","Check provider outcome and reservation history. If stock was released and cannot safely be reallocated, refund or fulfill through a documented exception workflow; never quietly oversell."],["Q094",18,"Design a multi-tenant reporting service.","Queue authorized report jobs, isolate tenant data, and cap workers so a large tenant cannot starve others.","API -> tenant-authorized job record\nQueue -> bounded worker concurrency\nWorker -> scoped data read -> S3 report object\nDownload -> verify job ownership -> presigned GET","Separate authorization from execution scheduling, store input/output under tenant-scoped identities or enforced paths, queue jobs and isolate noisy workloads. Decide fairness, retention, audit and cancellation behavior. Use durable job state so retries do not publish conflicting reports. Job identity and tenant identity must travel through the asynchronous boundary.","One giant tenant should not consume all workers and starve every other tenant.","How would you enforce per-tenant fairness without a queue for every customer?","Use tenant-aware scheduling with per-tenant active-job limits or weighted fair queues over a shared worker pool. Persist tenant identity with each job and apply global safety limits."],["Q095",18,"How would you lead an AWS migration from an on-premises Java monolith?","Migrate a monolith in measured steps: inventory dependencies, establish networking and identity, pilot a small workload, rehearse data cutover, then stabilize.","Assess -> baseline performance and dependency map\nPilot -> bounded environment and rehearsed data move\nCutover -> controlled writes, verification, rollback rule\nOptimize -> measured improvements after stabilization","Inventory dependencies, data and operational requirements, establish a secure network and identity foundation, then migrate a bounded workload with measurable parity. Choose rehosting, replatforming or redesign per component. Plan data cutover, rollback and operational ownership before execution. A migration is complete only when the team can operate, recover and control cost in the new environment.","Rewriting every component during the migration can combine too many unproven changes.","What evidence would allow the business to approve the data cutover?","Require tested reconciliation totals, business transaction parity, performance metrics, cutover rehearsal, rollback checkpoints, security sign-off, and a clear owner for go/no-go."],["Q096",19,"An ECS task cannot pull its image. What do you check?","For failed ECS image pulls, check task stop reasons, execution role, image digest, registry path, CPU architecture, and network route.","Evidence: stopped reason and container reason\nIdentity: execution role for supported ECR pull\nNetwork: routes, DNS, security and endpoints/NAT\nArtifact: repository, digest, architecture","Inspect the task stopped reason, image reference, execution-role permissions, registry availability and network paths to required endpoints. Check platform architecture and credentials where applicable. Application task-role permissions are a different path. The failure occurs before your application starts, so application logs may be absent.","Debugging JDBC settings will not repair a missing image-pull route.","Which endpoints might a private-subnet ECR pull depend on?","A private-subnet pull from ECR commonly needs connectivity to ECR API and Docker registry endpoints and the S3 layer-storage path, through endpoints or NAT as designed. Verify DNS and security groups."],["Q097",19,"SQS queue age rises while CPU stays low. What might be wrong?","Growing SQS message age with low CPU often means workers are waiting on downstream resources, not doing useful work.","Incoming: 200 messages/s\nProcessed: 100 messages/s\nCPU: 20%, DB pool wait: high\nAction: fix waiting bottleneck before more workers","Inspect consumer concurrency, blocked dependency calls, visibility churn, poison messages and polling configuration. Low CPU can indicate waiting rather than spare useful capacity. Compare processing rate with incoming rate and examine downstream saturation. Scaling consumers can worsen the database queue if every consumer waits on the same constrained resource.","Backlog size alone cannot explain processing progress without message age and throughput.","How would you detect repeated processing of the same message?","Track message ID, receive count, processing attempts, idempotency-store hits and DLQ events. Compare these with age and throughput to spot visibility churn or repeats."],["Q098",19,"An S3 request returns AccessDenied. What is your diagnosis?","For S3 AccessDenied, check exactly which caller, operation, key, bucket, endpoint policy, SCP and KMS key are involved.","Who: workload role session\nWhat: GetObject, not ListBucket\nWhere: object ARN and intended prefix\nExtra: KMS decrypt and endpoint policy if applicable","Capture the actual caller, operation, bucket/key and encryption context without exposing credentials. Check applicable IAM, bucket, endpoint and organization policies, relevant ownership settings and KMS permissions. Verify the ARN type and request conditions. An error can come from several authorization layers; repair the specific missing or denied permission.","Replacing policies with Action:* and Resource:* masks the cause and grants unnecessary authority.","How would you prove the repair still denies another tenant's prefix?","Test the intended prefix with a least-privileged role and a neighboring tenant's prefix using the same operation. The first should work; the cross-tenant test must remain denied."],["Q099",19,"A deployment is healthy but customers get errors. Why?","A healthy load balancer target may still fail real orders due to auth, database, routing, or schema problems.","Probe: HTTP readiness passes\nBusiness request: order insert fails schema check\nRouting: only one path points to the wrong target\nEvidence: per-route errors and deployed revision","Health probes may cover only a narrow endpoint or traffic path. Check real business requests, authentication, schema compatibility, dependency access and routing. Compare new and old versions using customer-facing metrics and representative smoke tests. Infrastructure health and application correctness are separate observations.","A green deployment dashboard is not sufficient release evidence.","What should trigger rollback versus a forward fix?","Rollback when a new version causes widespread user-visible failures and old code remains data-compatible. Forward-fix a small isolated defect only if risk and time are lower and rollback cannot solve it."],["Q100",19,"Which AWS interview claims should you avoid?","Avoid oversimplified statements such as 'managed means secure' or 'FIFO means exactly once.' Always state the actual scope and failure case.","Avoid: 'FIFO makes payment exactly once'\nAvoid: 'all Multi-AZ standbys are identical'\nAvoid: 'a private subnet has no outbound access'\nAvoid: 'managed means no customer responsibility'","Avoid guarantees broader than the service contract or your validation. State scope, topology and failure assumptions. Distinguish deployment configuration from observed production behavior and measured recovery. Replace slogans with one precise statement and a failure example.","Memorizing service names without explaining their limits weakens senior- level answers.","Pick one claim and defend a correct replacement in 60 seconds.","For example: SQS FIFO can constrain message order and deduplication within its contract, but a payment consumer still needs an idempotency key because a message or external effect may be retried."]],"labs":[["L01. Confirm the identity and Region before","diagnosis This identifies a caller; it does not prove the caller may read S3 or deploy ECS. No resources are created or deleted.","set -euo pipefail\nexport AWS_PAGER=\"\"\nPROFILE=YOUR_PROFILE\nREGION=YOUR_REGION\naws --profile \"$PROFILE\" --region \"$REGION\" \\\nsts get-caller-identity --output json\naws --profile \"$PROFILE\" configure get region"],["L02. Inspect an existing S3 bucket without reading","object contents ETag is not a universal object-content MD5. Account-level public-access controls and bucket policies also matter. The script stops on the first API failure so inspect that failure before continuing.","set -euo pipefail\nexport AWS_PAGER=\"\"\nPROFILE=YOUR_PROFILE\nREGION=YOUR_REGION\nBUCKET=YOUR_BUCKET\nKEY=YOUR_EXISTING_OBJECT_KEY\naws --profile \"$PROFILE\" --region \"$REGION\" \\\ns3api get-bucket-versioning --bucket \"$BUCKET\"\naws --profile \"$PROFILE\" --region \"$REGION\" \\\ns3api get-public-access-block --bucket \"$BUCKET\"\naws --profile \"$PROFILE\" --region \"$REGION\" \\\ns3api head-object --bucket \"$BUCKET\" --key \"$KEY\" \\\n--query '{Size:ContentLength,ETag:ETag,Version:VersionId}'"],["L03. Investigate a known ECS task and service","A describe response is a snapshot rather than proof of ongoing health. Correlate timestamps with target health, deployment identity and application errors.","set -euo pipefail\nexport AWS_PAGER=\"\"\nPROFILE=YOUR_PROFILE\nREGION=YOUR_REGION\nCLUSTER=YOUR_CLUSTER\nSERVICE=YOUR_SERVICE\nTASK_ARN=YOUR_TASK_ARN\naws --profile \"$PROFILE\" --region \"$REGION\" \\\necs describe-tasks --cluster \"$CLUSTER\" \\\n--tasks \"$TASK_ARN\" \\\n--query '{Tasks:tasks,Failures:failures}'\naws --profile \"$PROFILE\" --region \"$REGION\" \\\necs describe-services --cluster \"$CLUSTER\" \\\n--services \"$SERVICE\" \\\n--query '{Services:services,Failures:failures}'"],["L04. Read an SQS queue processing contract","Approximate counts are not exact accounting. No live consumer or retry behavior is tested by this metadata request.","set -euo pipefail\nexport AWS_PAGER=\"\"\nPROFILE=YOUR_PROFILE\nREGION=YOUR_REGION\nQUEUE_URL=YOUR_QUEUE_URL\naws --profile \"$PROFILE\" --region \"$REGION\" \\\nsqs get-queue-attributes --queue-url \"$QUEUE_URL\" \\\n--attribute-names VisibilityTimeout \\\nMessageRetentionPeriod RedrivePolicy \\\nApproximateNumberOfMessages \\\nApproximateNumberOfMessagesNotVisible"],["L05. Check the structure of a prefix-scoped IAM","policy No AWS policy simulator or account authorization check is performed. A structurally valid allow can still be denied by other applicable policies.","python3 - <<'PY'\nimport json\npolicy = {\n\"Version\": \"2012-10-17\",\n\"Statement\": [{\n\"Effect\": \"Allow\",\n\"Action\": [\"s3:GetObject\"],\n\"Resource\": [\"arn:aws:s3:::example-interview/reports/*\"]\n}]\n}\nencoded = json.dumps(policy, indent=2)\ndecoded = json.loads(encoded)\ns = decoded[\"Statement\"][0]\nassert s[\"Action\"] == [\"s3:GetObject\"]\nassert s[\"Resource\"] == [\n\"arn:aws:s3:::example-interview/reports/*\"\n]\nassert \"Principal\" not in s\nprint(encoded)\nprint(\"PASS: intended identity-policy statement\")\nPY"],["L06. Calculate a deployment-wide JDBC","connection budget A connection budget is not a throughput estimate. Query time, locks, proxy pinning and other sessions can reduce safe concurrency.","python3 - <<'PY'\ndb_limit = 300\nreserved_for_ops = 30\nother_apps = 50\nmax_tasks = 20\npool_per_task = 15\nbudget = db_limit - reserved_for_ops - other_apps\nworst_case = max_tasks * pool_per_task\nsafe_pool = budget // max_tasks\nassert budget == 220\nassert worst_case == 300\nassert safe_pool == 11\nprint(\"Application budget:\", budget)\nprint(\"Requested worst case:\", worst_case)\nprint(\"Upper bound per task:\", safe_pool)\nassert worst_case > budget\nprint(\"PASS: proposed pool exceeds budget\")\nPY"],["L07. Simulate duplicate delivery with a durable","invariant This models a local database effect only. It does not prove exactly-once payment, queue delivery or cross-service atomicity. An external effect needs its own idempotency/ reconciliation contract.","python3 - <<'PY'\nimport sqlite3\nc = sqlite3.connect(\":memory:\")\nc.executescript(\"\"\"\nCREATE TABLE orders(id TEXT PRIMARY KEY);\nCREATE TABLE outbox(event_id TEXT PRIMARY KEY,\norder_id TEXT NOT NULL);\nCREATE TABLE effects(event_id TEXT PRIMARY KEY,\norder_id TEXT NOT NULL);\n\"\"\")\nwith c:\nc.execute(\"INSERT INTO orders VALUES (?)\", (\"O42\",))\nc.execute(\"INSERT INTO outbox VALUES (?, ?)\",\n(\"E42\", \"O42\"))\nevent = c.execute(\"SELECT * FROM outbox\").fetchone()\nfor delivery in range(2):\nwith c:\nc.execute(\"INSERT OR IGNORE INTO effects VALUES (?, ?)\",\nevent)\ncount = c.execute(\"SELECT count(*) FROM effects\").fetchone()[0]\nassert count == 1\nassert c.execute(\"SELECT count(*) FROM orders\").fetchone()[0] == 1\nprint(\"PASS: two deliveries, one durable local effect\")\nPY"],["L08. Validate a minimal Fargate task-definition","example This is not an AWS API validation, complete security review or resource provisioning test. Fargate platform and task parameters must match the chosen deployment.","python3 - <<'PY'\nimport json\nspec = {\n\"family\":\"interview-orders\",\n\"networkMode\":\"awsvpc\",\n\"requiresCompatibilities\":[\"FARGATE\"],\n\"cpu\":\"512\", \"memory\":\"1024\",\n\"containerDefinitions\":[{\n\"name\":\"orders\", \"image\":\"REPLACE_WITH_REVIEWED_IMAGE\",\n\"essential\":True,\n\"portMappings\":[{\"containerPort\":8080,\"protocol\":\"tcp\"}]\n}]\n}\nx = json.loads(json.dumps(spec))\nassert x[\"networkMode\"] == \"awsvpc\"\nassert x[\"cpu\"] == \"512\" and x[\"memory\"] == \"1024\"\nassert x[\"containerDefinitions\"][0][\"essential\"] is True\nassert x[\"containerDefinitions\"][0][\"portMappings\"][0][\"containerPort\"] == 8080\nprint(json.dumps(x, indent=2))\nprint(\"PASS: intended minimal example fields\")\nPY"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

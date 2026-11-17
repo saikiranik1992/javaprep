@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JVM, GC &amp; Performance Tuning — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #7c3aed;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">JVM, GC &amp; Performance Tuning</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 10 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Handwritten Interview Notebook · HotSpot · G1 · ZGC · JFR
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (10)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 JVM Internals</span>
+              <span>•</span>
+              <span>158 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              JVM, GC &amp; Performance Tuning — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Handwritten Interview Notebook (HotSpot · G1 · ZGC · JFR). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">JVM, GC &amp; Performance Tuning</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">JVM, GC &amp; Performance Tuning — Hands-On Labs &amp; Reference Guides (10)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of JVM, GC &amp; Performance Tuning.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">JVM, GC &amp; Performance Tuning — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"jvm-gc","title":"JVM, GC & Performance Tuning","subtitle":"Handwritten Interview Notebook","category":"JVM Internals","badge":"HotSpot · G1 · ZGC · JFR","color":"#7c3aed","pages":158,"chapters":["JVM architecture and execution","Class loading, linking and initialization","Heap, object layout and native memory","JIT compilation and optimization","Garbage collection fundamentals","References, cleanup and retention leaks","Choosing a garbage collector","G1 architecture and phases","Evidence-driven G1 tuning","ZGC and Shenandoah","Heap sizing and OutOfMemoryError","GC logs and quantitative interpretation","JFR, dumps and native-memory tools","CPU, locks and tail latency","Allocation-aware Java coding","Benchmarking and experiment design","Containers and Kubernetes JVM budgets","Spring Boot production tuning","Modern Java version traps","Senior diagnosis and design scenarios"],"questions":[["Q001",0,"What is the JVM and how does it differ from the JDK?","The JVM runs Java bytecode; the JDK includes the JVM plus tools to build and diagnose Java programs.","Java source -> compiler -> class files\nClass files -> JVM loading and execution\nJDK -> compiler, runtime and diagnostic tools","The JVM executes class files according to a specification. A JDK supplies development tools and a runtime implementation. HotSpot is one JVM implementation; a collector or flag described for HotSpot is not automatically portable to every JVM. Why it matters: Portable bytecode runs through a platform-specific implementation.","A minimal runtime image may omit javac, jcmd or jfr even though java works.","Why does the same JAR still need testing on another CPU architecture?","Bytecode is portable, but the JVM, CPU instructions, native libraries, architecture- specific images and performance can differ. Test the actual deployment architecture."],["Q002",0,"What are the JVM run-time data areas?","The JVM specification describes memory and execution areas shared by threads or owned by one thread.","Per thread: PC and invocation frames\nShared: heap and method-area responsibilities\nHotSpot: also inspect metaspace and code cache\nlayout.","The specification defines per-thread PC registers and JVM stacks, a shared heap and method area, run-time constant pools and native method stacks where used. The physical implementation and memory accounting are implementation decisions. Why it matters: Specification categories describe responsibilities, not a universal native-memory","Equating the method area with a Java heap generation is misleading.","Where does HotSpot keep compiled machine code?","HotSpot stores JIT-compiled instructions in a native code cache, not inside the Java object heap."],["Q003",0,"What is the difference between stack and heap?","Each method call has a stack frame; the heap holds objects and arrays that references can point to.","Object value = new Object();\n// A local reference can point to an object.\n// The object can outlive this invocation if retained.","An invocation frame contains local-variable slots and operand-stack state. The heap is the specified allocation area for objects and arrays. A reference in a local slot is not the object itself; optimizations can eliminate physical allocations without changing semantics. Why it matters: Lifetime depends on reachability, not merely lexical declaration location.","'Every local object lives on the stack' confuses the reference with its referent.","Can an object remain reachable after the creating method returns?","Yes. A returned reference, static field or another live object can still point to it, so the object stays reachable."],["Q004",0,"Does Java interpretation mean code never becomes native?","HotSpot can first interpret bytecode and later compile popular methods into fast machine code.","Cold method -> interpretation and profiling\nHot path -> compiled code\nInvalid assumption -> deoptimization and adaptation","No. HotSpot can interpret bytecode and compile frequently executed code into native instructions. Compilation, profiling and deoptimization operate during execution. A cold and warmed-up application can therefore show different performance. Why it matters: The runtime can optimize using behavior observed in the running application.","'Java is always interpreted' and 'everything compiles before startup' are both overgeneralizations.","Why should a performance test include warmup?","Warmup allows class loading, JIT profiling and compilation to settle. Otherwise startup effects distort a steady-state benchmark."],["Q005",0,"What is the difference between JVM behavior and OS behavior?","The JVM runs Java code and manages heap/GC; the OS schedules work and enforces process memory and CPU limits.","Heap used: 400 MiB\nProcess RSS: 750 MiB\nContainer limit: 1 GiB\nCPU quota: independent constraint","The JVM manages Java execution and selected resources, while the OS schedules threads, supplies virtual memory and enforces process/container limits. A JVM metric must be interpreted together with OS evidence. Why it matters: Java heap statistics cover only one portion of process resources.","RSS minus heap-used is not a precise native-memory breakdown.","What can terminate Java without a Java OutOfMemoryError?","Linux can kill the process when a cgroup or host memory budget is exceeded. An external SIGKILL or node failure also stops Java without a Java OOME."],["Q006",1,"What are loading, linking and initialization?","Loading finds a class, linking checks and prepares it, and initialization runs its static setup code.","Load -> verify -> prepare -> resolve as needed\nInitialize -> execute static field initializers/blocks\nUse -> execute ordinary program behavior","Loading obtains a class definition. Linking verifies it, prepares its static storage and resolves symbolic references as required. Initialization executes the class initialization method according to language and JVM rules. Resolution can be lazy within permitted constraints. Why it matters: These stages explain different errors and side effects.","Class loading and class initialization are not synonyms.","Can a class be loaded without running its static initializer?","Yes. Class.forName(name, false, loader) can load without initializing; initialization waits for a qualifying active use."],["Q007",1,"When does static initialization happen?","Static initialization runs at a Java-defined active-use event, not whenever a class name appears.","class Config {\nstatic final int PORT = 8080; // constant variable\nstatic { System.out.println(\"init\"); }\n}\n// Reading Config.PORT alone need not print init.","Initialization is triggered by specified active uses, such as certain static member access, construction and reflection. Access to a compile-time constant can avoid initializing its declaring class. Initialization ordering follows superclass and relevant interface rules. Why it matters: The compiler can embed the constant into caller bytecode.","Not every final static field is a compile-time constant.","What changes if PORT is assigned by a method call?","If PORT comes from a method call, it is not a compile-time constant. Reading Config.PORT normally triggers class initialization."],["Q008",1,"Why can the same class name represent different types?","A Java class is identified by its name AND the class loader that defines it.","Loader A -> example.Plugin\nLoader B -> example.Plugin\nSame binary name, different defining loader identity","A class's identity includes its defining loader as well as its binary name. Two independent defining loaders can produce incompatible types with the same name. This matters for plugins, application servers and redeployment. Why it matters: A cast can fail even when the displayed type names appear identical.","Looking only at the package and class name can miss a class-loader boundary.","How would you diagnose this in a plugin architecture?","Print each object's getClass().getClassLoader(), inspect duplicated JARs and loader boundaries, then check which API types must be shared."],["Q009",1,"How do ClassNotFoundException and NoClassDefFoundError differ?","ClassNotFoundException often follows an explicit lookup; NoClassDefFoundError is a linkage failure during use.","Explicit Class.forName -> lookup exception path\nDependent class at execution -> linkage error path\nEarlier static-init failure -> later erroneous-class use\nrelated symptoms.","ClassNotFoundException commonly reports failure of an explicit class lookup. NoClassDefFoundError is a linkage error when a needed definition cannot be obtained; it can also follow earlier initialization failure. Diagnose the first failure and its cause chain. Why it matters: Classpath visibility and failed initialization are different causes that can produce","Adding a dependency will not repair a static initializer that throws because configuration is missing.","Why should you preserve the earliest startup exception?","The first error may show a missing dependency or a failed static initializer; later failures can hide the original reason."],["Q010",1,"How can class loaders leak memory?","An old class loader stays alive when a long-lived reference still points to its classes, threads or callbacks.","Long-lived thread -> context loader -> old deployment\nStatic registry -> callback -> application class\nRepeated reload -> increasing retained metadata","A loader and its classes cannot unload while relevant strong references keep the loader alive. Long- lived threads, ThreadLocals, callbacks or registries can retain application classes across redeployments. Investigate the retaining path rather than only class counts. Why it matters: The root can belong to infrastructure outside the application being replaced.","A growing metaspace graph is not proof of a loader leak without lifetime and reachability evidence.","How would you verify that an old deployment loader becomes collectible?","Stop old deployments, remove references and compare post-GC retained loaders using class-loading logs or heap-dump root paths."],["Q011",2,"How are fields and local variables initialized?","Java assigns defaults to fields, but local variables must be assigned before reading them.","class Example {\nint count;             // initially 0\nObject value;          // initially null\nvoid run() { int x; /* printing x is invalid */ }\n}\ninitializer.","Object and static fields receive default values before their explicit initialization sequence. Local variables must be definitely assigned before use. Reading an unassigned local is a compile-time error rather than automatically reading zero or null. Why it matters: Default field values do not imply that every variable gets an implicit source-level","Constructor assignment occurs after field storage has its default value.","What values do elements of new int[3] have?","All three elements are zero because Java initializes new int arrays with the int default value."],["Q012",2,"What is inside a HotSpot object?","An object occupies header, fields and possible padding; actual sizes depend on the JVM configuration.","Measured size = header + fields + padding\nReferences may use compressed representations\nArray = metadata + length + elements + padding\nobjects.","An object has implementation metadata, instance state and alignment effects. Headers, reference widths and layout depend on architecture, VM options and release. Arrays additionally need length information. Measure layout instead of treating a fixed diagram as a language guarantee. Why it matters: A collection's retained footprint includes its nodes, arrays and referenced","'Every object is exactly 16 bytes' is not a reliable statement across layouts.","How can alignment change the effect of adding one field?","Adding one field may consume spare padding, or push the object to the next alignment boundary. Measure instead of assuming exact bytes."],["Q013",2,"What are compressed references?","Compressed references let compatible HotSpot configurations store many object pointers more compactly.","Inspect effective VM flags on the actual runtime\nCompare object layout under selected configurations\nInclude architecture and object-header mode","HotSpot can encode certain references in a smaller form under applicable heap/layout conditions, decoding them when used. Compressed object pointers and compressed class pointers are distinct mechanisms. Inspect effective flags rather than inferring them only from Xmx. Why it matters: Smaller references can reduce object footprint and influence cache behavior.","A memorized heap-size cutoff is not universal across alignment and VM configurations.","Why could changing heap size unexpectedly change memory footprint per object?","A heap or alignment change can disable/change pointer compression, increasing the size of references inside object graphs."],["Q014",2,"What are metaspace and the code cache?","Metaspace holds class metadata; the code cache holds JIT machine instructions, both outside the Java heap.","Many class definitions -> metadata growth\nMany compiled methods -> code-cache activity\n-Xmx -> object heap maximum, not these totals\nareas.","In HotSpot, metaspace holds class-metadata-related native allocations. The code cache holds generated machine code and related structures. These are outside the Java object heap and have different lifecycle and diagnostic signals. Why it matters: Dynamic proxies, generated classes and application hot paths affect different","Raising Xmx alone does not directly raise a metaspace or code-cache limit.","Which evidence would distinguish metadata exhaustion from a heap leak?","Use the exact OOME message, class counts/metaspace metrics, heap after GC and native-memory data. Metadata growth with stable live heap suggests a different problem."],["Q015",2,"How do direct ByteBuffers affect memory?","A direct ByteBuffer has a Java wrapper but stores its byte payload in native memory.","ByteBuffer b = ByteBuffer.allocateDirect(1024);\n// Wrapper is a Java object; payload is direct memory.\nb.putInt(42);","A direct ByteBuffer provides a Java object associated with native memory used for its contents. Its cleanup and accounting differ from ordinary heap arrays. Monitor buffer-pool metrics, allocation behavior and process memory; a heap dump alone does not contain all native payloads. Why it matters: Retained wrappers can keep direct allocations alive.","Off-heap allocation is not free memory and does not make the process immune to GC-related lifecycle issues.","How would you diagnose direct-memory exhaustion with a modest Java heap?","Compare direct-buffer pool use, RSS, NMT where enabled, native allocations and live wrappers. Xmx alone does not explain direct usage."],["Q016",3,"What is tiered compilation in HotSpot?","Tiered compilation combines interpretation, profiling and increasingly optimized native code.","Interpret -> profile -> compile hot paths\nOptimize using observed type and branch behavior\nAdapt when assumptions change","Tiered compilation combines interpretation and different compilation/profiling levels to balance startup and optimized execution. C1 and C2 are common HotSpot compiler names, with actual availability depending on the build. Do not assign a universal invocation threshold to every method. Why it matters: Early compiled code and later optimized code can have different characteristics.","A fixed '10,000 calls means C2' rule ignores configuration and method behavior.","How would you determine whether a method was compiled?","Inspect JIT compilation output where supported, JFR compilation events or diagnostic compiler tooling on the selected HotSpot build."],["Q017",3,"What is method inlining and why does it matter?","Inlining replaces a method call with its body inside compiled code to enable further optimization.","Small hot helper -> potential inline into caller\nInlining -> constants and allocations become visible\nToo much expansion -> code size and cache pressure","Inlining places a callee's behavior into compiled caller code where profitable. It can remove call overhead and enable other optimizations. Decisions depend on code size, profiles and compiler constraints rather than only a method's source length. Why it matters: Inlining often matters because it enables optimization across a call boundary.","Making every method final is not a guaranteed performance improvement.","How might polymorphic call sites affect inlining?","One type at a call site is easier to optimize; several possible receiver types may need guarded inlining or prevent it."],["Q018",3,"What are escape analysis and scalar replacement?","Escape analysis can prove an object need not be created as a lasting allocation; the JIT may use simple scalar values instead.","record Point(int x, int y) {}\nint sum() {\nPoint p = new Point(2, 3);\nreturn p.x() + p.y();\n}\nobservable behavior.","Escape analysis reasons about where an object can be observed. Scalar replacement can represent its fields as compiler values and eliminate allocation when permitted. This does not mean that HotSpot universally moves all nonescaping objects onto a physical thread stack. Why it matters: The allocation might disappear in optimized execution without changing","A source-level new expression does not prove a heap allocation survives compilation.","How would you benchmark an allocation that the compiler can eliminate?","Use JMH with returned/consumed results and realistic inputs, inspect allocation rates and avoid forcing arbitrary behavior that changes the workload."],["Q019",3,"What is deoptimization?","Deoptimization safely leaves specialized compiled code when a runtime assumption becomes invalid.","Warm call site sees one implementation\nNew implementation appears during execution\nCompiled assumptions may need adaptation","Deoptimization transfers execution from optimized code when assumptions no longer hold or a runtime requirement needs a less specialized representation. It is part of adaptive execution. Frequent transitions can affect performance and should be correlated with profiles and workload changes. Why it matters: Runtime optimization is speculative but must preserve Java semantics.","A deoptimization event alone is not proof of a defect or the cause of every latency spike.","What workload change could invalidate a monomorphic type profile?","Loading a new implementation at a formerly single-type interface call site may invalidate the compiled monomorphic assumption."],["Q020",3,"How do startup and steady-state performance differ?","Startup measures time until useful service; steady-state measures performance after warmup at a defined load.","Startup objective: ready for traffic in bounded time\nSteady state: latency and throughput at target load\nRecovery: new replicas become useful quickly enough","Startup includes loading, initialization, dependency creation and compilation activity. Steady-state measurements assume a defined warmed and representative workload. Optimize each objective separately and include deployment/resource constraints. Why it matters: A change that improves warm throughput can increase startup cost or memory.","Measuring only the first request misrepresents long-running service capacity.","How would rapid autoscaling change your warmup strategy?","Warm capacity or pre-warming may be needed. Measure how quickly fresh replicas pass readiness and meet real p95/p99 under traffic."],["Q021",4,"How does the GC decide an object is garbage?","GC finds reachable objects from roots; unreachable objects can be collected later.","Root -> service -> cache -> retained value\nNo remaining retaining path -> eligible for reclamation\nGC cycle -> may recover storage\nreachable.","Tracing collectors discover objects reachable from relevant roots and references under their processing rules. Objects no longer reachable can be reclaimed. Reachability is a runtime property and reclamation timing is not a deterministic source-code event. Why it matters: An object can be logically useless to the business while remaining strongly","A reference going out of lexical scope does not guarantee immediate collection.","Why can Java still have memory leaks?","Java leaks occur when code still retains objects it no longer needs, such as growing caches, listeners or ThreadLocal values."],["Q022",4,"What are GC roots?","GC roots are live starting points such as thread state, runtime references and JNI handles.","Thread state -> local reference -> object graph\nRuntime class/static state -> long-lived registry\nJNI handle -> Java object","Roots are starting points used to discover reachable objects, such as relevant thread state, runtime- maintained references and JNI handles. Exact implementation categories vary. Root-path analysis explains why a supposedly unused object remains alive. Why it matters: The retaining chain can be more informative than the object's own size.","Treating all static fields as permanent immortal storage ignores class-loader lifetime.","Which root might retain a request through a thread pool?","A pooled worker's ThreadLocal value or a queued task can retain request context between requests."],["Q023",4,"What are young and old generations?","Young/old treatment helps collectors optimize for short-lived versus long-lived objects.","Temporary JSON objects -> often short lived\nCached customer graph -> may remain live\nPromotion policy -> implementation decision","Generational collectors exploit the observation that many allocated objects become unreachable quickly. Young collection focuses on recently allocated objects; survivors can remain young or move to older treatment according to policy. Generations and layouts differ by collector and release. Why it matters: Object lifetime distribution affects collection cost and survivor volume.","Every collector and JDK does not use the same Eden/two-survivor contiguous layout.","Why does a sudden rise in survivors matter more than allocation count alone?","More survivors mean more objects must be copied or retained, increasing evacuation work and old-generation pressure."],["Q024",4,"How do marking, sweeping and compaction differ?","Mark finds live objects, sweep reclaims dead space, and compaction moves live objects together.","Mark: determine live graph\nSweep: reclaim dead locations\nCompact/evacuate: relocate live objects\nUpdate references: preserve valid access","Marking identifies live objects. Sweeping makes dead storage reusable. Compaction relocates live objects to reduce fragmentation; copying/evacuation also relocates survivors into other storage. Collectors combine these techniques in different phases. Why it matters: Free bytes and a usable contiguous allocation are different properties.","A concurrent collector is not necessarily a nonmoving collector.","Why can a large allocation fail despite some free heap space?","Free bytes can be scattered into small gaps; a large contiguous allocation may need compaction or fail."],["Q025",4,"What is the difference between parallel, concurrent and stop-the-world GC?","Parallel means several GC workers; concurrent means GC overlaps application execution; stop-the-world means app threads pause.","Parallel STW phase: many workers, app paused\nConcurrent phase: GC and app both consume CPU\nPause target: objective, not an automatic guarantee\nrequires coordination.","Parallel describes multiple GC workers doing work together. Concurrent describes GC work overlapping application execution. Stop-the-world describes phases that suspend participating application execution. A collector can use all three at different times. Why it matters: Concurrency shifts some work out of pauses but still consumes resources and","'Concurrent means no pauses' is inaccurate.","Why can a low-pause collector still reduce application throughput?","Concurrent GC uses CPU and memory bandwidth while the app runs, so throughput may fall despite shorter pauses."],["Q026",5,"How do strong, soft, weak and phantom references differ?","Strong, soft, weak and phantom references offer different reachability and cleanup behaviors.","Strong: ordinary object field\nSoft: memory-sensitive retention, no fixed cache SLA\nWeak: association that should not keep referent alive\nPhantom: lifecycle notification through a queue\ntime.","Ordinary strong reachability prevents reclamation. Soft references support memory-sensitive retention with collector-controlled clearing. Weak references do not preserve weakly reachable referents. Phantom references support post-reachability notification patterns and do not return a referent through get. Why it matters: Reference queues can inform cleanup bookkeeping without promising an exact","SoftReference is not a predictable bounded cache replacement policy.","Why does WeakHashMap still require careful value design?","A WeakHashMap value can strongly refer back to its key, making the key reachable and preventing the expected removal."],["Q027",5,"Why should external resources use try-with- resources?","Use try-with-resources to close sockets, files and DB handles promptly even when Java memory is fine.","try (var in = java.nio.file.Files.newInputStream(path)) {\n// read required data\n}\nconstraints.","Files, sockets and database connections have limited external resources and need timely release. AutoCloseable lets structured code release them deterministically on scope exit. GC reclaims Java memory on its own schedule and is not a resource-management policy. Why it matters: Close runs even when the body throws, subject to normal abrupt termination","Collecting an object is not a guarantee that its external resource was released promptly.","What happens when both the body and close throw?","The body exception remains primary; close failures are recorded as suppressed exceptions accessible with getSuppressed()."],["Q028",5,"Why is finalization unsuitable for normal cleanup?","Do not depend on finalizers to close resources; their execution is uncertain and they are deprecated for removal.","Primary lifecycle: explicit close()\nFallback where appropriate: independent cleanup state\nAvoid: relying on finalize() before resource exhaustion","Finalization has unpredictable timing and problematic reliability and security properties; it is deprecated for removal in modern Java. Prefer explicit close. Cleaner can provide a carefully designed fallback for suitable resources but must not capture the referent and prevent reclamation. Why it matters: Cleanup ownership should be visible in normal control flow.","Cleaner is not a deterministic substitute for close.","How can a cleanup action accidentally retain the object it should clean?","A Cleaner action that holds the referent directly creates a strong path to it; keep independent cleanup state instead."],["Q029",5,"How do ThreadLocals leak or cross- contaminate requests?","Pooled threads outlive requests, so an uncleared ThreadLocal may leak data or expose it to the next request.","try {\ncontext.set(requestContext);\nhandleRequest();\n} finally {\ncontext.remove();\n}","Values stored on long-lived threads can survive a request unless removed or replaced. ThreadLocal maps have implementation lifecycle details that do not guarantee prompt value release. Use finally to clean scoped state and avoid carrying one user's context into another task. Why it matters: Pool threads outlive the request that created the value.","A weak reference to a ThreadLocal key does not guarantee its associated value immediately disappears.","How would asynchronous work complicate context propagation?","Tasks can move between threads, so ThreadLocal context does not reliably follow them. Pass context explicitly or use a deliberately scoped mechanism."],["Q030",5,"How do you distinguish an intentional cache from a memory leak?","A cache is intentional only when it has a useful size/TTL policy and a measurable eviction plan.","Cache policy: bounded entries and measured byte budget\nObserve: retained graph after comparable workload phases\nInvestigate: owners, eviction and references","Compare retention with the defined policy and workload. A cache that exceeds its intended size/TTL or retains unnecessary object graphs is a correctness or design problem. Track post-reclamation live-set trends and inspect retaining paths before labeling every rise a leak. Why it matters: A flat object count can still hide larger values.","A single heap snapshot cannot prove a growth trend.","Which cache metrics would you record alongside a heap comparison?","Track entries, estimated bytes, hit/miss rate, evictions, load failures, live-set size and the cache's effect on backend calls."],["Q031",6,"How do you choose a collector?","Choose a collector by measuring user latency, throughput, CPU and memory on the real workload.","Compare: same app, heap, load and resource limits\nMeasure: throughput, p99, GC pauses, CPU and RSS\nKeep: correctness, error rate and startup observations","Define acceptable tail latency, throughput, memory footprint and CPU budget, then test suitable collectors on the same runtime and representative workload. Start with supported defaults. Verify collector availability in the actual vendor build and platform. Why it matters: Collector selection is an experiment constrained by service objectives.","Smaller GC pauses alone do not establish a better application.","What evidence would justify changing from G1 to ZGC?","Move from G1 to ZGC only if a repeatable improvement in tail latency outweighs CPU, heap/RSS and throughput costs under comparable load."],["Q032",6,"When is Serial GC useful?","Serial GC uses one GC worker; it may suit tiny heaps or tightly limited CPUs when pauses are acceptable.","java -XX:+UseSerialGC -Xmx128m SmallApp","Serial GC performs collection with a single GC worker and is suited to some small-footprint or limited-resource workloads. Evaluate its simplicity and overhead against pause behavior for the actual live set. It is not a generic choice for all latency-sensitive services. Why it matters: A small workload may not benefit from a large parallel collection workforce.","A low thread count does not guarantee acceptable pauses as the live set grows.","What would you measure before using Serial in a small container?","Measure p95/p99 pauses, throughput, peak RSS, warmup, CPU quota and total job duration with realistic data."],["Q033",6,"When is Parallel GC useful?","Parallel GC prioritizes useful throughput while allowing stop-the-world collection work.","java -XX:+UseParallelGC -Xmx2g BatchJob\nis available.","Parallel GC emphasizes throughput using multiple workers for stop-the-world collection. It can fit batch workloads with acceptable pause tolerance. Compare total completion time and resource use rather than assuming concurrent collection is always superior. Why it matters: More parallel collection work can reduce some collection durations when CPU","Parallel workers compete within limited CPU quotas and can still cause substantial application pauses.","Why might a batch job prefer Parallel over a lower-pause collector?","For a batch job with flexible pauses, faster completion and lower total CPU/ memory cost may matter more than p99 response latency."],["Q034",6,"What is Epsilon GC and why is it unusual?","Epsilon allocates but never reclaims objects; it is useful only for bounded experiments.","java -XX:+UnlockExperimentalVMOptions \\\n-XX:+UseEpsilonGC -Xmx128m BoundedExperiment\nreuse by Epsilon.","Epsilon manages allocation without reclaiming unused objects. It is useful for bounded experiments and specialized workloads that complete within their memory budget. In HotSpot it requires experimental-option unlocking and is not an ordinary long-running service collector. Why it matters: Once available heap is exhausted, unreachable objects are not recovered for","'No GC pause' is not proof of a sustainable memory lifecycle.","How would you bound a useful Epsilon experiment?","Choose a fixed operation count, -Xmx, input size and duration; run in an isolated process and expect exhaustion once the budget is spent."],["Q035",6,"What happened to CMS and what is the modern default?","CMS was removed in JDK 14; G1 is a common server default, but always inspect runtime flags.","java -XX:+PrintCommandLineFlags -version\n# Confirm the collector selected by this runtime.","CMS was removed in JDK 14. G1 became the default for common server configurations in JDK 9, with ergonomic and build/platform qualifications. Inspect the effective collector instead of copying a historical CMS flag set into a modern launch command. Why it matters: Historical guides can contain options that newer JDKs reject.","Do not describe CMS as an available standard collector in Java 17, 21 or 25.","What is your migration process for old production JVM flags?","Inventory all launch flags, confirm target-JDK support, remove obsolete settings, test performance and failure cases, then canary the rollout."],["Q036",7,"How does G1 organize the heap?","G1 divides the heap into regions that can play Eden, survivor, old or humongous roles.","Regions: Eden | Survivor | Old | Free | Humongous\nCollection set: selected regions for this evacuation\nLive objects: copied to suitable destination space","G1 divides its heap into equally sized regions used for young, old, free and humongous allocation roles. The generational arrangement is logical rather than one permanently contiguous young block. Region selection helps spread reclamation work across pauses. Why it matters: Region roles can change as storage is reused.","A region map is not a fixed Java object-addressing contract.","Why does evacuation require destination capacity?","Live objects need free destination regions when copied; without enough suitable space, evacuation can fail."],["Q037",7,"What is a G1 young collection?","A G1 young GC copies reachable objects from selected young regions and reclaims the rest.","New allocations -> Eden regions\nYoung pause -> survivors copied\nDead temporary objects -> storage reused","A young evacuation pause processes the young collection set, relocating live survivors and making the collected regions reusable. Survival, root work and reference processing affect duration. Frequent young pauses can be normal for an allocation-heavy service. Why it matters: Allocation frequency and surviving volume are separate tuning inputs.","Every young pause is not evidence of a leak.","Why might fewer allocations still produce a slower pause?","Pause time also depends on survivor bytes, references, remembered-set/root work and CPU scheduling, not just allocation count."],["Q038",7,"What is a G1 mixed collection?","A G1 mixed collection includes young regions plus selected older regions after marking.","Marking -> old-region liveness information\nMixed collection set -> young + selected old regions\nSequence of pauses -> incremental old reclamation","A mixed evacuation pause collects young regions plus selected old regions after marking has identified suitable candidates. It differs from collecting the whole heap. Observe which portions of evacuation work contribute to the pause. Why it matters: Old-space work is distributed rather than necessarily reclaimed all at once.","'Mixed GC' is not synonymous with 'Full GC'.","What tradeoff follows from spreading old reclamation across more pauses?","More smaller pauses may reduce individual duration but increase frequency and overhead. Compare both tail latency and useful throughput."],["Q039",7,"What do remembered sets and barriers do in G1?","G1 remembered sets track relevant references across regions so a young collection need not scan the entire heap.","Old region object -> reference into selected young region\nRecorded cross-region information -> root discovery\nEvacuation -> update relevant references","They help track relevant cross-region references so selected regions can be collected without blindly rescanning the entire heap every time. Barriers record information when references change; maintaining and processing it costs CPU and memory. Why it matters: The application reference pattern influences collection overhead.","Remembered sets do not contain every object as a complete backup copy.","Why might heavy reference mutation affect GC cost?","Frequent pointer writes can increase write-barrier and remembered-set update work, which costs CPU and memory."],["Q040",7,"What are humongous objects in G1?","Very large G1 objects use special humongous regions, which can increase space and fragmentation pressure.","Example region: 1 MiB\nLarge byte array: inspect total aligned object size\nPayload buffering -> possible humongous allocation","Objects at or above roughly half a G1 region, including the threshold defined by the implementation, receive special allocation treatment across contiguous regions. This can increase old-space pressure and fragmentation. Inspect actual region size and humongous allocation evidence. Why it matters: Large arrays used for request bodies can change the collector's allocation path.","The exact boundary is based on object size and the selected region size, not a universal payload byte count.","How would streaming a payload alter this behavior?","Stream bounded chunks instead of building one giant byte array; then check humongous allocation events, p99 and memory peaks."],["Q041",8,"Does MaxGCPauseMillis guarantee a maximum pause?","MaxGCPauseMillis is a G1 planning target, not a maximum-pause promise.","-XX:MaxGCPauseMillis=100\n# Illustrative target; not a 100 ms guarantee.","No. For G1 it is a soft target used in collection planning, not a hard real-time bound. A tighter target can change collection frequency and overhead without guaranteeing application p99. Keep the target tied to a measured service objective. Why it matters: Target planning operates within live-set, capacity and CPU constraints.","A target lower than the available work budget cannot make necessary work vanish.","What should you measure after lowering the target?","Measure actual pause percentiles, frequency, GC CPU, throughput, allocation stalls and the service's end-to-end p99."],["Q042",8,"Why should you avoid fixing young-generation size blindly for G1?","G1 sizes young collections adaptively; forcing a fixed young size may prevent useful adaptation.","Baseline: selected G1 defaults and measured heap\nAvoid inherited -Xmn without understanding its effect\nCompare pause phases and useful throughput","G1 adapts its young collection set to meet objectives. Options that constrain young sizing can reduce this freedom and create unexpected behavior. First inspect allocation, survival and pause phases; change constraints only for a specific measured hypothesis. Why it matters: A flag that helped another collector may interfere with G1's policy.","There is no universal 'young must be 30% of heap' rule.","What evidence would justify constraining G1's young generation?","Only constrain it if logs show a repeatable phase-specific problem and controlled A/B testing improves user latency without harming throughput."],["Q043",8,"What causes G1 evacuation failure or Full GC?","G1 may fail evacuation when too much live data must move but too little suitable free space remains.","Inspect: evacuation-failure evidence\nCompare: live set, free regions and allocation spikes\nCorrelate: marking progress and CPU availability","Insufficient suitable destination space, high retained occupancy, late reclamation and allocation patterns can prevent successful evacuation. Full collection can follow, but explicit requests or other causes also exist. Read the stated cause and preceding events. Why it matters: The first relevant warning often explains the later long pause.","Raising heap without addressing unbounded retention may only postpone recurrence.","How would you distinguish capacity pressure from a leaking cache?","Check whether post-GC live set keeps rising under equal workloads and inspect cache ownership/eviction; a stable live set with sharp peaks suggests capacity pressure."],["Q044",8,"How does initiating heap occupancy affect G1?","G1 starts concurrent marking based on occupancy and predictions; it needs CPU time to finish.","Observe marking start versus old occupancy\nCheck allocation during the marking cycle\nVerify CPU headroom for concurrent work\nisolation.","G1 uses occupancy and adaptive predictions to decide when to begin marking. Earlier marking can create time to reclaim old regions, while CPU constraints can still prevent timely completion. Inspect adaptive behavior before forcing a static threshold. Why it matters: The useful variable is time available before pressure, not one threshold in","A copied IHOP value is not a guarantee that marking finishes before exhaustion.","What would happen if a container's CPU limit is cut sharply?","Less CPU can delay concurrent marking, lengthen wall-clock work and increase risk of old-space pressure or Full GC."],["Q045",8,"How should you respond to long mixed pauses or humongous pressure?","Diagnose which G1 work is slow before tuning; large buffers or retention may be better fixed in code.","Hypothesis: large response buffering creates pressure\nChange: stream bounded chunks\nValidate: fewer large allocations, stable throughput\nCheck: p99, heap trend, CPU and errors\noverhead.","Use phase and heap evidence to separate old evacuation, object copying, roots and fragmentation. Reduce problematic allocation/retention where possible. Collector-specific flags are a controlled alternative whose throughput and memory effects must be tested. Why it matters: An application change can remove the cause instead of shifting collector","Changing region size affects more than one metric and is not a universal fragmentation cure.","How would you isolate the effect of a region-size experiment?","Hold JDK, heap, inputs, traffic and all other flags constant; change only region size, repeat runs and compare large-object counts, pauses and throughput."],["Q046",9,"What makes ZGC different from G1?","ZGC moves more GC work into concurrent phases to keep pauses low; G1 evacuates selected regions during pauses.","G1: pause-based evacuation of selected regions\nZGC: substantial concurrent marking and relocation\nBoth: require memory and CPU budgets","ZGC emphasizes low pauses with concurrent work, including relocation, using its implementation- specific reference/barrier mechanisms. G1 evacuates selected regions during pauses and balances throughput and latency. Compare full application results under the same resources. Why it matters: Moving work out of pauses does not remove its resource cost.","A low-pause collector cannot guarantee low end-to-end request latency.","What might cause allocation stalls despite short ZGC pauses?","If allocation exceeds reclamation progress, little heap headroom or CPU starvation can cause an allocation stall despite tiny STW pauses."],["Q047",9,"How did ZGC change across Java 17, 21 and 25?","Java 17 ZGC is non-generational; Java 21 can opt into generational ZGC; Java 25 uses generational ZGC.","Java 17: -XX:+UseZGC\nJava 21: -XX:+UseZGC -XX:+ZGenerational\nJava 25: -XX:+UseZGC\ncollector.","Java 17 ZGC is non-generational. Java 21 introduced an opt-in generational mode. Generational mode became the default for ZGC in Java 23; Java 24 removed the non-generational mode. Java 25 uses generational ZGC without the old mode-selection option. Why it matters: The mode is selected within ZGC; this does not make ZGC the general default","Do not carry ZGenerational into a Java 25 launch recipe.","What must you compare when moving a Java 17 ZGC workload to Java 25?","Compare collector mode, effective flags, heap/RSS, CPU, allocation stalls, pause distribution, throughput, startup and error rates on the real service."],["Q048",9,"How do you size heap for a concurrent collector?","Concurrent collectors need space for the live graph plus objects allocated while GC is running.","Heap need: live set + in-cycle allocation + headroom\nCPU constraint: collector must make progress\nObserve: allocation stalls and useful throughput\nroom.","Provide room for the retained live set and allocations that occur while reclamation proceeds. CPU headroom and allocation spikes determine whether concurrent work keeps up. Use observed stalls and memory behavior instead of assigning an arbitrary percentage to every service. Why it matters: A heap close to the live set can fail to provide adequate concurrent breathing","'Only the live set matters' overlooks ongoing allocations.","How would you tune for bursts with a stable long-term live set?","Measure short burst allocation rates and cycle duration; add observed safety headroom and check worst-case stalls within the memory limit."],["Q049",9,"What is Shenandoah and is it available everywhere?","Shenandoah aims for low pauses with concurrent work, but it is not available in every JDK build.","java -XX:+UseShenandoahGC -version\n# Supported build: starts; unsupported build: rejects.","Shenandoah is a low-pause HotSpot collector using concurrent work, including evacuation. Availability depends on JDK distribution, build and platform. Verify the runtime directly; Oracle and other vendor builds do not necessarily ship identical collector sets. Why it matters: A vendor choice can change the feasible collector experiment.","OpenJDK feature availability is not proof that every packaged JDK includes it.","How would you keep deployment images consistent during a Shenandoah rollout?","Pin reviewed JDK images by digest, verify -XX:+UseShenandoahGC at startup, test each architecture and roll out the same approved image."],["Q050",9,"What changed for Generational Shenandoah in Java 25?","JDK 25 supports productized generational Shenandoah on builds that include it; choose the mode explicitly.","Supporting JDK 25:\n-XX:+UseShenandoahGC -XX:ShenandoahGCMode=generational\nCheck vendor build and effective runtime behavior.","JEP 521 made the generational mode a product feature in JDK 25 after its experimental introduction in JDK 24. On a supporting build, select the documented mode explicitly and verify it; do not assume a mode change only because the JDK version changed. Why it matters: Version and mode belong in the test report.","Java 17 execution cannot validate Java 25 Generational Shenandoah behavior.","How would you compare single-generation and generational modes fairly?","Use the same JDK build, heap, workload, CPU quota and sample size; change only collector mode and compare real pauses, RSS, CPU and throughput."],["Q051",10,"How do Xms and Xmx differ?","Xms sets the starting/minimum heap and Xmx sets its maximum; neither limits the whole process.","java -Xms256m -Xmx1g Application\n# Initial/minimum and maximum object-heap settings.\n# Native allocations and thread stacks are additional.","Xms controls the initial/minimum heap sizing contract in HotSpot and Xmx controls the maximum heap. Neither caps total process memory. Equal values can reduce heap resizing, but increase baseline commitment expectations and reduce footprint flexibility. Why it matters: Collector behavior and OS page residency still affect physical memory.","Xmx is not equivalent to RSS or a container memory limit.","When might equal Xms and Xmx be useful, and what does it cost?","Equal Xms/Xmx can help predictable heap sizing after warmup but holds a larger heap commitment and reduces memory flexibility."],["Q052",10,"What kinds of OutOfMemoryError should you distinguish?","Java memory errors differ by exhausted resource: heap, metadata, direct buffers or native threads.","s include Java heap exhaustion, metaspace exhaustion, direct-buffer limits and\ninability to create native threads. The message and context guide diagnosis. Some\nresource failures or OS kills happen without a useful Java error or dump.\nExample\nJava heap space -> object allocation/live-set evidence\nMetaspace -> class metadata and loader lifetime\nDirect buffer memory -> direct allocation budget\nNative thread creation -> limits and memory resources","Why it matters: Each category has a different ownership and measurement path.","Raising Xmx can reduce available native headroom and worsen thread creation failures.","What evidence would you collect for a native-thread OOME?","Check the exact exception, thread count, ulimit/pid limits, process RSS, native thread-stack use and OS/container events."],["Q053",10,"Does increasing heap always improve performance?","More heap can postpone GC, but can increase memory use, pressure elsewhere and some pause costs.","Hypothesis: too little allocation headroom\nExperiment: modest heap increase within process budget\nCompare: GC work, p99, RSS and throttling","No. More heap can reduce collection frequency and provide headroom, but can increase footprint, affect layout or work per cycle, and violate process limits. Compare useful throughput and tail latency within the same deployment budget. Why it matters: A larger heap is a capacity change that needs evidence.","An unbounded live set eventually consumes a larger heap too.","What result would make you reject a heap increase?","Reject it if tail latency, total RSS, container OOM risk or throughput becomes worse, even if GC events become less frequent."],["Q054",10,"What does GC overhead limit exceeded mean?","GC overhead limit exceeded means the VM spends excessive time collecting but recovers little memory under its policy.","Repeated costly collections\nLittle useful reclamation\nApplication makes inadequate progress","On collectors and configurations that enforce it, the JVM detects excessive time spent collecting with insufficient reclamation. It is a symptom of an unsustainable memory/workload situation. Investigate retained data and capacity instead of merely disabling the check. Why it matters: The exception reports poor progress rather than naming the retaining owner.","Disabling the overhead limit does not create memory or repair retention.","How would you compare the live set with the allowed heap?","Compare post-full-collection occupancy with Xmx over repeated comparable periods; near-capacity retained data suggests a live-set or leak issue."],["Q055",10,"How do you capture evidence around heap exhaustion?","Capture logs, heap evidence and process/container events before failures when safe; guard sensitive dumps.","-XX:+HeapDumpOnOutOfMemoryError\n-XX:HeapDumpPath=/controlled/path\n-Xlog:gc*:file=gc.log:uptime,level,tags","Use appropriate GC logs and a reviewed heap-dump policy, correlate process/container termination and retain deployment identity. Heap dumps can be large, disruptive and sensitive. Store them securely on a path with capacity rather than assuming every failure produces one. Why it matters: A Java heap OOME and an OS/container kill have different evidence paths.","A heap-dump-on-OOME flag does not guarantee a dump after an external kill.","How would you manage dump storage for many replicas?","Use per-instance bounded dump paths, disk quotas/retention, centralized restricted storage and a tested cleanup/collection plan."],["Q056",11,"How do you enable modern GC and safepoint logging?","Use unified -Xlog settings for GC and safepoints in supported HotSpot versions.","-Xlog:gc*,safepoint:file=gc.log:uptime,level,tags:\nfilecount=5,filesize=10M\n# Join as one option; shown across lines for reading.","Use unified logging on modern HotSpot. Select tags, level, decorators and output rotation appropriate to the investigation. Verify support on the actual JDK and ensure logs do not create uncontrolled storage or I/O overhead. Why it matters: Decorators and GC identifiers help connect phases belonging to one cycle.","Old PrintGCDetails-style recipes do not map unchanged to every modern release.","Which extra phase detail would you enable for a long G1 evacuation pause?","Enable focused G1 phase tags such as gc+phases at debug level for a short window; measure logging overhead and disk growth."],["Q057",11,"How do you read heap before/after and pause duration?","GC logs show heap occupied before/after events and how long the reported phase took.","Illustrative: GC(7) Pause Young ... 96M->24M(128M) 8.0ms\nBefore: 96M; after: 24M; shown heap capacity: 128M\nDuration: 8.0ms for this reported event","Identify the event, cause, heap values and unit, then compare across equivalent workload phases. A before-to-after decrease describes reclamation during that event, not a standalone proof of leak absence or an exact retained-live-set measurement. Why it matters: A young event can leave garbage in uncollected old regions.","Treating every after-young value as the complete live set is incorrect.","Which trends would suggest increasing long-term retention?","Watch post-GC occupancy across similar traffic windows; an upward baseline after major reclamation suggests retained growth."],["Q058",11,"How can GC duty fraction and allocation rate help?","GC duty fraction estimates the share of an interval spent in pauses; allocation rate estimates new object bytes per time.","Example: 0.5 s STW time / 10 s wall window = 5%\nAllocation: 200 MiB over 2 s = 100 MiB/s\nSeparate: concurrent GC CPU and cycle duration\nquestion.","Compute event time and allocation over a defined observation window with clear counting rules. They expose memory-management demand but must be paired with collector CPU and application metrics. Concurrent cycle wall time is not an STW pause. Why it matters: The arithmetic is useful only when the selected measurements match the","Summing concurrent cycle duration as application stopped time inflates a pause estimate.","How would you estimate bytes allocated per successful request?","Combine allocation bytes in JFR or profiler with successful request count over the same window; exclude background work or report it separately."],["Q059",11,"What do User, Sys and Real mean in GC timing?","User/Sys are CPU time consumed in different modes; Real is elapsed clock time, including scheduling delays.","Illustrative: User=0.08s Sys=0.01s Real=0.03s\nCPU time can sum across workers\nWall time reflects elapsed duration","They report CPU and elapsed-time perspectives for the event. Parallel worker CPU time can exceed elapsed time. High wall time with limited CPU progress can suggest scheduling pressure; high system time can motivate OS memory/I/O investigation. Why it matters: These values help form a hypothesis, not a complete diagnosis by themselves.","User plus Sys need not equal Real for parallel execution.","What other evidence would confirm CPU throttling?","Look at cgroup throttled time/periods, container CPU usage versus quota, runnable queues and GC wall-clock-to-CPU gaps."],["Q060",11,"What is a safepoint and is every safepoint a GC pause?","A safepoint is a JVM coordination state; many events besides GC can request one.","Request coordination -> threads reach suitable state\nVM operation executes -> application resumes\nLog: inspect reaching and operation duration\nphase.","A safepoint is a VM coordination state used for operations requiring participating threads to reach suitable execution states. GC is one use, but other operations can require safepoints. Time to reach coordination can differ from time executing the operation. Why it matters: A latency spike can involve coordination delay rather than a long collector","Every application stall is not visible as a long GC pause.","How would you investigate a long time-to-safepoint?","Enable safepoint logs and inspect time-to-safepoint, busy thread states, native transitions and OS scheduling/CPU starvation."],["Q061",12,"What does Java Flight Recorder provide?","JFR records sampled and event-based JVM/application behavior with relatively low overhead.","jcmd PID JFR.start name=investigation settings=profile \\\nduration=60s filename=investigation.jfr","JFR records selected runtime and application events for time-correlated diagnosis. Event settings, thresholds and sampling affect what is observed and its cost. Start with a bounded recording and inspect CPU, allocation, locks, I/O and GC according to the question. Why it matters: A recording links multiple signals within one time window.","JFR does not automatically record every method call or every allocation.","Which events would you inspect for a slow service with low CPU?","Inspect socket/file I/O delays, thread parks, monitor contention, blocked times and request-specific spans or custom events."],["Q062",12,"What can a thread dump tell you?","A thread dump shows what Java threads are doing, including stacks, waits and some lock ownership.","jcmd PID Thread.print -l\n# Repeat at meaningful intervals if appropriate.","A thread dump gives stacks and state information at a point in time. Repeated dumps can expose stable blocked or waiting patterns and hot loops. Use relevant APIs or tools for deadlock detection and distinguish observations from causal conclusions. Why it matters: A persistent stack pattern is often more informative than one isolated snapshot.","RUNNABLE can include native I/O activity; it is not proof of active CPU consumption.","How would you connect a Linux hot thread with a Java stack?","Find the Linux TID using top -H, convert it to hexadecimal and match nid in a JVM thread dump for the same process/time."],["Q063",12,"What is the difference between a histogram and a heap dump?","A histogram counts objects by type and size; a heap dump also preserves reference graphs and retaining paths.","jcmd PID GC.class_histogram\njcmd PID help GC.heap_dump\n# Review command impact before collecting a large dump.","A histogram groups object counts and sizes by class. A heap dump contains a graph useful for retained-size and root-path analysis. Diagnostic collection behavior and impact depend on the command and options; a live-oriented request may trigger GC. Why it matters: High shallow bytes point to a class; retention analysis identifies an owner.","The largest class by shallow size is not necessarily the leak's retaining cause.","Why might an empty collection object retain a large backing array?","Removing entries may not shrink the internal array capacity; the empty collection can still own a large backing array."],["Q064",12,"What does Native Memory Tracking measure?","Native Memory Tracking reports categorized HotSpot native allocations when enabled; it does not explain all process RSS.","Start: -XX:NativeMemoryTracking=summary\njcmd PID VM.native_memory baseline\njcmd PID VM.native_memory summary.diff scale=MB","HotSpot NMT tracks supported internal native allocations when enabled at startup. It can show reserved/committed categories and changes. It does not account for all third-party native allocations or equal OS RSS; reconcile it with other process and platform measurements. Why it matters: A diff can locate growth in tracked categories over an interval.","NMT committed memory is not a direct physical-residency measurement.","What would you inspect if RSS grows while NMT categories stay stable?","Inspect file mappings, malloc allocator caching, mapped files, shared libraries and system/container memory accounting."],["Q065",12,"How do CPU and allocation profiles differ?","CPU profiles show where CPU is spent; allocation profiles show where new objects are created.","High CPU -> sampled hot execution paths\nHigh allocation -> object creation sites\nLow CPU, high latency -> waits, queues, dependencies\nCPU frame.","A CPU profile samples where active execution spends time. An allocation profile identifies selected allocation sites and rates. A wall-clock or blocking view helps when threads wait. Choose the evidence according to whether work, memory demand or waiting dominates. Why it matters: An expensive allocation site may be a useful optimization even if it is not the top","A CPU profile alone can miss a database wait dominating request latency.","How would you evaluate profiler overhead and sampling bias?","Compare sampling frequency, event drop rate, run-to-run noise and service overhead; use representative loads and corroborating metrics."],["Q066",13,"Why can p99 rise when average latency stays low?","p99 captures the slowest user requests; a small slow group can increase p99 while mean stays stable.","Most requests: 20 ms\nSmall tail: 1,000 ms\nAverage can look acceptable while p99 is poor","A small subset of requests can encounter pauses, queueing, slow dependencies, contention or cold execution. An average dilutes those outliers. Measure percentiles with enough observations and a defined population, then correlate the slow path. Why it matters: Endpoint and tenant segmentation can reveal a concentrated problem.","p99 estimates from a tiny sample are not stable evidence.","How would you separate one slow endpoint from a whole-service regression?","Break down histograms by endpoint, status and region; compare each route's traffic share and dependency timing."],["Q067",13,"What is the difference between service time and queueing time?","Service time is active work; queueing time is waiting before work or a scarce resource.","Request total = admission + pool wait + work + I/O\nJDBC acquisition: 400 ms\nSQL execution: 10 ms","Service time is time spent executing the required work, while queueing time is time waiting for admission or resources. As utilization approaches a bottleneck, waiting can grow sharply. Instrument acquisition and execution separately. Why it matters: Optimizing the 10 ms SQL step alone may miss the dominant pool delay.","More threads can increase contention and waiting rather than throughput.","Which pool and dependency metrics would you correlate?","Correlate executor queue age, Hikari pending/acquisition duration, HTTP client pool waits, DB query time and arrival rate."],["Q068",13,"How do you diagnose lock contention?","Lock contention makes threads wait for exclusive access even when application code is otherwise fast.","Many requests -> one synchronized critical section\nOwner -> slow I/O while holding lock\nCandidate repair -> separate I/O from guarded state","Use repeated stacks and lock-related recording events to identify waiting threads, owners and critical sections. Then reduce unnecessary lock scope or contention while preserving correctness. Evaluate throughput and tail latency under the same concurrency. Why it matters: The right change depends on the protected invariant.","Replacing a lock with a concurrent collection does not preserve every multi- step atomic operation.","How would you verify the correctness of a lock-scope reduction?","Add concurrency tests for invariants and race conditions, then measure contention and p99 before and after the narrower lock."],["Q069",13,"Why is high CPU not always a GC problem?","High CPU can come from business loops, serialization, retries, spinning or GC; profile before guessing.","CPU: high\nGC pause fraction: low\nProfile: repeated JSON serialization dominates\nHypothesis: reduce redundant serialization work","CPU can be consumed by application loops, serialization, cryptography, compilation or collector work. Use CPU sampling, GC events and per-thread evidence to identify the owner. Diagnose the hot path before changing collector settings. Why it matters: A collector experiment is useful only if it addresses a measured contribution.","The coexistence of GC activity and high CPU does not prove GC is the dominant cost.","How would you quantify concurrent collector CPU versus application CPU?","Use JFR/CPU profiles and process CPU; compare GC worker activity in logs or OS thread samples against application hot stacks."],["Q070",13,"How can retries create performance collapse?","Retries multiply load when a dependency is slow, potentially creating a positive feedback loop.","Client retries x service retries x SDK retries\nEffective attempts can multiply\nBudget: end-to-end deadline and bounded admission\nGC tuning.","Retries multiply offered load when a dependency is already slow. Extra waiting requests retain state and consume pools, threads and memory. Use deadlines, bounded attempts, backoff/jitter and concurrency limits with idempotent or resolvable operations. Why it matters: The memory and latency symptom may originate from failure policy rather than","An unlimited retry queue can become an unbounded retained object graph.","What would you cap first during a dependency incident?","Cap in-flight dependency calls and retry attempts first, apply deadlines and jittered backoff, and shed noncritical work."],["Q071",14,"How do boxing and collections affect allocation?","Boxed values and collection nodes allocate extra objects compared with many primitive representations.","List<Integer> -> references and possible boxed values\nint[] -> primitive payload in one array\nIntStream -> primitive operations where appropriate","Boxing and reference-based data structures can add object and pointer overhead, though caching and optimization change exact allocation. Primitive arrays or specialized approaches can help measured hot paths. Compare semantics, workload and retained footprint. Why it matters: The data representation can matter more than a collector flag.","Not every boxing expression necessarily creates a fresh object.","How would you measure the allocation cost of a real collection workload?","Profile allocation bytes and objects per operation on realistic inputs; validate with JMH where helpful and end-to-end behavior."],["Q072",14,"How can string and logging work create allocation pressure?","Formatting, concatenating and logging strings can allocate many short-lived objects.","log.debug(\"value={}\", cheapValue);\nif (log.isDebugEnabled()) {\nlog.debug(\"summary={}\", buildExpensiveSummary());\n}","Repeated formatting, concatenation or payload construction can allocate substantial temporary data. Parameterized logging can avoid some formatting when disabled, but argument expressions still evaluate. Guard expensive computation where justified and keep sensitive payloads out of logs. Why it matters: The logging API does not automatically defer every method argument.","Enabling verbose payload logs during load can change the performance being diagnosed.","When would a logging supplier API be useful?","Supplier-style lazy messages help when disabled log levels would otherwise construct expensive data; avoid capturing large objects unnecessarily."],["Q073",14,"Should every temporary object be pooled?","Pooling small objects can add state, contention and retention costs; measure first.","Cheap short-lived DTO -> ordinary allocation\nConnection/socket -> managed bounded lifecycle\nPooled buffer -> explicit ownership and size bound","No. Ordinary allocation can be cheap and the collector may handle short-lived objects efficiently. Pools introduce retained memory, ownership, concurrency and reset complexity. Pool only a measured expensive resource or representation with a clear bounded lifecycle. Why it matters: A pool can convert short-lived data into a long-lived retained graph.","Reusing an object without clearing request-specific state can leak data between users.","What would make a buffer pool worth its complexity?","A buffer pool helps if allocation/GC cost is material, reuse is frequent, and bounded pool size improves actual throughput/latency."],["Q074",14,"How do you reduce large-payload memory spikes?","Stream large data in bounded pieces rather than holding whole files or payloads in heap.","100 requests x 10 MiB full buffers = about 1,000 MiB\nBounded chunk processing -> different peak profile\nLimit concurrency -> bound simultaneous payload state","Use bounded streaming, pagination, chunking and admission limits rather than buffering every payload or result at once. Ensure downstream APIs and transaction behavior support the intended stream. Measure peak concurrent memory, not just one request. Why it matters: Per-request memory multiplies across concurrent requests.","A Stream API expression does not guarantee end-to-end streaming if the source was already fully materialized.","How would you test a slow consumer without unbounded buffering?","Throttle a test client/consumer, limit producer buffering and verify stable RSS, bounded queue length and correct cancellation."],["Q075",14,"Are parallel streams always faster?","Parallel streams use shared parallel execution resources and can hurt small tasks or request fairness.","Small cheap map -> overhead may dominate\nLarge independent CPU work -> candidate for testing\nBlocking request path -> inspect pool/resource behavior","No. Parallel work adds scheduling, coordination and resource contention. Benefit depends on work size, independence and available CPU. Blocking I/O and shared pools require particular care. Measure useful throughput and service interference rather than only one loop duration. Why it matters: A shared execution resource can couple unrelated workloads.","Parallelizing an operation does not make its shared mutable state safe.","How would you isolate CPU-heavy background work from HTTP request capacity?","Use a dedicated bounded executor or explicit concurrency control for CPU- heavy background work, separate from HTTP request capacity."],["Q076",15,"Why are naive nanoTime microbenchmarks unreliable?","A tiny loop using nanoTime is affected by JIT warmup, dead-code removal and measurement noise.","long start = System.nanoTime();\n// Tiny loop with unused result: misleading experiment.\nlong elapsed = System.nanoTime() - start;","Compilation, dead-code elimination, constant folding, timer cost and environmental noise can dominate an ad hoc loop. JMH provides a structured harness, but its setup must still model the question. A microbenchmark does not replace an end-to-end load test. Why it matters: The measured program might not execute the work you intended.","A precise timer does not make a flawed experiment accurate.","What would you change before claiming one collection implementation is faster?","Use JMH with controlled inputs, warmups, forks and allocation profiling; compare confidence intervals and actual service performance."],["Q077",15,"How does dead-code elimination affect a benchmark?","The compiler may eliminate work if its result cannot be observed, making timings unrealistically fast.","@Benchmark\npublic int sum() {\nreturn values[0] + values[1];\n}\n// JMH consumes the benchmark result.","If a result has no relevant observable use, optimized code may remove all or part of the computation. Return benchmark results or use suitable JMH consumption mechanisms. Inspect generated behavior or allocation evidence when the result seems implausible. Why it matters: The measured operation needs a meaningful escape to the harness.","An unused allocation loop can benchmark optimized-away work.","How would you keep an allocation benchmark representative without forcing unrelated overhead?","Return or consume realistic results via JMH, keep data dependencies, and compare allocation profiles without adding artificial heavy sinks."],["Q078",15,"What is constant folding in a benchmark?","The compiler can precompute constant expressions, so your benchmark might avoid the intended operation.","Constant expression -> possible precomputed result\nBenchmark state -> representative input source\n@Param -> compare controlled workload dimensions","The compiler can precompute operations on inputs it can prove constant. Use appropriately managed state and realistic varying inputs when measuring runtime work. Do not confuse Java field modifiers with the full compiler's ability to infer constants. Why it matters: A nanosecond result can reflect a constant result rather than the full algorithm.","Randomizing inputs inside the timed method may instead benchmark random-number generation.","Where should input preparation occur?","Prepare input data in JMH setup/State at an appropriate iteration or invocation scope, keeping preparation cost separate from measured work."],["Q079",15,"Why do JMH warmup and forks matter?","JMH warmup measures optimized hot paths; separate JVM forks reduce contamination from prior measurements.","Record: JDK, JVM flags, forks, warmup and measurement\nObserve: distribution and error, not one best number\nValidate: representative inputs and consumed outputs","Warmup lets the runtime reach a defined execution condition. Forks isolate JVM execution histories and reduce cross-test profile contamination. Choose iterations, forks and measurement modes from the workload and variability; default values are not universal proof of rigor. Why it matters: Different execution histories can produce different compiled code.","Running one benchmark after another in one JVM can couple their profiles.","How would you compare startup-sensitive operations instead of warmed throughput?","Measure cold-start-to-ready and first-request latency in fresh processes, with repeatable startup inputs, instead of relying on warmed JMH scores."],["Q080",15,"How do you design a fair collector experiment?","A collector comparison needs identical workload, JVM build, heap, CPU limits and valid end-to-end metrics.","A: G1, same image and representative traffic\nB: ZGC, same budget and deployment placement\nCompare: p99, successful throughput, CPU, RSS, stalls","Hold application version, workload, resource limits and most settings constant; record unavoidable collector-specific differences. Repeat runs, separate warmup from observation and measure the service objective with error rates. Include memory and CPU cost alongside pauses. Why it matters: A fair comparison explains any changed variable, including JDK version.","Comparing Java 17 G1 with Java 25 ZGC cannot isolate collector choice alone.","How would you disentangle a JDK upgrade from a collector change?","Use a matrix: run old/new JDK each with its supported matching collector/mode, then compare within-JDK and cross-JDK separately."],["Q081",16,"How does HotSpot become container-aware?","Container-aware HotSpot reads applicable cgroup resource limits to choose defaults and ergonomics.","java -XshowSettings:system -version\njava -XX:+PrintCommandLineFlags -version\n# Inspect what the actual deployment detects.","Supported modern HotSpot builds on supported platforms can use container resource information for ergonomics. Verify the detected memory and processors, effective flags and runtime build. Detection and limits differ by OS, cgroup version and deployment configuration. Why it matters: The same image can choose different ergonomics under different limits.","Running on a host does not validate behavior in your Kubernetes pod.","What would you inspect after moving from cgroup v1 to v2?","Inspect java -XshowSettings:system -version, cgroup files, actual Xmx, availableProcessors and runtime logs after the migration."],["Q082",16,"How do MaxRAMPercentage and Xmx interact?","MaxRAMPercentage helps choose heap ergonomically when Xmx is not explicitly set; an explicit Xmx wins.","Option A: -Xmx512m\nOption B: -XX:MaxRAMPercentage=50\n# Alternatives to evaluate, not equivalent everywhere.","Heap-percentage flags affect ergonomic sizing when applicable; an explicit Xmx sets the heap maximum rather than making the percentage a second independent cap. The denominator depends on effective memory detection and configuration. Inspect the resulting heap. Why it matters: Neither option bounds total native memory or guarantees container headroom.","A high percentage may leave too little memory for threads and buffers.","How would you choose a budget for a 1 GiB Java container?","Reserve memory for metaspace, thread stacks, code, direct buffers, native libraries and safety headroom; measure RSS before fixing Xmx."],["Q083",16,"Why can a pod be OOMKilled while heap usage is below Xmx?","A container memory kill can happen when native and heap memory together exceed the cgroup limit.","Heap used: below Xmx\nDirect buffers and stacks: additional memory\nPlatform charged memory: exceeds container limit\nOutcome: external kill may produce no heap dump","The platform enforces its own charged-memory limit, which includes more than the Java heap. Native allocations, stacks, direct buffers and other charged resources can exceed that limit. Inspect termination and cgroup evidence alongside JVM metrics. Why it matters: The failing boundary is the container, not necessarily Java heap allocation.","Raising Xmx can worsen the external kill risk.","Which deployment and process metrics would distinguish this from heap OOME?","Check termination reason, cgroup OOM events, RSS, heap-after-GC, NMT, direct buffers and thread counts."],["Q084",16,"How does CPU throttling affect GC and latency?","CPU throttling delays application and GC workers, increasing real time even if GC work itself is unchanged.","CPU demand > quota -> scheduling delay\nConcurrent marking slower -> less reclamation headroom\nRequest queues -> longer end-to-end latency","A CPU quota can delay application and collector progress even when the host has spare processors. Concurrent collectors need time to keep up, and parallel phases share the same effective resource constraint. Inspect throttling and runnable demand together with GC timing. Why it matters: A collector can appear slower because its environment changed.","Adding GC threads does not create more CPU quota.","How would you test whether a long pause is primarily scheduling delay?","Compare GC User+Sys with Real under throttling metrics; repeat at a higher CPU quota and test whether wall-time gaps shrink."],["Q085",16,"How should you budget process memory?","Total Java process memory includes heap, metadata, code cache, native buffers, stacks and overhead.","Example 1 GiB limit:\n512 MiB heap + measured native budget + headroom\nCheck concurrent requests, thread count and buffers\nValidate actual charged-memory peak","Start from measured peak charged memory and break down plausible contributors: heap, metadata, code, thread stacks, direct/native buffers and other process/deployment charges. Leave justified headroom and validate under peak and failure traffic. Estimates are not exact additive OS accounting. Why it matters: The budget must survive realistic concurrency, not only startup.","A universal 'set heap to 75%' recipe ignores workload-dependent native use.","How would the budget change for thousands of platform threads?","Many platform threads consume stacks and scheduling/native-thread resources; multiply observed per-thread costs and include concurrency limits."],["Q086",17,"Which metrics should you watch for Spring Boot?","Spring Boot needs user latency plus JVM, executor, DB pool and dependency metrics, not only heap graphs.","Customer: successful rate and p99\nJVM: allocation, pauses, live-set trends\nPools: queued work and acquisition wait\nDependencies: SQL and outbound latency","Track customer rate, errors and latency, plus JVM allocation/GC/memory, executor saturation, connection-pool waits and dependency timing. Use supported metrics integrations and stable labels. Protect operational endpoints and measure overhead of added telemetry. Why it matters: Framework health and useful customer outcomes are distinct signals.","An up health endpoint does not prove requests are fast or transactions succeed.","What metric would identify HikariCP acquisition delay?","Monitor HikariCP connection acquisition time and pending-connection gauges, with timeout counts and max-pool utilization."],["Q087",17,"How can connection-pool sizing affect JVM performance?","More JDBC connections are not always better; too many can saturate the database and amplify wait costs.","20 replicas x pool maximum 15 = 300 connections\nDatabase capacity and other clients constrain budget\nWaiting requests -> retained context and response data\nmemory symptom.","Blocked requests can retain object graphs and occupy platform threads while waiting for a connection. A larger pool may overload the database rather than help. Budget connections across all replicas and instrument waiting separately from SQL execution. Why it matters: The bottleneck can be a database concurrency budget expressed as a JVM","Pool max is multiplied by replicas and can change during autoscaling.","What should happen when the pool is full and the request deadline expires?","Return a controlled timeout/503 or suitable overload response; release caller resources and do not let requests wait beyond their deadline."],["Q088",17,"How do WebFlux and virtual threads change resource needs?","WebFlux changes the I/O concurrency model; virtual threads allow blocking- style code with many virtual tasks, but resources remain finite.","Reactive: event loop -> nonblocking composition\nVirtual thread: simpler blocking style where suitable\nBoth: DB, remote API and memory budgets still apply\ninvariants.","They change how waiting work occupies execution resources, but do not remove downstream limits or per-request state. Avoid blocking event-loop code in reactive applications. With virtual threads, bound resource access and admitted work rather than assuming cheap threads make unlimited concurrency safe. Why it matters: The concurrency model changes the cost profile, not the service's business","More in-flight requests can increase memory even with cheap thread scheduling.","Which limit would you enforce around a slow external API?","Use a bulkhead/semaphore on concurrent external calls plus connection limits and timeouts; neither model grants infinite downstream capacity."],["Q089",17,"How do you tune startup for autoscaling?","Autoscaling succeeds only if new JVM instances warm up before traffic overwhelms the existing fleet.","Start process -> initialize -> readiness -> traffic\nMeasure each phase and first-request latency\nAvoid moving failures invisibly into customer requests","Measure time spent in loading, bean creation, database checks, initialization and compilation. Remove unnecessary eager work while keeping readiness truthful. Use supported startup instrumentation and evaluate startup features for your selected JDK and framework version. Why it matters: Lazy initialization can shift work and failure from startup into request handling.","A faster readiness signal that precedes required initialization can worsen service reliability.","How would you verify that a newly scaled replica is truly useful?","Replay realistic traffic against newly Ready replicas; monitor startup time, first- request p99, error rate, cache warmup and capacity."],["Q090",17,"How do you roll out a JVM tuning change safely?","Tune JVM settings with a baseline, a small controlled change, canary observation and a rollback plan.","Hypothesis -> one controlled change -> canary\nObserve -> p99, errors, useful rate, RSS, CPU\nDecision -> expand or restore prior configuration","Change a small reviewed set of variables, deploy to representative limited traffic and compare customer, GC and resource metrics. Define abort criteria and keep a compatible rollback configuration. Record exact JDK, flags, image and environment. Why it matters: A flag-only release still changes runtime behavior and resource demand.","A canary with only idle traffic does not validate a peak-load memory change.","What would trigger immediate rollback of a heap-size experiment?","Rollback if user p99, errors, OOM kills, CPU throttling or RSS exceeds predefined safe thresholds."],["Q091",18,"What JVM and GC version details should an interview answer include?","Always state the exact JDK vendor/build, GC name/mode and JVM/container flags when discussing tuning.","Report: Java 17 HotSpot, G1, Linux/x86_64\nAlternative: Java 25 supporting build, Generational ZGC\nRecord exact flags and resource context","State the JDK release, vendor/build, collector and mode, architecture and relevant resource limits. Identify removed or changed options before migration. Avoid presenting one release's default as a permanent property of the Java language. Why it matters: This makes the answer reproducible and its scope assessable.","'We use Java GC' omits the collector contract being discussed.","Which runtime details belong in a production performance report?","Record java -version, effective flags, heap, container limits, CPU architecture, collector mode, image digest, workload and measurements."],["Q092",18,"Do virtual threads eliminate platform threads and memory costs?","Virtual threads reduce per-request platform-thread costs but still consume memory and downstream resources.","Many waiting tasks -> virtual-thread candidates\nCPU-heavy tasks -> limited by actual processors\nIn-flight state -> still consumes memory","No. Virtual threads run on carrier platform threads and retain their own execution state. They can improve scalability for suitable waiting workloads, but cannot make CPU work infinitely parallel or remove memory and dependency budgets. Available since Java 21 as a final feature. Why it matters: Improved thread economics can expose a downstream bottleneck sooner.","Virtual threads should not be described as a faster garbage collector.","How would you prevent unbounded virtual-thread work from exhausting memory?","Set admission/semaphore limits, timeouts and bounded request queues; monitor heap, native usage and active external calls."],["Q093",18,"How did virtual-thread monitor pinning change?","Monitor pinning behavior changed across newer Java releases, so use the specific JDK's rules and diagnostics.","Java 21: inspect blocking synchronized sections\nJava 24+: monitor pinning behavior improved\nAll versions: preserve bounded downstream access","In Java 21, blocking inside synchronized code can pin a carrier. JEP 491 in Java 24 removed the monitor-related pinning limitation; other contexts such as relevant native execution can still matter. Diagnose according to the exact JDK rather than repeating old universal advice. Why it matters: An upgrade can change which recorded symptoms are expected.","'Never use synchronized with virtual threads' ignores newer runtime behavior and correctness needs.","What pinning evidence would you collect on the selected JDK?","Capture JFR virtual-thread pin events or relevant tracing on that JDK, then identify monitor/native blocking call stacks."],["Q094",18,"What are compact object headers in Java 25?","Compact object headers in Java 25 can reduce header footprint under the selected supported HotSpot mode.","Supporting Java 25: -XX:+UseCompactObjectHeaders\nCompare: layout, retained footprint and throughput\nCheck: other selected VM options and platform support","JEP 519 made compact object headers a product feature after experimentation in Java 24. This is a HotSpot layout feature, not a new Java object model. Verify support and enablement, then measure footprint and performance; it is not an automatic reduction of every object to one fixed size. Why it matters: Headers are only one contributor to object size, alongside fields and alignment.","Java 17 measurements cannot validate this Java 25 feature.","Which object-heavy workload might benefit most?","Object-heavy workloads with many tiny live objects and linked collection nodes may benefit, if CPU and compatibility measurements also improve."],["Q095",18,"How should you evaluate a JDK upgrade for performance?","A JDK upgrade can change GC, JIT and runtime defaults; test correctness and performance together.","Test A: old JDK, old compatible config\nTest B: new JDK, comparable supported config\nTest C: new JDK, deliberate collector/feature change","Test correctness and compatibility first, then compare startup, steady-state capacity, latency and resources using the same workload. Separate runtime changes from collector/configuration changes where possible. Review release notes and effective options rather than relying on expected speedups. Why it matters: Multiple comparison points help isolate the source of a difference.","A single faster run after an upgrade is not a reliable attribution.","What would block an upgrade despite better average throughput?","Block on incompatible libraries, crashes, data corruption, unacceptable tail latency, higher OOM risk or failed rollback/recovery tests."],["Q096",19,"A service's heap keeps rising. How do you investigate?","When heap climbs, compare allocation and post-GC live memory, then identify which owners retain growing object graphs.","Trend: baseline after comparable reclamation rises\nHistogram: growing payload objects\nRoot path: retry queue retains failed requests\nRepair: bounded queue, deadlines and safe discard","Establish workload phases and compare retained/live-set behavior after relevant reclamation, not just instantaneous used heap. Correlate cache, queue and session counts. Capture suitable histograms or dumps, identify retaining roots and test the suspected owner's policy. Why it matters: The retaining owner often explains why more heap only delayed failure.","A sawtooth graph with temporary growth can be normal.","How would you validate that the repair stops growth under sustained failures?","Run sustained-load and failure-path tests, verify stable post-GC baselines, bounded caches/queues and safe OOM headroom over time."],["Q097",19,"RSS rises while Java heap looks stable. What next?","Stable heap with rising RSS suggests checking off-heap memory, threads, metaspace and OS accounting.","Heap stable; thread count grows steadily\nInspect: stacks and thread ownership\nNMT: tracked Thread category changes\nOS: confirm resident/charged-memory trend","Inspect direct buffers, threads, tracked native categories, libraries and OS mappings, along with memory-accounting context. Use NMT diffs where enabled and OS evidence where it is not. Compare workload and deployment changes before assigning the growth to a leak. Why it matters: Unbounded thread creation can consume memory outside the heap.","Stable NMT does not rule out an untracked native library leak.","Which evidence would distinguish allocator retention from still-growing live native allocations?","Compare NMT deltas, mapped files, allocator behavior and direct-buffer use; retained native allocations rise differently from reusable allocator arenas."],["Q098",19,"p99 is poor but GC pauses are short. What do you do?","Short GC pauses do not rule out request queuing, DB waits, network stalls or CPU contention.","GC pauses: short\nTrace: 600 ms JDBC acquisition, 15 ms query\nBottleneck: connection availability/admission\nRepair: workload and DB budget, not random GC flags\ndelay.","Follow the request timeline through admission, locks, CPU scheduling and dependencies. Inspect allocations and collector stalls only when evidence connects them. Compare endpoint-level traces and saturation rather than assuming all tail latency comes from GC. Why it matters: Low-pause GC removes one possible contributor rather than every source of","Changing to another low-pause collector can leave the dominant wait untouched.","What evidence would change your diagnosis back toward memory management?","Change direction if allocation stalls, safepoint delays, native-memory pressure or retained-heap trends line up in time with p99 spikes."],["Q099",19,"Would you choose G1 or ZGC for a large Java API?","Choose G1 or ZGC by testing the same large Java API, memory/CPU budget and customer SLO.","Constraint: measured p99 and error objective\nBudget: fixed CPU and charged-memory limit\nCompare: equivalent workload and deployment\nDecision: evidence, tradeoff and rollback plan","Start with the service's tail-latency and resource objectives, exact runtime and allocation/live-set profile. Benchmark both where supported, measuring successful throughput, stalls, memory and CPU. Choose the configuration that meets the full objective within the deployment budget. Why it matters: Large heap size alone does not establish a winner.","Collector-specific claims about pause goals are not an application SLA.","What result would make you keep G1 despite shorter ZGC pauses?","Keep G1 if ZGC uses too much CPU/memory, reduces throughput, causes allocation stalls or does not meaningfully improve user p99."],["Q100",19,"How do you present a credible performance improvement?","A credible speedup has a controlled baseline, clear mechanism, repeatable measurements and safe rollout.","Problem -> evidence -> hypothesis -> controlled repair\nResult -> latency, useful throughput, CPU and memory\nLimits -> workload, runtime, environment and duration\nconclusion.","Describe the initial symptom, measured bottleneck, controlled change, representative test and before/after results with uncertainty. Include errors, resource cost and operational limits. Distinguish a local demonstration from production validation. Why it matters: A trustworthy report lets another engineer reproduce or challenge the","'Changed five flags and it is faster' cannot identify cause or regression risk.","How would you prove the improvement survives peak traffic and a dependency slowdown?","Repeat under peak and degraded dependencies, report percentile latency, errors, throughput, CPU/RSS and rollback evidence, not just average speed."]],"labs":[["HANDS-ON EXERCISE 01 / 10 — L01. Inspect the actual runtime and effective","ergonomics Inspect first; do not assume the collector from a remembered JDK default. TEST SCRIPT PRESERVED FROM SOURCE set -euo pipefail","Inspect first; do not assume the collector from a remembered JDK default.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njava -version\njava -XX:+PrintCommandLineFlags -version\njava -XshowSettings:vm -version"],["HANDS-ON EXERCISE 02 / 10 — L02. Observe loading versus initialization","The constant expression can be embedded in the caller. Static initialization is not triggered by every class reference. TEST SCRIPT PRESERVED FROM SOURCE set -euo pipefail","by every class reference.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes InitDemo.java\njava -cp classes InitDemo\nExpected observation: PASS confirms no initialization during the false-initialize"],["HANDS-ON EXERCISE 03 / 10 — L03. Generate a bounded G1 GC log","The loop is an allocation demonstration, not JMH or a service-capacity benchmark. Work and timing vary by runtime and environment. TEST SCRIPT PRESERVED FROM SOURCE set -euo pipefail","and timing vary by runtime and environment.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes GcLoad.java\njava -Xms32m -Xmx32m -XX:+UseG1GC \\\n'-Xlog:gc*:file=g1.log:uptime,level,tags' \\"],["HANDS-ON EXERCISE 04 / 10 — L04. Run the same allocation source with available","collectors Java 17 ZGC here is non-generational. Elapsed values from one short loop do not rank collectors for production. TEST SCRIPT PRESERVED FROM SOURCE","Java 17 ZGC here is non-generational. Elapsed values from one short loop do not rank\ncollectors for production.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes GcLoad.java\nfor collector in Serial Parallel Z; do"],["HANDS-ON EXERCISE 05 / 10 — L05. Create and read a JFR recording through its","API This verifies custom recording and reading, not that a CPU profile explains a real application bottleneck. TEST SCRIPT PRESERVED FROM SOURCE","This verifies custom recording and reading, not that a CPU profile explains a real\napplication bottleneck.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes JfrDemo.java\njava -cp classes JfrDemo"],["HANDS-ON EXERCISE 06 / 10 — L06. Verify ThreadLocal cleanup on a reused","worker Do not infer automatic context propagation to asynchronous tasks. Scope and ownership must be designed separately. TEST SCRIPT PRESERVED FROM SOURCE","Do not infer automatic context propagation to asynchronous tasks. Scope and ownership\nmust be designed separately.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes ThreadLocalDemo.java\njava -cp classes ThreadLocalDemo"],["HANDS-ON EXERCISE 07 / 10 — L07. Detect an intentionally isolated deadlock","This is an isolated toy child process. It illustrates detection, not recovery of a real service deadlock. TEST SCRIPT PRESERVED FROM SOURCE set -euo pipefail","deadlock.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes DeadlockDemo.java\njava -Xmx64m -cp classes DeadlockDemo\nExpected observation: PASS confirms ThreadMXBean detects the two intentionally"],["HANDS-ON EXERCISE 08 / 10 — L08. Compare bounded and unbounded retention","policies Entry count is not a byte budget when value sizes differ. Both graphs are intentionally small and do not prove heap-dump leak analysis. TEST SCRIPT PRESERVED FROM SOURCE","Entry count is not a byte budget when value sizes differ. Both graphs are intentionally\nsmall and do not prove heap-dump leak analysis.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes RetentionDemo.java\njava -Xmx64m -cp classes RetentionDemo"],["HANDS-ON EXERCISE 09 / 10 — L09. Reproduce heap exhaustion in a small child","process Catching this expected error is only for demonstration. Continuing a production JVM after memory exhaustion is not presented as a general recovery policy. TEST SCRIPT PRESERVED FROM SOURCE","Catching this expected error is only for demonstration. Continuing a production JVM after\nmemory exhaustion is not presented as a general recovery policy.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\njavac --release 17 -d classes OomDemo.java\njava -Xms16m -Xmx16m -XX:+UseSerialGC \\"],["HANDS-ON EXERCISE 10 / 10 — L10. Calculate pause fraction and a memory","estimate Concurrent cycle durations must not be counted as stopped time. Estimated memory categories are not a perfect additive RSS model. TEST SCRIPT PRESERVED FROM SOURCE","Concurrent cycle durations must not be counted as stopped time. Estimated memory\ncategories are not a perfect additive RSS model.\nTEST SCRIPT PRESERVED FROM SOURCE\nset -euo pipefail\npython3 - <<'PY'\npauses_ms = [8, 12, 10, 20]"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

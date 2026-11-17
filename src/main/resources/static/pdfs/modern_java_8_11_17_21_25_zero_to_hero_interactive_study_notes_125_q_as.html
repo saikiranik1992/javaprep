@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Java (8 · 11 · 17 · 21 · 25) — Zero to Hero Interactive Study Notes (125 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #2563eb;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Modern Java (8 · 11 · 17 · 21 · 25)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              25 Chapters · 125 Q&amp;As · 20 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Version-by-Version Interview Notes · Java 8 to Java 25 LTS
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (25)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (125)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (20)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 125</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Core Java</span>
+              <span>•</span>
+              <span>179 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Modern Java (8 · 11 · 17 · 21 · 25) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Version-by-Version Interview Notes (Java 8 to Java 25 LTS). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 125 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">125</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (25)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 25 Chapters (125 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Modern Java (8 · 11 · 17 · 21 · 25)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 125</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Modern Java (8 · 11 · 17 · 21 · 25) — Hands-On Labs &amp; Reference Guides (20)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Modern Java (8 · 11 · 17 · 21 · 25).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Modern Java (8 · 11 · 17 · 21 · 25) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"java-versions","title":"Modern Java (8 · 11 · 17 · 21 · 25)","subtitle":"Version-by-Version Interview Notes","category":"Core Java","badge":"Java 8 to Java 25 LTS","color":"#2563eb","pages":179,"chapters":["Java 8: Lambdas And Target Typing","Java 8: Interface Evolution And Functional Contracts","Java 8: Stream Pipelines And Execution","Java 8: Collectors And Optional","Java 8: Time, Futures And Collection Operations","Java 8: Collections And Runtime Foundations","Java 11: Type Inference And Collection Evolution","Java 11: Standard Http Client","Java 11: Text, Files And Launch Conveniences","Java 11: Modules, Removal And Diagnostics","Java 17: Records And Value-Oriented Modeling","Java 17: Sealed Hierarchies And Instanceof Patterns","Java 17: Switch Expressions And Text Blocks","Java 17: Encapsulation And Runtime Changes","Java 21: Virtual-Thread Fundamentals","Java 21: Resources, Pinning And Cancellation","Java 21: Record Patterns And Pattern Switch","Java 21: Sequenced Collections","Java 21: Preview Boundaries And Runtime Additions","Java 25: Permanent Language Changes","Java 25: Scoped Context And Stable Values","Java 25: Inherited Apis And New Security Apis","Java 25: Runtime, Observability And Incubators","Migration: Build Targets And Release Discipline","Senior Interviews: Choose Features From Guarantees"],"questions":[["Q001",0,"What problem does a lambda solve?","A lambda supplies behavior for a compatible functional-interface target without declaring a separate implementation class.","Predicate<String> longName = s -> s.length() > 4;\nSystem.out.println(longName.test(\"Meena\")); // true","The target declares the parameter and result contract. The lambda evaluates the length predicate when test is invoked; defining it does not process any input. It is useful when the varying part of an operation is behavior.","A lambda is not an untyped method that fits every interface.","Where does the compiler learn the parameter type?","The functional interface supplies the target type. For Predicate<String>, the lambda parameter is a String and its result must be boolean."],["Q002",0,"What is a functional interface?","It has one abstract method after the language's inheritance/Object- method rules are applied; default and static methods do not add abstract operations.","@FunctionalInterface\ninterface PriceRule { int price(int base); }\nPriceRule plusTax = base -> base + 10;","The annotation asks the compiler to validate the contract; an interface can still be functional without it. Inherited compatible declarations can represent one abstract operation. Adding another unrelated abstract method breaks lambda compatibility.","Counting every declared method gives the wrong answer.","Can a functional interface have default methods?","Yes. It may contain any number of default and static methods, but only one abstract operation under the functional-interface rules."],["Q003",0,"Why must captured local variables be effectively final?","The local's binding must not change after initialization, making it safe to capture its value rather than a changing local stack slot.","int fee = 10;\nIntUnaryOperator total = base -> base + fee;\n// fee++; // compilation error when captured","Effectively final means no reassignment is needed to obtain the final rule. A captured reference can still point to mutable state: final does not make the object immutable or thread safe. Fields follow different access rules.","Mutating a captured list is permitted but can still be unsafe.","What changes if fee is an instance field?","An instance field is read through the object and may change after lambda creation. It does not need to be effectively final, but concurrent access needs proper synchronization."],["Q004",0,"How is this inside a lambda different from an anonymous class?","A lambda uses this from its enclosing context; an anonymous class has its own this.","class Demo {\nRunnable job() { return () -> System.out.println(this.getClass()); }\n}","The lambda's this refers to the Demo instance. Replacing an anonymous class mechanically can change name resolution and object identity assumptions. A lambda in a static context cannot invent an enclosing instance.","Lambdas are not simply anonymous classes with identical scope rules.","Can this be used in a static method's lambda?","Not as an unqualified enclosing-instance reference: a static method has no this. The lambda may use an explicit object reference instead."],["Q005",0,"How do method references relate to lambdas?","A method reference supplies compatible behavior through a named method or constructor, with adaptation governed by the target type.","Function<String,Integer> parse = Integer::parseInt;\nFunction<String,Integer> length = String::length;\nSupplier<List<String>> create = ArrayList::new;","parse targets a static method; length invokes an instance method on the supplied receiver; create invokes a constructor. A bound reference such as service::run captures a particular receiver. Overloaded methods may need an explicit target type.","A method reference does not call the method when it is declared.","How does an unbound instance reference supply its receiver?","For String::length, the function's first input is the String receiver; Function<String,Integer> passes that receiver to length()."],["Q006",1,"PRESERVED Q006 Why were default methods added to interfaces?","They support interface evolution by providing an implementation that existing implementors can inherit under explicit conflict rules.","interface Named {\ndefault String label() { return \"unknown\"; }\n}","A new default can avoid forcing every implementor to add a method immediately. It does not provide ordinary instance fields or constructor state like an abstract class. Behavioral compatibility still requires review.","A default method is not a guarantee of safe API evolution.","Why can an abstract class still be useful?","An abstract class can hold instance fields, initialize them in constructors and share protected implementation state. An interface does not replace those capabilities."],["Q007",1,"PRESERVED Q007 How do conflicting default methods get resolved?","A class method takes priority, more-specific interface rules apply, and unrelated competing defaults generally require an explicit override.","interface A { default String name() { return \"A\"; } }\ninterface B { default String name() { return \"B\"; } }\nclass Both implements A, B {\npublic String name() { return A.super.name(); }\n}","Both resolves the unrelated defaults explicitly. The qualified super call selects A's implementation. Class hierarchy and abstract declarations also affect inheritance, so do not reduce every case to an arbitrary interface order.","The first interface in implements does not automatically win.","What if a superclass defines a concrete name method?","The superclass's concrete name() wins over inherited interface defaults, unless the class deliberately overrides it."],["Q008",1,"PRESERVED Q008 Are static interface methods inherited like defaults?","No. A static interface method belongs to its declaring interface and is normally invoked through that interface name.","interface Codes {\nstatic boolean valid(String s) { return s != null; }\n}\nboolean ok = Codes.valid(\"X\");","Default methods are instance behavior; static methods are interface-owned utilities. Implementing Codes does not turn valid into an inherited instance method. Java 9 additionally allows private interface helpers.","Java 8 does not allow private interface methods.","When would a private helper reduce repeated default-method code?","Use a private interface helper, available since Java 9, when several default methods share logic that should not be exposed as public API."],["Q009",1,"PRESERVED Q009 How do Predicate, Function, Consumer and Supplier differ?","They express Boolean testing, transformation, side-effect consumption and value production respectively.","Predicate<String> present = s -> !s.isEmpty();\nFunction<String,Integer> size = String::length;\nConsumer<String> log = System.out::println;\nSupplier<String> token = () -> \"sample\";","Choose the contract by inputs and outputs instead of treating all lambdas as interchangeable. UnaryOperator specializes a same-type transformation; primitive specializations can reduce boxing. Side effects still need a concurrency policy.","Consumer returning void does not make its effects harmless.","Which interface models int-to-int computation without boxing?","Use IntUnaryOperator: it accepts an int and produces an int without wrapping each primitive in an Integer."],["Q010",1,"PRESERVED Q010 How do functional composition and checked exceptions interact?","Composition combines compatible contracts; checked exceptions still must match the functional method's declared throws clause.","Function<String,String> trim = String::trim;\nFunction<String,Integer> size = String::length;\nFunction<String,Integer> result = trim.andThen(size);\n// Function<Path,List<String>> read = Files::readAllLines;\n// Invalid: Function.apply does not declare IOException.","andThen applies trim then size; compose reverses which operation runs first. Standard Function.apply does not declare checked exceptions, so an I/O lambda needs an explicit error strategy or a suitable custom interface. The commented method reference uses a Java 8 API but intentionally fails the checked-exception contract.","Wrapping every failure as an unchecked exception can hide a poor contract.","How would you represent a checked I/O operation cleanly?","Define a ThrowingFunction<T,R> whose abstract method declares throws IOException, or catch and translate the checked exception at a clear boundary."],["Q011",2,"How does a stream differ from a collection?","A collection stores elements; a stream describes a pipeline over a source and is normally consumed by one terminal operation.","List<Integer> values = Arrays.asList(1,2,3);\nStream<Integer> pipeline = values.stream().filter(n -> n > 1);\nSystem.out.println(pipeline.count()); // 2","The list remains available after the stream is consumed. Intermediate operations are generally lazy, so terminal consumption drives the work. Reusing the same stream for another terminal operation is invalid.","A stream is not a reusable collection wrapper.","How would you run a second independent calculation?","Call values.stream() again to create a new pipeline. A previously consumed stream cannot be restarted."],["Q012",2,"What is the difference between map and flatMap?","map transforms each element into one result; flatMap transforms each element into a stream and flattens the nested results.","List<List<Integer>> groups = Arrays.asList(\nArrays.asList(1,2), Arrays.asList(3));\nList<Integer> flat = groups.stream().flatMap(List::stream)\n.collect(Collectors.toList()); // [1, 2, 3]","Mapping List::stream alone produces a stream of streams. Flattening is useful for nested relationships, but it does not automatically remove duplicates or null inputs. Primitive flatMap variants exist for primitive streams.","flatMap does not mean distinct.","What happens if one group is null?","List::stream throws for a null group. First choose a policy, such as filter(Objects::nonNull) or reject null groups explicitly."],["Q013",2,"How do short-circuiting operations change work?","They can stop when the result is known, provided the surrounding pipeline and source permit termination.","boolean found = Stream.of(1,2,3,4).anyMatch(n -> n == 2);\nint first = IntStream.iterate(1, n -> n + 1).limit(3).sum(); // 6","anyMatch can stop at a matching value, and limit can bound an otherwise unbounded source. Stateful operations such as sorting can require more upstream work. Empty anyMatch is false; empty allMatch is true.","A short-circuit terminal does not make every infinite pipeline terminate.","Why is sorting an unbounded stream problematic?","sorted() must see the complete input to determine global order. For an infinite stream, it may never produce its first result."],["Q014",2,"When is reduce valid?","The reduction operation must respect its identity and associativity contracts, especially if partial results can be combined.","int sum = IntStream.of(1,2,3).reduce(0, Integer::sum); // 6\n// Subtraction is not an associative replacement for addition.","Different parallel grouping can expose an invalid accumulator. For mutable result containers, use a properly designed collect operation rather than sharing one mutable reduce identity. Floating-point addition also has numerical-order effects.","A sequentially plausible reduce can be wrong in parallel.","What identity belongs to multiplication?","Multiplication uses identity 1, because 1 * x = x. The multiplication operator must also be associative for safe regrouping."],["Q015",2,"When should you avoid parallel streams?","Avoid them when workload size, blocking, shared state, ordering cost or executor interaction makes parallel overhead and contention worse.","// Unsafe shared accumulator:\nList<Integer> out = new ArrayList<>();\nvalues.parallelStream().forEach(out::add);","ArrayList is not a concurrent accumulator; use a valid collection reduction instead. Parallel streams commonly use shared fork/join facilities, which can interact poorly with blocking calls. Measure representative work and preserve semantics.","Parallel does not guarantee faster, ordered or isolated execution.","How would you verify correctness and performance separately?","Assert sequential and parallel results match across representative data, then benchmark with realistic workload sizes and no shared mutable accumulator."],["Q016",3,"How do groupingBy and partitioningBy differ?","groupingBy uses arbitrary classifier keys; partitioningBy uses a Boolean predicate to split the input into true/false partitions.","Map<Integer,List<String>> byLength = Stream.of(\"Sai\",\"Ravi\",\"Meena\")\n.collect(Collectors.groupingBy(String::length));\nMap<Boolean,List<String>> split = Stream.of(\"Sai\",\"Meena\")\n.collect(Collectors.partitioningBy(s -> s.length() > 3));","The first groups by lengths 3, 4 and 5. The second exposes the two Boolean partitions. Downstream collectors can count or summarize instead of storing each group's rows. Map iteration order depends on the chosen map contract.","A default grouped map does not promise sorted keys.","How do you request a TreeMap result?","Use the overload groupingBy(classifier, TreeMap::new, downstream) to request sorted classifier keys."],["Q017",3,"What happens when toMap encounters duplicate keys?","The basic toMap collector throws on duplicate keys; choose an explicit merge function when duplicates have a valid domain meaning.","Map<String,Integer> totals = Stream.of(\"A\",\"A\",\"B\")\n.collect(Collectors.toMap(Function.identity(), s -> 1, Integer::sum));\n// A=2, B=1; display order is unspecified.","The merge resolves conflicting values for the same key. Keeping first/last is a business decision and depends on defined ordering where relevant. Do not use a merge merely to hide unexpected duplicates.","A collector's map is not guaranteed to have your preferred implementation.","How would you preserve encounter order in the map?","Use toMap(keyMapper, valueMapper, mergeFunction, LinkedHashMap::new) on an ordered source to retain encounter order."],["Q018",3,"Does Collectors.toList guarantee an ArrayList or immutability?","No. Its contract does not promise a particular list type or mutability; request the needed behavior explicitly.","List<String> mutable = Stream.of(\"A\",\"B\")\n.collect(Collectors.toCollection(ArrayList::new));","The explicit supplier gives a mutable ArrayList here. Java 16 Stream.toList instead returns an unmodifiable list. These are different contracts, even if a current implementation happens to resemble one another.","Do not cast a collected list based on observed implementation.","Which choice works on Java 8 when mutation is required?","Use Collectors.toCollection(ArrayList::new) to request a mutable ArrayList on Java 8."],["Q019",3,"What is Optional intended to communicate?","It represents a possibly absent result through a value-based container rather than forcing an unchecked null assumption.","Optional<String> name = Optional.ofNullable(null);\nString display = name.map(String::trim).orElse(\"unknown\");","Use the API to transform and handle absence. Optional.of rejects null; ofNullable accepts it as empty. An Optional variable itself should not be null. It is not a blanket replacement for every field, parameter or framework mapping.","Calling get without a presence contract reintroduces failure.","When is an explicit result/error type more expressive?","When failures have distinct meanings, use an explicit outcome such as Success, NotFound or Failure, rather than collapsing everything into absence."],["Q020",3,"How do orElse and orElseGet differ?","orElse evaluates its argument eagerly; orElseGet invokes its supplier only when the Optional is empty.","String a = Optional.of(\"saved\").orElse(expensiveDefault());\nString b = Optional.of(\"saved\").orElseGet(() -> expensiveDefault());","Both return saved, but only the first necessarily calls expensiveDefault while evaluating the method argument. Side effects and cost can therefore differ. The supplier must still have a clear failure and null contract.","Eager default evaluation can perform an unwanted remote call.","How would you demonstrate the call count in a test?","Increment an AtomicInteger inside expensiveDefault(). orElse() increments even with a present value; orElseGet() does not."],["Q021",4,"How do Instant, LocalDateTime and ZonedDateTime differ?","Instant identifies a point on the timeline; LocalDateTime has no zone/ offset; ZonedDateTime combines local time with zone rules.","Instant event = Instant.parse(\"2026-01-01T00:00:00Z\");\nZonedDateTime local = event.atZone(ZoneId.of(\"Asia/Kolkata\"));\n// 2026-01-01T05:30+05:30[Asia/Kolkata]","Choose a type from whether the domain models an instant, civil time or calendar date. A local date- time can be ambiguous or nonexistent around daylight-saving transitions in some zones. Most java.time types are immutable.","Adding a zone after the fact cannot recover an unstated original meaning.","Which type fits a birthday?","Use LocalDate. A birthday is a calendar date, not an instant or a time tied to a particular zone."],["Q022",4,"How do thenApply and thenCompose differ?","thenApply transforms a completed value; thenCompose flattens an asynchronous operation that itself returns a stage.","CompletableFuture<Integer> base = CompletableFuture.completedFuture(10);\nCompletableFuture<Integer> doubled = base.thenApply(n -> n * 2);\nCompletableFuture<Integer> flat = base.thenCompose(\nn -> CompletableFuture.completedFuture(n + 1));","Mapping to a future with thenApply gives a nested future; composing gives one completion chain. This resembles map/flatMap but includes completion and failure propagation. Neither method alone selects a dedicated worker thread.","Chaining async-shaped values is not proof of asynchronous execution.","What changes with thenApplyAsync and an explicit executor?","thenApplyAsync(fn, executor) schedules the transformation using the supplied executor instead of relying on normal dependent-stage execution behavior."],["Q023",4,"How do CompletableFuture exception handlers differ?","exceptionally provides a fallback for failure; handle sees success/failure and can transform; whenComplete observes both without normally replacing the result.","CompletableFuture<Integer> result = CompletableFuture\n.supplyAsync(() -> 10 / 0)\n.exceptionally(ex -> -1);","The failed computation is recovered as -1 here. Observer actions can themselves throw, affecting the dependent stage. get and join expose exceptions differently, so define the boundary rather than swallowing all errors.","An arbitrary fallback can turn a real failure into misleading success.","When should the original failure propagate?","Propagate failures when returning a fallback would mislead the caller, such as a payment authorization error or corrupted response."],["Q024",4,"Do timeouts and cancellation guarantee background work stops?","No. A completion result and the underlying operation's lifecycle are separate; cancellation/interruption behavior depends on the task and API.","CompletableFuture<String> task = new CompletableFuture<>();\ntask.cancel(true);\n// CompletableFuture cancellation does not use interruption to stop a computation.","Java 8 has no orTimeout; that arrives in Java 9. Even later timeout completion does not automatically undo a side effect or stop an unrelated socket operation. Use an operation-level deadline and cooperative cancellation where supported.","A timeout does not prove a payment was never sent.","Who owns the executor and underlying client request?","The application must own the executor and HTTP client lifecycle. Set client deadlines and explicitly cancel/close supported in-flight operations on request abandonment."],["Q025",4,"What do removeIf, computeIfAbsent and LongAdder add?","They express conditional collection mutation, key-based value initialization and contended additive counting, with implementation-specific concurrency contracts.","Map<String,List<Integer>> groups = new HashMap<>();\ngroups.computeIfAbsent(\"A\", k -> new ArrayList<>()).add(1);","HashMap is still not thread safe. ConcurrentHashMap provides stronger per-operation rules, but a stored ArrayList remains mutable and unsafe to append concurrently. LongAdder.sum is not a linearizable snapshot suitable for every invariant.","A concurrent map does not make its values concurrent.","Which counter contract does a strict inventory limit need?","A strict inventory limit needs an atomic check-and-update of the invariant, commonly a database conditional update or transaction; LongAdder.sum() is not enough."],["Q026",5,"What changed in HashMap collision handling in Java 8?","OpenJDK can use balanced tree bins for heavily colliding buckets, subject to its implementation thresholds and conditions.","OpenJDK threshold constants include:\nTREEIFY_THRESHOLD = 8; MIN_TREEIFY_CAPACITY = 64\nSmall tables can resize rather than treeify.","These constants describe an implementation, not a portable Map API contract or an exact trigger for every insertion path. Good hash distribution and stable key equality remain important; tree bins do not justify deliberate collisions.","Saying every eighth insertion becomes a tree ignores capacity and code path.","Why does a poor hash function still matter?","Collisions waste lookup and update work and can skew buckets. Tree bins mitigate some worst cases but do not replace a sound hash function."],["Q027",5,"Why are mutable HashMap keys dangerous?","Changing fields used by equals/hashCode after insertion can make lookup inconsistent with the bucket chosen at insertion.","Map<Key,String> map = new HashMap<>();\nKey key = new Key(1); map.put(key,\"saved\");\nkey.id = 2; // if id determines hashCode/equals, lookup can fail","The map does not automatically relocate the entry when the key changes. A final reference to the key does not freeze its contents. Use stable immutable identity fields and consistent equals/ hashCode.","A record containing a mutable component can still be a problematic key.","What does the equals/hashCode contract require?","Equal keys must have equal hashes; equality must be reflexive, symmetric, transitive and consistent while keys are stored. Changing identity fields violates the stable-lookup assumption."],["Q028",5,"How do ConcurrentHashMap compound operations differ from a precheck?","Its supported atomic per-key operations coordinate certain updates, while separate get/put steps leave a race.","ConcurrentHashMap<String,Integer> counts = new ConcurrentHashMap<>();\ncounts.merge(\"A\",1,Integer::sum);","merge combines a key's mapping atomically under its contract; this does not create a transaction across several keys. Mapping functions should be short and follow update restrictions. Null keys/ values are not supported.","Thread-safe individual methods do not make arbitrary multi-step code atomic.","How would you enforce an invariant across two balances?","Use a transaction or another coordinated atomic mechanism protecting both balances, with invariant checks and concurrent tests; per-key merge is insufficient."],["Q029",5,"How did class metadata storage change in HotSpot Java 8?","HotSpot replaced PermGen with native-memory Metaspace for class metadata; Java objects still occupy managed heap storage.","Heap: ordinary object allocation\nMetaspace: class metadata; grows subject to configuration/resources","Removing PermGen did not remove memory limits or class-loader leaks. A process can run out of native memory, metadata space or heap for different reasons. Class unloading and loader reachability matter.","Metaspace is not an unlimited part of the Java heap.","What evidence distinguishes a heap leak from loader growth?","Heap dumps and live-object growth suggest heap issues. Rising loaded-class/class-loader counts, metaspace and native memory point toward loader retention."],["Q030",5,"What does Java portability actually guarantee?","Bytecode and standard APIs can run on a compatible JVM implementation, but version, native dependencies and environmental assumptions still matter.","Java 8 class-file major version: 52\nJava 11: 55; Java 17: 61; Java 21: 65; Java 25: 69","A newer runtime generally supports older ordinary class files, subject to removed APIs and behavior changes. An older runtime cannot load a newer class-file version. OS-specific paths, JNI libraries and external encodings can break a supposedly portable application.","Running on a newer JDK does not automatically upgrade an application's language syntax.","How do source, bytecode and API targets differ?","-source controls syntax, -target class-file format, and --release constrains syntax, bytecode and public JDK APIs to the requested version."],["Q031",6,"Is var a Java 11 feature and does it mean dynamic typing?","Local-variable var was finalized in Java 10 and is available in 11; the compiler infers a static type from the initializer.","var count = 10; // int, not Object\n// count = \"ten\"; // compilation error","It reduces repeated local type names without changing runtime type checking. It is not allowed for ordinary fields, return types or uninitialized locals. A lambda initializer without a target type is also insufficient.","var is not a runtime union of arbitrary types.","What type is inferred by var items = new ArrayList<>()?","With var items = new ArrayList<>(), targetless diamond inference usually yields ArrayList<Object>, not ArrayList<String>."],["Q032",6,"What did Java 11 add to lambda parameter declarations?","It permits var syntax for lambda parameters, useful when annotations are needed without spelling parameter types.","BiFunction<String,String,String> join = (var a, var b) -> a + b;\n// (var a, b) -> ... is invalid mixing of parameter styles.","The target still determines actual types. Parameters must consistently use an allowed style; var does not allow ordinary modifiers/types to be mixed arbitrarily. An annotation such as a nullability marker still relies on its own tools/contracts.","var annotations do not change lambda target typing.","Why would you annotate an inferred parameter?","Annotations on (var input) can express nullability or other parameter metadata while the functional target still supplies the inferred type."],["Q033",6,"How do List.of and Arrays.asList differ?","List.of, added in Java 9, creates an unmodifiable list and rejects nulls; Arrays.asList creates a fixed-size list backed by the supplied array.","List<String> fixed = Arrays.asList(\"A\",\"B\");\nfixed.set(0,\"X\"); // allowed\nList<String> readOnly = List.of(\"A\",\"B\");\n// readOnly.set(0,\"X\"); // UnsupportedOperationException","Fixed-size and unmodifiable are different contracts. Neither guarantees that referenced elements are deeply immutable. Set.of rejects duplicates; Map.of rejects duplicate keys as well as nulls.","An unmodifiable collection can contain mutable objects.","How does mutation of the original array affect Arrays.asList?","Arrays.asList(array) is backed by the array: changing an array element changes the corresponding list element, and vice versa through set."],["Q034",6,"How does List.copyOf differ from an unmodifiable view?","List.copyOf, added in Java 10, gives an unmodifiable structural snapshot; Collections.unmodifiableList wraps a live backing list.","List<String> source = new ArrayList<>(List.of(\"A\"));\nList<String> view = Collections.unmodifiableList(source);\nList<String> snapshot = List.copyOf(source);\nsource.add(\"B\"); // view=[A,B], snapshot=[A]","copyOf may reuse a suitable unmodifiable input rather than allocate a new object. It rejects null elements and does not deep-copy them. The important guarantee is structural isolation from later changes to a mutable source.","Identity comparison is not the right copyOf contract test.","What if the list contains mutable Address objects?","List.copyOf copies the collection structure, not each Address. Mutating an Address object can remain visible through the snapshot."],["Q035",6,"What changed in stream/Optional APIs between Java 8 and 11?","Java 9 adds takeWhile, dropWhile, ofNullable and Optional.stream/or; Java 11 adds Optional.isEmpty.","List<Integer> prefix = Stream.of(2,4,1,6).takeWhile(n -> n % 2 == 0)\n.collect(Collectors.toList()); // [2, 4]\nlong count = Stream.of(Optional.of(\"A\"), Optional.<String>empty())\n.flatMap(Optional::stream).count(); // 1","takeWhile on an ordered stream takes the matching prefix; filter would retain the later 6 too. Prefix meaning requires encounter order. Optional.stream converts presence to a zero/one-element stream without unguarded get.","takeWhile is not another name for filter.","What remains after dropWhile on the example?","dropWhile removes only the initial run satisfying the predicate; once the first failing element appears, all later elements remain, even if they also satisfy it."],["Q036",7,"What does the Java 11 HttpClient provide?","It provides immutable reusable HTTP clients with synchronous/ asynchronous requests, HTTP/2 support and WebSocket facilities.","HttpClient client = HttpClient.newBuilder()\n.connectTimeout(Duration.ofSeconds(2)).build();","Reuse an appropriately configured client rather than recreate it per request. A client is immutable; its builder and request-building lifecycle are separate. Protocol negotiation and proxy/TLS settings affect the actual request.","Requesting HTTP/2 does not guarantee every peer connection uses it.","Where do you configure redirects and proxy behavior?","Configure redirect handling and any proxy on HttpClient.Builder; inspect the client's policies rather than treating them as per-request defaults."],["Q037",7,"How do send and sendAsync differ?","send waits for a response and reports checked failures; sendAsync returns a CompletableFuture for asynchronous response completion.","HttpRequest request = HttpRequest.newBuilder(\nURI.create(\"https://example.invalid/api\")).build();\nCompletableFuture<HttpResponse<String>> pending =\nclient.sendAsync(request, HttpResponse.BodyHandlers.ofString());","The placeholder endpoint is illustrative and is not called by the labs. The future does not imply unlimited capacity or automatic retries. send interruption and asynchronous cancellation require a deliberate lifecycle policy.","Calling join immediately after sendAsync can block the caller again.","When is asynchronous composition valuable?","Use sendAsync to compose multiple independent calls without blocking one thread per wait, especially when throughput is dominated by network latency."],["Q038",7,"How do connect timeout and request timeout differ?","Connect timeout applies to establishing a connection when needed; a request timeout bounds the request under the client's documented behavior.","HttpRequest request = HttpRequest.newBuilder(uri)\n.timeout(Duration.ofSeconds(3)).GET().build();","An existing connection can mean no new connection establishment is needed. End-to-end application budgets must also cover queueing, response processing and downstream work. Cancellation of a timed-out response does not prove a remote write was undone.","One timeout property does not define every phase of an API deadline.","How do you handle an unknown payment outcome?","A timed-out payment may already have completed remotely. Keep an idempotency key, query status or reconcile before trying again."],["Q039",7,"Does a 404 or 500 automatically become an exception?","HTTP error status is normally still an HTTP response; application code must interpret status and body according to its contract.","HttpResponse<String> response = client.send(request,\nHttpResponse.BodyHandlers.ofString());\nif (response.statusCode() >= 400) { /* map the domain outcome */ }","Transport/TLS/I/O failures differ from HTTP rejection responses. ofString does not itself validate JSON or turn every error status into a failed future. Preserve error details without leaking secrets or unbounded bodies.","A successfully completed future can contain a 500 response.","Which failures are safe to retry?","Retry transient transport/server failures only when the operation is safely repeatable or protected by idempotency. A 4xx response is not automatically retriable."],["Q040",7,"How should HTTP response bodies and retries be designed?","Select a bounded body strategy and an explicit idempotency/deadline policy; the client API is not a complete resilience architecture.","BodyHandlers.ofString(): aggregate body in memory\nBodyHandlers.ofInputStream(): caller must consume/close the stream","Large bodies can exhaust memory. Resource ownership differs by handler, and every retry adds latency/load. Retry only chosen failures within a budget and preserve stable identity for nontrivial writes.","Retrying every POST after timeout can duplicate effects.","When would streaming or a file body handler fit?","Use a streaming body handler or BodyHandlers.ofFile for large responses that should not all be buffered in memory; close consumed streams as required."],["Q041",8,"How do isBlank, strip and trim differ?","isBlank tests for an empty/whitespace-only string; strip uses Character.isWhitespace rules, while trim uses its older character-bound rule.","String text = \"\\u2003Sai\\u2003\"; // EM SPACE\nSystem.out.println(text.strip()); // Sai\nSystem.out.println(\"  \".isBlank()); // true","strip can remove characters that trim leaves. Neither means every character a user visually interprets as spacing is handled identically; normalization requirements should be explicit. Strings remain immutable.","isBlank is not the same as isEmpty.","How would you handle null before calling these methods?","Check null explicitly or normalize through Optional.ofNullable(value) before calling strip, trim or isBlank; those instance methods do not accept a null receiver."],["Q042",8,"What do lines and repeat do?","lines lazily exposes line-delimited strings; repeat constructs repeated content with an explicit repeat count.","List<String> lines = \"A\\nB\\n\".lines().collect(Collectors.toList());\nString marks = \"-\".repeat(3); // ---","The trailing line terminator does not create an extra empty terminal line in lines. Negative repeat counts are invalid, and large repeated strings need memory. Review recognized line terminators instead of assuming every Unicode separator is a newline.","Repeating user-controlled huge counts can allocate huge strings.","How would you bound input size?","Cap bytes/chars or lines while reading, use bounded limit where appropriate and reject oversized inputs early rather than collecting unlimited content."],["Q043",8,"What did Files.readString, writeString and Path.of add?","Java 11 provides convenient text-file operations and a Path factory; default text encoding for these Files methods is UTF-8.","Path file = Path.of(\"notes.txt\");\nFiles.writeString(file,\"Hello\\n\",StandardCharsets.UTF_8);\nString content = Files.readString(file,StandardCharsets.UTF_8);","These whole-content conveniences are unsuitable for arbitrarily large files. Default write options can create or truncate a file; choose options deliberately. Exceptions and path/resource policies remain application responsibilities.","Default text convenience does not make every platform charset UTF-8 in Java 11.","What changes with a streaming reader?","A streaming reader processes chunks and can bound memory. Files.readString loads the entire file into a single String."],["Q044",8,"How does launching a single source file work in Java 11?","The java launcher can compile and run a supported source-file program directly, avoiding a separate visible javac step.","// Hello.java still contains a class in this Java 11 example.\npublic class Hello {\npublic static void main(String[] args) { System.out.println(\"Hi\"); }\n}\n// Command: java Hello.java","This is a launch convenience, not Java 25 compact-source syntax. Do not assume it replaces a project build with dependencies, annotation processing and packaged artifacts. Later launch capabilities extend the model.","Omitting the class declaration is not permanent Java 11 syntax.","How is source-file launch different from --release compilation?","Source-file launch compiles and runs a .java source in one launcher step; --release creates compatible class files and API constraints for deployment."],["Q045",8,"What are nestmates and why do interviewers mention them?","Java 11 nest-based access control lets related nested classes access private members through JVM-supported nest membership.","class Outer {\nprivate int secret = 7;\nclass Inner { int read() { return secret; } }\n}","The source-level private access already existed; Java 11 improves how compilers/JVMs represent it without relying on some synthetic access bridges. It is not a new rule allowing arbitrary unrelated classes to read private state.","Bytecode evolution is not always a new source-language capability.","What does javap reveal about compiled nesting?","javap -v can reveal NestHost and NestMembers attributes describing nested classes' JVM access relationship."],["Q046",9,"How do classpath and module path differ?","The classpath follows the unnamed-module model; the module path resolves named modules with declared readability and exported packages.","module com.example.app {\nrequires java.net.http;\nexports com.example.api;\n}","requires declares dependence/readability, while exports exposes an API package. Module names are not merely package names. Automatic modules and split packages need migration attention. Java 11 applications can still run on the classpath.","Upgrading the JDK does not require modularizing every application.","What does opens add beyond exports?","opens permits reflective access to a package; exports exposes its public types for compile- time and normal runtime access."],["Q047",9,"How do exports and opens differ?","exports permits ordinary access to public API types; opens permits deep reflection into a package under module rules.","module com.example.model {\nexports com.example.api;\nopens com.example.dto; // narrow qualified opens may be preferable\n}","Frameworks that reflect into fields or constructors can need opens even when public access is exported. Qualified directives can limit exposure to selected modules. Broad command-line overrides can hide a missing boundary design.","Exporting a package is not the same as opening private members.","How would you open only to one named framework module?","Use opens package.name to framework.module; to grant deep reflection only to that named module rather than opening the entire module."],["Q048",9,"Which removed components commonly break Java 8 to 11 migration?","Java EE/CORBA modules removed from the JDK, such as bundled JAXB, can require explicit external dependencies and compatible replacements.","Old assumption: javax.xml.bind supplied by the JDK\nJava 11: add a compatible JAXB API/implementation when needed","Removed JDK modules, framework Jakarta namespace changes and licensing/distribution choices are separate issues. Do not blindly replace all javax packages with jakarta. Inventory imports, providers, native libraries and build tooling.","Java 11 removal is not the same event as Spring's later Jakarta migration.","How would you detect transitive reliance on removed modules?","Run jdeps on your application and all dependencies, inspect missing modules/classes, and execute upgrade tests rather than checking only direct imports."],["Q049",9,"What do jdeps and jlink help you do?","jdeps analyzes dependencies; jlink builds a custom runtime image from a resolved module set.","jdeps --multi-release 11 --ignore-missing-deps app.jar\njlink --add-modules java.base,java.net.http --output runtime-image","Review unresolved dependencies rather than accepting ignore-missing-deps as validation. A linked runtime is platform-specific and must include required modules/providers. It does not automatically compile the application into a native executable.","A small runtime image is not a guarantee of full application compatibility.","How would you discover service-provider modules?","Inspect provides/uses service declarations and use jdeps --bind-services, then include required providers when building the jlink runtime image."],["Q050",9,"Which Java 11 diagnostics and runtime additions matter?","Standard JDK Flight Recorder and the Java 11 experimental ZGC option are notable; collector support, flags and defaults still depend on release/ build.","java -XX:StartFlightRecording=filename=app.jfr,duration=30s -jar app.jar\n// Java 11 ZGC was experimental; review its platform/flag requirements.","Use recordings to investigate allocation, stalls and execution instead of assuming a collector switch fixes all latency. HotSpot G1 became default in Java 9 for typical supported configurations, not newly in 11. Runtime improvements can matter without changing source code.","Do not reuse experimental flags across every JDK unchanged.","Which evidence would separate GC pauses from lock contention?","Compare GC logs/JFR pause events with thread dumps, monitor/blocking events and CPU profiles. Lock waiting is not proved by GC pause duration."],["Q051",10,"What does a record generate?","A record declares a transparent data carrier with component fields/ accessors, a canonical constructor and standard equals/hashCode/toString behavior.","record Employee(int id, String name) {}\nEmployee e = new Employee(1,\"Sai\");\nSystem.out.println(e.name()); // Sai","Records are implicitly final and extend java.lang.Record. Component accessor names are name(), not automatically JavaBean getName(). They can implement interfaces and define methods, but do not provide arbitrary extra instance fields.","A record is a real reference class, not a primitive value class.","Can a record extend a domain superclass?","No. A record extends java.lang.Record and cannot extend another class; it may implement interfaces."],["Q052",10,"Are records deeply immutable?","No. Component references are final, but referenced objects can still be mutable unless you protect them.","record Team(List<String> members) {}\nList<String> source = new ArrayList<>(List.of(\"Sai\"));\nTeam team = new Team(source); source.add(\"Meena\");","The record's members now observes both names. Use an appropriate defensive structural copy in construction, and review nested objects too. Returning a mutable component through an accessor exposes its mutation policy.","final fields do not imply deep immutability.","What does List.copyOf solve and leave unresolved?","List.copyOf stops structural list changes, but not changes to mutable objects within the list. Deeply immutable content requires copying or immutable elements."],["Q053",10,"How does a compact record constructor work?","It validates/normalizes component parameters without repeating the parameter list; implicit component assignment happens after its body.","record User(String name) {\nUser { name = Objects.requireNonNull(name).strip(); }\n}","Reassigning the parameter controls the value eventually assigned to the field. In a compact constructor, assigning directly to a component field is not the intended allowed form. Match constructor visibility to the record declaration.","Compact construction does not skip validation.","How would you reject a blank normalized name?","Normalize and validate the constructor parameter before assignment; reject blank text with IllegalArgumentException in the compact constructor."],["Q054",10,"How does generated record equality handle an array component?","It follows component equality rules; an array component does not automatically get element-by-element array equality.","record Bytes(byte[] data) {}\nboolean same = new Bytes(new byte[]{1}).equals(new Bytes(new byte[]{1}));\n// false: different array objects","Choose a content-based immutable representation or carefully implement consistent equals/ hashCode if byte content defines identity. Copying an array protects aliases but does not change default array equality. Mutable components can also destabilize map-key behavior.","Defensive copying and value equality solve different problems.","What must hashCode do if equals becomes content based?","If equality compares array contents, hashCode must use the corresponding content-based algorithm such as Arrays.hashCode, not array identity hash."],["Q055",10,"When should you choose a class instead of a record?","Use a class when identity, inheritance, encapsulated representation or lifecycle behavior does not fit a transparent fixed-component carrier.","RequestDto(id,amount): record can fit\nManaged persistence entity with mutable lifecycle/proxy assumptions: assess class","Records suit many DTOs and small results, but framework mapping support is version/configuration dependent. Domain entities and aggregates may require controlled mutation or hidden state. A record does not automatically validate every domain invariant.","Converting every entity to a record is not a Java upgrade requirement.","Which behavior belongs in a constructor versus a service?","Validate invariant-preserving input rules in constructors; place orchestration, repository access and external effects in services."],["Q056",11,"What problem do sealed classes/interfaces solve?","They constrain direct subtypes so a domain hierarchy can declare its permitted alternatives explicitly.","sealed interface Outcome permits Accepted, Rejected {}\nrecord Accepted(long id) implements Outcome {}\nrecord Rejected(String reason) implements Outcome {}","Records satisfy final-subtype requirements. A closed domain can make exhaustive reasoning easier, but sealed does not prevent mutation inside a permitted subtype. It controls extension, not access authorization.","sealed is not a replacement for private or a security permission.","Which domains have a naturally closed set of outcomes?","Closed outcome families such as Approved, Rejected and PendingReview fit a sealed type when their set is controlled by the domain."],["Q057",11,"What must a direct subclass of a sealed class declare?","It must be final, sealed or non-sealed under the subtype rules, and permitted subtypes must meet module/package placement constraints.","sealed class Shape permits Circle, OpenShape {}\nfinal class Circle extends Shape {}\nnon-sealed class OpenShape extends Shape {}","non-sealed deliberately reopens extension below that subtype. In a named module, permitted direct subclasses belong to that module; in the unnamed module, they belong to the same package. permits may be inferred in some same-file arrangements.","A permits list is not permission to place subtypes anywhere.","What extension is still possible below OpenShape?","A non-sealed direct subtype such as OpenShape permits further subclasses below it, even though other direct sealed subtypes remain restricted."],["Q058",11,"How does instanceof pattern matching reduce casts?","It combines the type test and a scoped pattern variable when the match succeeds.","if (value instanceof String text && !text.isBlank()) {\nSystem.out.println(text.length());\n}","The compiler knows text is a String where flow proves the match. null does not match the String type pattern. This feature is permanent in 17, unlike pattern-switch which is preview in that release.","instanceof patterns do not make pattern-switch permanent in Java 17.","Why is text valid on the right side of &&?","For obj instanceof String text && text.length() > 3, the right operand runs only when the match succeeds, so text is in scope."],["Q059",11,"What is flow scoping for a pattern variable?","Its availability follows control flow proving that the pattern matched, rather than only the braces around a declaration.","if (!(value instanceof String text)) { return; }\nSystem.out.println(text.length());","The returning nonmatch branch leaves only String matches on the following path. Changing return to a continuing branch can change scope validity. With ||, the right side can run after a nonmatch, so a positive pattern variable is not automatically in scope.","A nearby variable name is not enough to establish a valid match.","Which refactoring would invalidate the final line?","Refactoring the && condition to || can make the pattern variable unavailable because the other branch can be true without matching."],["Q060",11,"Are sealed types and enums interchangeable?","Enums represent a fixed set of named instances; sealed hierarchies represent constrained alternative types that can carry distinct data.","enum Status { PAID, PENDING }\nsealed interface Result permits Success, Failure {}\nrecord Success(long id) implements Result {}\nrecord Failure(String message) implements Result {}","Choose by the modeled values, not only by a desire for exhaustiveness. A sealed result supports subtype-specific payloads; an enum can have fields/methods but follows its own instance model. Java 17 stable switch does not yet pattern-match these result types.","Do not show Java 21 pattern-switch as ordinary Java 17 code.","Which model fits a success ID or a failure reason?","Use a sealed outcome hierarchy when variants need distinct payloads, such as a success ID or detailed failure reason. Enum constants alone have limited typed payload modeling."],["Q061",12,"How do switch expressions differ from traditional switch statements?","A switch expression produces a value and must cover its possible outcomes; arrow cases avoid traditional fall-through.","int days = switch (kind) {\ncase \"short\" -> 1;\ncase \"long\" -> 3;\ndefault -> 0;\n};","The value is assigned to days. A statement can still use switch for control flow without producing a value. Colon-style syntax can appear in expression form too, with its own completion rules.","Arrow syntax and expression semantics are related but not identical concepts.","Why must this String switch have an appropriate default?","A non-exhaustive switch over String needs a default (or all possible values must otherwise be covered, which ordinary strings cannot be)."],["Q062",12,"When do you use yield in a switch expression?","Use yield to produce a value from a block arm that performs more than a single expression.","int fee = switch (tier) {\ncase \"gold\" -> { int base = 10; yield base + 2; }\ndefault -> 20;\n};","yield targets the enclosing switch expression, while return exits the enclosing method. Every relevant path through a value-producing arm must complete correctly. Exceptions are permitted alternatives to producing a normal value.","break is not the value-producing substitute for yield.","How would one arm reject an invalid tier?","Use throw new IllegalArgumentException(...) directly in the relevant arrow arm, or yield an accepted value from a block; no result is produced for the rejection."],["Q063",12,"How are text blocks processed?","They are String literals with multiline syntax, incidental-indentation processing and escape handling.","String sql = \"\"\"\nSELECT employee_id\nFROM employees\n\"\"\";","The opening delimiter requires a line break, and closing placement affects indentation/trailing newline. Text blocks are not raw strings: escapes still have defined meaning. They improve readability without validating SQL or JSON.","Formatting a query as a text block does not parameterize it.","How does moving the closing delimiter alter the result?","The position of the closing delimiter controls incidental indentation; moving it can remove or retain spaces and change the exact resulting text."],["Q064",12,"Do text blocks provide string interpolation?","No. Use ordinary formatting APIs deliberately; text-block syntax does not evaluate embedded expressions.","String message = \"\"\"\nHello, %s\n\"\"\".formatted(\"Sai\");","formatted is available from Java 15. An embedded ${name} is just literal content in a normal Java text block. String templates previewed in later releases were withdrawn and are not a permanent Java 25 feature.","Avoid teaching withdrawn string-template syntax as a Java 25 capability.","Why must SQL values still be bound instead of formatted?","Text blocks are just strings, not SQL parameter binding. Use prepared statements or parameterized queries so user values never become executable SQL syntax."],["Q065",12,"Can ordinary Java 17 switch handle null or arbitrary object patterns?","Traditional permanent Java 17 switch rules do not provide Java 21's case null and object-pattern switch behavior.","String kind = null;\n// switch(kind) with ordinary String cases throws NullPointerException.\n// Pattern-switch is preview in 17 and requires matching preview flags.","Handle null before an ordinary String/enum switch when required. Preview syntax and API shapes are tied to their release and can change before finalization. Examples compiled without preview must use the permanent 17 subset.","Java 17 being an LTS does not make every preview permanent.","What becomes permanent for switch in Java 21?","Java 21 finalized record patterns and pattern matching for switch, including type patterns, guarded cases and null handling."],["Q066",13,"What does strong JDK encapsulation mean in Java 17?","Most JDK internals are strongly encapsulated; unsupported reflective access that older releases tolerated can fail.","// setAccessible(true) against an inaccessible JDK package can fail.\n--add-opens java.base/java.lang=ALL-UNNAMED","The command is a targeted compatibility escape hatch, not a long-term replacement for supported APIs. Update incompatible frameworks/agents and distinguish exports from reflective opens. Some critical internal APIs have exceptional treatment, so do not claim all internal access disappears identically.","--illegal-access no longer restores the broad old relaxation in 17.","Which dependency owns the failing reflection?","Find which library performs the forbidden reflection, then upgrade it or replace unsupported access. --add-opens is a targeted temporary migration workaround."],["Q067",13,"What happened to the Security Manager in Java 17?","It was deprecated for removal in 17; permanent disabling occurred later in Java 24 and is inherited by 25.","Java 17: deprecated-for-removal transition\nJava 25: do not plan a Security Manager-based sandbox","Deprecation, removal and disabling are distinct stages. Untrusted execution isolation requires a separate supported boundary such as a restricted process/container with a reviewed policy. Do not infer an in-process sandbox from modules alone.","A Java 17 warning is not the same as a Java 25 behavior.","Where should an untrusted plugin run?","Run untrusted plugins in a process/container or other real isolation boundary with OS-level permissions, not inside a JVM relying on Security Manager checks."],["Q068",13,"Did Java 17 remove Nashorn or change every encoding default?","Nashorn was removed in Java 15 and that removal is inherited by 17; the UTF-8 default charset change arrived in Java 18.","Java 17: default charset still depends on environment\nFiles.readString: its own UTF-8 default already existed in 11","Language feature, removed JDK component and API-specific encoding are separate timelines. Bind explicit encodings for external file/protocol contracts. A newer runtime may expose implicit-charset assumptions during migration.","Files.readString's default does not describe every I/O API's default.","How would you test a non-ASCII file migration?","Write and read files containing non-ASCII characters in explicit encodings such as UTF-8, comparing bytes/results across both runtimes."],["Q069",13,"Which garbage-collector facts matter for Java 17 interviews?","G1 is a common HotSpot default; ZGC and Shenandoah became production features in 15, with availability and behavior depending on the distribution/platform.","Measure: allocation rate, pause distribution, live set, CPU and throughput\nDo not choose a collector from one isolated latency anecdote.","Java 17 does not include Java 21's generational ZGC introduction. Heap size, container limits, workload and build support influence the choice. Collector changes do not remove every source of latency or memory pressure.","Stable feature status is not proof a collector fits your service.","How would you run a meaningful before/after comparison?","Compare matched loads and service-level p95/p99 latency, throughput, allocation, pause distributions, RSS and CPU before selecting GC settings."],["Q070",13,"Why test agents, reflection and build tooling during a JDK upgrade?","They can depend on class-file formats, internal APIs and processing behavior independently of application source compatibility.","Application compiles -> agent rejects a newer class-file version\nSerialization or reflection framework may still fail at runtime.","Inventory instrumentation, mocking, bytecode generation, JNI and annotation processors. jdeps is useful but does not find every reflective/runtime dependency. Test packaged startup, integration paths and production-like settings.","A clean compile is not complete migration proof.","Which rarely executed code path needs an integration test?","Test seldom-used paths involving dynamic proxies, reflection, serialization, instrumentation and startup-generated classes with representative dependencies."],["Q071",14,"What is a virtual thread?","It is a lightweight Java thread scheduled by the JVM onto carrier platform threads, enabling many concurrent thread-per-task activities.","Thread task = Thread.ofVirtual().start(() -> System.out.println(\"work\"));\ntask.join();","The Thread API still expresses sequential code, interruption and thread identity. A virtual thread can unmount during supported blocking operations, freeing a carrier to run other tasks. Resource limits outside thread scheduling still apply.","Lightweight does not mean zero memory or unlimited useful concurrency.","What is the carrier thread's role?","A carrier is a platform worker that executes a mounted virtual thread. Blocking operations can unmount the virtual thread so the carrier runs other work."],["Q072",14,"Why do virtual threads help blocking I/O workloads more than CPU workloads?","They reduce the cost of many tasks waiting on I/O; they do not add CPU cores or make the same computation require fewer instructions.","10,000 waiting requests: scheduling overhead can matter\n10,000 continuously computing tasks: CPU capacity remains the limit","The benefit depends on supported blocking behavior, workload mix and downstream capacity. Bounded CPU execution can still be appropriate. Compare throughput and tail latency with representative work rather than counting created threads.","Replacing a CPU pool with many virtual threads is not a speed guarantee.","Which metric reveals CPU saturation?","Monitor CPU utilization, runnable queues and actual throughput. More virtual threads cannot exceed the CPU available for computation."],["Q073",14,"What does newVirtualThreadPerTaskExecutor do?","It starts a new virtual thread for each submitted task; it is not a fixed reusable pool of virtual workers.","try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {\nFuture<Integer> result = executor.submit(() -> 42);\nSystem.out.println(result.get());\n}","ExecutorService implements AutoCloseable from Java 19, so this permanent Java 21 form closes the executor and waits for termination. Define task lifetime and failure handling. Do not pool virtual threads merely to reuse cheap thread instances.","Unbounded thread creation still needs bounded resource admission.","How do you cap database work without pooling virtual threads?","Use a semaphore, database pool or a bounded admission queue around scarce resources; do not turn virtual threads themselves into a fixed worker pool."],["Q074",14,"Are virtual threads daemon threads and why does that matter?","They are daemon threads; their presence alone does not keep the JVM alive when no non-daemon thread remains.","Thread worker = Thread.startVirtualThread(() -> doWork());\nworker.join(); // explicit lifecycle owner waits","A fire-and-forget virtual thread can be abandoned when the process exits. Joining, executor ownership or a structured scope keeps responsibility visible. A virtual thread's priority is fixed, and thread-group assumptions differ from platform-thread tuning.","Starting a thread is not a completion or delivery guarantee.","Who owns work during application shutdown?","Virtual threads are daemon threads, so process exit does not wait for them alone. The owning service must join/cancel outstanding tasks during orderly shutdown."],["Q075",14,"Do virtual threads eliminate synchronization and data races?","No. Shared mutable state still needs a valid happens-before and atomicity policy.","// Still unsafe, regardless of virtual or platform thread:\ncounter++;\n// Use an appropriate atomic operation, lock or ownership model.","Virtual threads change how work is scheduled, not the Java Memory Model. A compound business invariant may require more than an atomic counter. Immutable values and partitioned ownership can reduce shared mutation.","More affordable threads can expose more races, not repair them.","Why is volatile insufficient for counter++?","volatile gives visibility and ordering for individual accesses but counter++ is read- modify-write. Use AtomicInteger.incrementAndGet() or an appropriate lock."],["Q076",15,"How does synchronized pinning differ between Java 21 and 25?","In Java 21, blocking inside a held monitor can pin a virtual thread; Java 24 removes this monitor-related pinning, and 25 inherits the improvement.","// Analyze differently on 21 and 25:\nsynchronized (lock) { blockingIo(); }","On 21, frequent long blocking under a monitor can retain carriers; a justified alternative lock strategy may help. On 25, do not repeat the old blanket recommendation to replace every synchronized block. Native/foreign interactions still require review.","Reduced pinning does not remove serialization caused by holding the lock.","What evidence distinguishes lock contention from carrier pinning?","Compare JFR virtual-thread pinning events and carrier utilization with thread dumps and monitor-blocked time; Java 25 changed monitor pinning behavior relative to 21."],["Q077",15,"How should ThreadLocal be used with virtual threads?","Use it for genuinely thread-local state, but avoid per-thread expensive resource caches across very large numbers of short-lived threads.","ThreadLocal<RequestContext> context = new ThreadLocal<>();\ntry { context.set(value); handle(); }\nfinally { context.remove(); }","Virtual threads support thread-local variables, yet millions of threads can multiply stored resources. A thread-local JDBC connection is not automatically a good design. ScopedValue, final in 25, fits some bounded read-only context flows.","Virtual threads do not automatically propagate arbitrary request context.","Which resources should be shared or pooled independently?","Use request-local data sparingly and clean it up. Pool databases/sockets separately; do not store a dedicated connection in every virtual thread."],["Q078",15,"How do you bound scarce work when threads are cheap?","Use resource-level limits such as connection-pool capacity, semaphores and bounded admission, independent of virtual-thread creation.","Semaphore permits = new Semaphore(20);\npermits.acquire();\ntry { callDownstream(); }\nfinally { permits.release(); }","The semaphore limits concurrent use, not total queued requests. Add a queue/admission and deadline policy to bound memory and waiting. Acquiring before entering try ensures release is paired with a successful acquisition.","A semaphore alone can leave an unlimited backlog.","When should a request be rejected rather than wait?","Reject when the wait plus expected work would exceed the request's deadline or exhaust capacity; return an explicit overload outcome such as HTTP 429/503."],["Q079",15,"Why must interrupt handling remain cooperative?","An interrupt is a cancellation signal that APIs/tasks must honor; it is not forced rollback or immediate thread termination.","try { Thread.sleep(1000); }\ncatch (InterruptedException e) {\nThread.currentThread().interrupt();\nreturn;\n}","sleep clears interrupt status when throwing, so restoring it is useful when the boundary returns rather than rethrows. Other APIs have different interruption behavior. Ensure cleanup and an appropriate return/propagation strategy.","Swallowing interruption can delay shutdown or scope close.","What if a blocking native call cannot be interrupted?","Use an operation-level timeout and close/cancel external resources when supported. A blocked native call may require process or driver-specific recovery."],["Q080",15,"How should a deadline cover several parallel downstream calls?","Give the overall operation an explicit time budget and cancellation/ cleanup ownership, instead of independent unlimited child work.","Request budget: 500 ms\nReserve response/cleanup time; children share the remaining deadline.","CompletableFuture composition alone does not cancel every sibling when one fails. Executor close or structured scope close can wait for uncooperative tasks, so operation-level timeouts also matter. Known remote rejection and unknown side-effect outcome are distinct.","Completing a timeout future does not prove children stopped.","How would you prevent leaked work after the caller leaves?","Pass a shared absolute deadline/cancellation signal to children, cancel unfinished work on departure and wait for structured cleanup where possible."],["Q081",16,"How do record patterns differ from ordinary instanceof patterns?","They deconstruct record components into nested patterns rather than only bind the entire matched object.","record Point(int x, int y) {}\nif (value instanceof Point(int x, int y)) {\nSystem.out.println(x + y);\n}","The pattern follows the record's declared components and their types. A null record does not match. Deconstruction is a matching feature, not a mutable destructuring assignment or arbitrary getter convention for every class.","A record pattern does not match any class with similar field names.","How would a nested record be matched?","A nested record can be matched with nested components, e.g. case Box(Point(int x,int y) p) -> ... using the appropriate record component structure."],["Q082",16,"What does pattern matching for switch add?","It lets switch match suitable type/record patterns and express guarded alternatives, with exhaustiveness and dominance rules.","String label = switch (value) {\ncase null -> \"missing\";\ncase String s -> \"text:\" + s;\ncase Integer n -> \"number:\" + n;\ndefault -> \"other\";\n};","This Object-oriented switch is permanent Java 21 syntax. Each pattern variable belongs to its matching arm. The explicit null arm chooses missing-value behavior rather than relying on a default that does not itself match null.","default is not a substitute for case null.","What happens when the null case is omitted?","For a switch selector of reference type, omitting case null means a null value typically causes a NullPointerException, rather than matching default."],["Q083",16,"What is dominance in a pattern switch?","An earlier case that covers every value a later case can match makes the later case unreachable under the language rules.","// Invalid order:\ncase CharSequence c -> \"sequence\";\ncase String s -> \"text\";","Every String is a CharSequence, so the later String arm is dominated. Put more-specific alternatives first when appropriate. Guard analysis follows defined language rules; the compiler does not prove every arbitrary business predicate.","Case ordering is part of semantics, not only presentation.","Why can two differently guarded cases need deliberate order?","A general case can dominate a narrower one. Put narrower or guarded cases first and confirm that each later case is reachable."],["Q084",16,"How do when guards work?","A guard adds a Boolean condition after a pattern match, letting one type have several behavior cases.","case String s when s.isBlank() -> \"blank\";\ncase String s -> \"text\";","The blank case only succeeds after String matching and its guard are true; the next String case handles the remaining strings. Guard expressions should have clear failure/side-effect behavior. They do not replace null handling.","The Java 21 guard keyword is when, not the older preview syntax.","Where should the unguarded String case go?","Place the unguarded case String s after the specific guarded case String s when ..., otherwise it dominates the guarded one."],["Q085",16,"How does exhaustiveness help with sealed models?","A switch covering all permitted alternatives can omit a general default and force source updates when the modeled alternatives change.","String describe(Outcome outcome) {\nreturn switch (outcome) {\ncase Accepted a -> \"id=\" + a.id();\ncase Rejected r -> r.reason();\n};\n}","This example assumes the two-type sealed model and a non-null input contract. Separate compilation/version skew can still produce an unanticipated runtime alternative and a MatchException. Recompilation catches a newly permitted alternative.","Compile-time exhaustiveness is not immunity to incompatible binary evolution.","Should a domain error be encoded as null or as a subtype?","Use a sealed subtype for a domain error rather than using null. Exhaustive switching can then force callers to handle every defined outcome."],["Q086",17,"What is a sequenced collection?","It is a collection with a defined encounter order and common first/last/ reversed operations under its supported mutation contract.","List<String> names = new ArrayList<>(List.of(\"A\",\"B\"));\nSystem.out.println(names.getFirst()); // A\nSystem.out.println(names.getLast()); // B","List gains these operations through the new hierarchy in 21. An ordered collection is not necessarily sorted; its order can come from insertion or a comparator. Empty endpoint access throws NoSuchElementException.","HashSet does not gain a meaningful encounter-order guarantee.","What is the difference between sorted and insertion order?","Sorted order follows a comparator; insertion order follows when elements entered a sequence. A SequencedCollection specifies encounter order, not necessarily sorting."],["Q087",17,"Is List.reversed a copied list?","No. It provides a reverse-ordered view whose backing relationship and mutation support follow the original list.","List<String> source = new ArrayList<>(List.of(\"A\",\"B\"));\nList<String> reversed = source.reversed();\nsource.add(\"C\"); // reversed now observes [C, B, A]","Do not assume a snapshot. Supported writes through a view can affect the backing collection, while unmodifiable sources restrict mutation. Use an explicit copy if later changes must be isolated.","Reversed order is not structural immutability.","How would you produce a reverse-ordered snapshot?","Copy the reversed view using List.copyOf(source.reversed()) if you want a stable structural snapshot rather than a backed view."],["Q088",17,"How do addFirst/addLast behave on sequenced sets?","They can explicitly position elements in supporting implementations, while sets retain uniqueness and sorted implementations can reject positional insertion.","LinkedHashSet<String> set = new LinkedHashSet<>(List.of(\"A\",\"B\"));\nset.addFirst(\"B\"); // encounter order becomes [B, A]","Repositioning an existing element does not add a duplicate. A SortedSet's comparator determines its order, so arbitrary endpoint insertion is not generally supported. Check the concrete API contract instead of assuming all sequenced collections are deques.","A common interface does not mean every mutator is supported.","What happens with a TreeSet positional insertion?","TreeSet follows comparator ordering, so it cannot arbitrarily move a value to the first or last encounter position; positional modifications are unsupported."],["Q089",17,"What do firstEntry and pollFirstEntry express on SequencedMap?","They expose the first encounter-order mapping, with poll removing it when the implementation supports that operation.","LinkedHashMap<String,Integer> map = new LinkedHashMap<>();\nmap.put(\"A\",1); map.put(\"B\",2);\nSystem.out.println(map.firstEntry().getKey()); // A","The ordinary fixture uses insertion order. Access-order maps and sorted maps have different order rules. An empty map's endpoint-entry methods can return null; entry mutability is also part of the API contract.","Map encounter order is not always insertion order.","How would an access-order cache alter this reasoning?","An access-order LinkedHashMap changes encounter order on access, so the first entry may be the least recently used rather than earliest inserted."],["Q090",17,"How does an unmodifiable sequenced view differ from a stable result?","It blocks supported mutation through that reference but can still reflect changes in the underlying collection and mutable elements.","SequencedCollection<String> source = new ArrayList<>(List.of(\"A\"));\nvar view = Collections.unmodifiableSequencedCollection(source);\nsource.add(\"B\"); // view observes the new element","Read-only access, snapshot structure and deep immutability are three separate guarantees. Choose the one the caller needs and document alias ownership. Endpoint methods do not alter this distinction.","Naming a result immutable cannot strengthen its backing contract.","Which guarantee does List.copyOf add?","List.copyOf produces an unmodifiable structural snapshot at copy time; an unmodifiable view can still reflect backing collection changes."],["Q091",18,"Is StructuredTaskScope permanent in Java 21?","No. Structured concurrency is a preview API in 21, with a release-specific API shape and explicit preview opt-in.","// Java 21 preview shape:\ntry (var scope = new StructuredTaskScope.ShutdownOnFailure()) {\nvar task = scope.fork(() -> 42);\nscope.join().throwIfFailed();\nSystem.out.println(task.get());\n}","The scope expresses related child lifetime and failure policy; cooperation still matters during cancellation/close. Java 25 uses a redesigned open/Joiner API, so this 21 example must not be relabelled as 25 code.","Preview APIs can change even across LTS releases.","Which policy should cancel a sibling after failure?","No. In Java 21 StructuredTaskScope is preview. Use a fail-fast sibling-cancelling policy such as ShutdownOnFailure with matching 21 preview flags."],["Q092",18,"What was the status of ScopedValue in Java 21?","It was a preview API for bounded context sharing in 21; it becomes permanent in Java 25.","Java 21: ScopedValue usage requires --enable-preview\nJava 25: ordinary ScopedValue usage needs no preview flag","Its goal fits one-way contextual data, rather than unrestricted mutable thread-local communication. Parent-child sharing requires supported structured relationships, not arbitrary executor submission. Keep your examples tied to their release.","A final virtual-thread feature does not finalize every related context API.","When is an explicit method parameter still clearer?","Choose explicit parameters for short, simple calls or when the required identity must be visible to callers; scoped context helps deeply nested request calls."],["Q093",18,"Was the Foreign Function and Memory API final in Java 21?","No. It was a third preview in 21 and was finalized in Java 22, becoming a permanent inherited API in 25.","Java 21 FFM: preview\nJava 25 FFM: permanent; arena lifetime and native access still matter","FFM offers foreign-memory/native-call mechanisms with scoped lifetime checks, but is not a universal safety guarantee for arbitrary native code. JNI and FFM migrations need ABI, ownership and concurrency review.","Final API status does not validate a C function's behavior.","Who owns a memory segment's lifetime?","The owner opens and closes an arena around the segment's use. After closure, segment access is invalid; confined ownership also restricts thread access."],["Q094",18,"What is generational ZGC's Java 21 status?","Java 21 introduces a generational ZGC mode; later releases change its default and remove the non-generational mode.","// Java 21 HotSpot selection where supported:\njava -XX:+UseZGC -XX:+ZGenerational -jar app.jar","In 23 generational mode becomes default for ZGC, and in 24 the non-generational mode is removed. These are ZGC mode choices, not a statement that ZGC becomes the JVM's overall default collector. Measure your workload.","Do not copy an old mode flag blindly into every later runtime.","What does an allocation-heavy service need you to measure?","Measure allocation rate, pause latency, throughput, CPU overhead and memory pressure under the target Java 21 collector configuration."],["Q095",18,"What changed for dynamically loaded agents in Java 21?","JDK 21 issues warnings for dynamic agent loading, preparing for a future default policy change; startup agents are a distinct path.","Startup instrumentation: -javaagent:agent.jar\nDynamic attach: review warnings, permissions and dependency behavior","Mocking, profiling and instrumentation tools can trigger dynamic loading. Update tools and choose a supported startup/configuration path rather than suppressing unexplained warnings. The warning is not proof that all agent loading is already forbidden in 21.","Future policy preparation is not the same as present removal.","Which test framework component attaches an agent?","Check test mocking/profiling tools that dynamically attach agents; prefer supported startup agent configuration and monitor relevant warnings."],["Q096",19,"Can Java 25 run a program without an explicit class or static main?","Yes. Compact source files and eligible instance main methods are permanent in 25; the classic form remains valid.","// Hello.java, Java 25 permanent:\nvoid main() {\nIO.println(\"Hello, Java 25\");\n}\n// Command: java Hello.java","The compiler creates an implicit class for the compact file. This is still Java, with restrictions appropriate to the simplified form. Main discovery follows specified candidate-method/instantiation rules; no-main programs are not magically runnable.","This permanent syntax does not compile as ordinary Java 21 code.","When is an explicit class/package more appropriate?","Use a conventional named class and package for library code, APIs, larger services and projects needing explicit encapsulation and tooling."],["Q097",19,"What is java.lang.IO in Java 25?","It provides convenient console input/output operations and is implicitly available as a java.lang type; its static methods are not automatically statically imported.","void main() {\nIO.println(\"Ready\");\n}\n// println(\"Ready\") alone needs an explicit static import or own method.","Use the qualified IO name in the final 25 form instead of copying an earlier preview tutorial. The convenience API does not replace structured logging or an application's error/output policy. Core output behavior is based on System streams.","Earlier preview examples can have changed names/import behavior.","How would you write a classic main with IO.println?","A classic public static void main(String[] args) can invoke IO.println(...) on Java 25 with the appropriate API available; no compact source is required."],["Q098",19,"Does import module replace requires or export access checks?","No. A module import is a source-name convenience for accessible exported API types; it does not grant access to concealed internals or replace a named module's dependencies.","import module java.base;\n// List, Function and Stream can now be referenced by simple names.","On-demand imports can create ambiguity; explicit type imports can resolve names. The source using a module import need not itself be a named module. Module resolution/readability and source-name lookup remain separate concerns.","Importing java.se can require explicitly resolving that aggregator module.","Why can Date be ambiguous after broad imports?","Broad module imports can expose both java.util.Date and java.sql.Date; use an explicit import or fully qualified name to disambiguate."],["Q099",19,"What do flexible constructor bodies allow in Java 25?","They allow a restricted prologue before explicit super(...) or this(...), useful for argument validation/computation and permitted own-field initialization.","class Positive extends Base {\nPositive(int amount) {\nif (amount <= 0) throw new IllegalArgumentException();\nsuper(amount);\n}\n}","This is permanent 25 syntax and invalid in the ordinary older language levels here. The early- construction rules prohibit using the incompletely constructed object freely; permitted own-field assignments do not imply arbitrary reads/method calls.","'Anything may run before super' is incorrect.","Why is calling an overridable instance method there invalid?","The early-construction context cannot use the not-yet-constructed instance to invoke an overridable method, which could reach uninitialized subclass state."],["Q100",19,"Are primitive patterns permanent in Java 25?","No. Primitive types in patterns, instanceof and switch are a third preview in 25, covering more selectors and safe-conversion matching.","// Java 25 PREVIEW:\nint number = 127;\nif (number instanceof byte small) {\nSystem.out.println(small); // 127\n}","The pattern matches only when the conversion is exact under the specified rules; changing number to 128 does not match byte. This is different from a narrowing cast that can truncate. Enable matching preview compilation/runtime flags.","Java 21 final type patterns do not include all these primitive extensions.","What should happen for a nonrepresentable value?","The preview pattern must succeed only for values exactly representable in the primitive target; nonrepresentable cases do not match (or are handled explicitly)."],["Q101",20,"How does a ScopedValue binding end and restore context?","where(...).run/call creates a bounded dynamic binding that restores the previous binding after normal or exceptional completion.","static final ScopedValue<String> TENANT = ScopedValue.newInstance();\nScopedValue.where(TENANT,\"T1\").run(() -> use(TENANT.get()));\n// Outside the scope: TENANT.isBound() is false if previously unbound.","This permanent 25 API fits request context without an unbounded mutable set/remove lifetime. The key's visibility controls who can read it. A missing binding is an explicit state; get then throws rather than inventing a tenant.","Context availability is not authorization by itself.","How should a request establish trusted tenant identity?","Validate tenant identity at the authenticated request boundary and bind an immutable trusted tenant value for the scope, not an arbitrary user header."],["Q102",20,"Does ScopedValue propagate to every executor task?","No. Supported inheritance is structured; do not assume arbitrary thread/ executor submissions capture the parent's binding.","Parent binds TENANT\nStructuredTaskScope opened inside binding captures supported child context\nUnrelated executor task: no automatic inheritance contract","Java 25's StructuredTaskScope is still preview even though ScopedValue is final. Explicit parameter passing remains useful at unrelated asynchronous boundaries. Design propagation and cleanup for traces/security context deliberately.","A context API does not create universal distributed tracing propagation.","Where should an HTTP header become a validated local context?","Validate the incoming identity once at the HTTP authentication boundary, then bind its trusted representation locally. Generic unrelated executor tasks do not inherit bindings automatically."],["Q103",20,"Does binding a mutable object make it immutable?","No. The binding is stable for its scope, but shared contents need immutability or proper synchronization.","ScopedValue<List<String>> DATA = ScopedValue.newInstance();\nScopedValue.where(DATA,new ArrayList<>()).run(() -> {\nDATA.get().add(\"A\"); // mutates the bound object\n});","Nested rebinding can temporarily select another value without mutating the outer binding. Prefer small immutable context records where the use case permits. Shared structured children must not race on a mutable payload.","Bounded lifetime and thread-safe contents are different guarantees.","What should a request-context record contain?","Use an immutable record of request ID, tenant ID and safe tracing metadata; do not hide mutable sessions, secrets or shared state inside it."],["Q104",20,"How does StableValue differ from a final field?","A final field is assigned during construction/initialization; a StableValue holder can acquire its contents later and then keep that association fixed.","// Java 25 PREVIEW:\nprivate final StableValue<String> label = StableValue.of();\nString value = label.orElseSet(() -> \"created\");","The holder provides an initialization contract rather than making referenced contents deeply immutable. It can fit deferred expensive state, but lifetime/resource ownership still needs design. Permanent API code must not use it without preview opt-in.","StableValue is not a refreshable cache.","How would you represent changing configuration instead?","Use a reloadable config holder with explicit versioning or an atomic reference for changing values; StableValue models once-initialized state, not live reconfiguration."],["Q105",20,"How should StableValue initialization failures be interpreted?","If the supplier throws, the exception propagates and the holder remains unset; a later call can retry. After successful initialization, the established value is stable.","// Java 25 PREVIEW:\nString value = holder.orElseSet(() -> createValue());\n// If creation throws, the holder remains unset; a later call may retry.","orElseSet coordinates successful initialization under races, while a precompute-then-trySet pattern can create several discarded objects. Supplier effects should be safe for the documented retry/ failure behavior. Stable association does not deduplicate an external side effect.","'Exactly one business effect ever' is not this holder's guarantee.","Who closes a successfully initialized resource?","Failed initialization may be retried and may already have side effects. The owning component must explicitly close any resource produced by a successful initializer."],["Q106",21,"How do Stream Gatherers differ from Collectors?","A gatherer defines an intermediate stream transformation; a collector performs a terminal mutable reduction.","// Permanent from Java 24, available in 25:\nvar windows = Stream.of(1,2,3,4,5)\n.gather(Gatherers.windowFixed(2)).toList();\n// [[1, 2], [3, 4], [5]]","Gatherers support transformations beyond ordinary one-to-one map, including stateful operations. Collector and gatherer state/combination contracts are different. The API is not available in Java 21 without a different library/design.","Gatherers are not newly finalized in 25.","Why is windowing an intermediate operation?","A gatherer can process a stream into intermediate windows/results before downstream operations; a collector is terminal and produces a final result."],["Q107",21,"How do windowFixed and windowSliding differ?","Fixed windows partition the sequence into batches; sliding windows overlap by moving across adjacent elements.","Stream.of(1,2,3,4,5).gather(Gatherers.windowFixed(3)).toList();\n// [[1, 2, 3], [4, 5]]\nStream.of(1,2,3,4,5).gather(Gatherers.windowSliding(3)).toList();\n// [[1, 2, 3], [2, 3, 4], [3, 4, 5]]","These permanent 24+ methods make batch and rolling-window semantics explicit. Empty input emits no window. Nonempty input shorter than a sliding window emits one partial window containing all input values. Windowing alone does not apply a remote concurrency limit.","Batch size and maximum in-flight work are separate controls.","Which form fits a three-reading moving average?","A sliding three-reading moving average uses windowSliding(3); fixed windows would skip overlapping triples."],["Q108",21,"What does the Class-File API provide?","The permanent Java 24 API, inherited by 25, supports reading, generating and transforming Java class files with a standard model.","ClassFile classFile = ClassFile.of();\nClassModel model = classFile.parse(bytes);","It can reduce reliance on external bytecode libraries for suitable tooling, but transformations still must preserve bytecode, linkage and application semantics. It is not ordinary source reflection, nor a promise that all agents automatically migrate.","A successful class-file parse is not proof a transformation is correct.","Which tests should follow instrumenting a method?","Verify resulting class files can load, retain required bytecode semantics and pass integration, concurrency and agent-tool tests after instrumentation."],["Q109",21,"What does an Arena control in the final FFM API?","It controls lifetime and access rules for allocated foreign memory; segments cannot be used freely after their arena is closed.","try (Arena arena = Arena.ofConfined()) {\nMemorySegment segment = arena.allocate(8);\nsegment.set(ValueLayout.JAVA_LONG,0,42L);\n}","This is permanent 22+ code, not permanent Java 21. A confined arena imposes thread-access rules; shared arenas have a different concurrency contract. Native pointer/function misuse can still violate assumptions outside the managed checks.","An arena is not a garbage-collected Java byte array.","What fails if another thread uses a confined segment?","Using a confined segment from a different thread violates its ownership rules and fails; choose an arena with appropriate sharing/lifetime where required."],["Q110",21,"Which Java 25 crypto API statuses should you distinguish?","The Key Derivation Function API is permanent in 25; PEM encoding APIs are preview, and provider/algorithm support is separate.","KDF API: derives key material through a provider-backed contract\nPEM encoding: Java 25 preview API","Do not invent a custom cryptographic scheme because a new factory exists. Understand key purpose, approved algorithm/provider and encoding/lifetime requirements in the actual system. Encoding a key is not encryption or authorization.","A permanent API does not imply every provider supports every algorithm.","Who governs allowed algorithms and secret handling?","Security policy decides permitted algorithms, providers, key lifecycle and secret handling; the JDK API alone is not a security policy."],["Q111",22,"What are compact object headers in Java 25?","HotSpot's compact-header mode reduces header size on supported 64-bit configurations and becomes a product feature in 25, after experimental status in 24.","Evaluate -XX:+UseCompactObjectHeaders where supported\nMeasure actual heap, allocation and throughput on your target build.","Header size is only part of an object's aligned footprint. Layout, reference compression, tooling and collector interactions matter. Product status does not mean universally enabled or universally beneficial.","Do not claim every object becomes exactly half its old size.","Which memory measurements would prove the effect?","Compare retained heap, object count, allocation/GC metrics and process RSS under matched loads, checking correctness and JVM build/flags."],["Q112",22,"How do JDK AOT caches differ from a native executable?","JDK 25 improves AOT cache creation and method-profile reuse for HotSpot startup; this still differs from building a standalone native-image executable.","Representative training run -> compatible AOT cache -> measured startup\nNative image: separate compilation/deployment model","Cache validity depends on application/runtime configuration and compatible inputs. AOT method profiles can help JIT decisions sooner, but do not eliminate every warmup or dynamic-code cost. Test readiness and steady-state behavior.","AOT does not always mean no JVM or no JIT.","What invalidates a trained cache in your deployment?","A cache can become unusable after changes to the runtime build, application/dependencies or related environment; validate cache compatibility on each deployment."],["Q113",22,"What changed in JFR profiling in Java 25?","JFR adds method timing/tracing and cooperative sampling improvements; Linux CPU-time profiling is specifically experimental.","Question: Is latency caused by on-CPU work, allocation or waiting?\nChoose relevant JFR events and verify collection overhead.","Elapsed samples and CPU-time samples answer different questions. Experimental CPU-time profiling has its own platform/configuration constraints. A recording is evidence to interpret, not an automatic root-cause verdict.","Not every Java 25 JFR addition shares the same status.","How would you distinguish wall time from consumed CPU?","Wall time includes waiting and sleeping; CPU time counts processing consumed by threads. Correlate CPU-time profiling with JFR wait/block and request traces."],["Q114",22,"What changed in generational collector modes by Java 25?","Generational Shenandoah becomes a product feature in 25; ZGC's non- generational mode was removed in 24 and stays absent in 25.","Collector choice depends on distribution/platform and measured workload\nGenerational mode != overall JVM default collector","Do not confuse ZGC and Shenandoah feature timelines or assume every distribution ships identical collectors. Compare pauses, throughput, memory and CPU within the same service-level goals. Mode/flag compatibility is part of migration testing.","A newer collector name is not enough to justify a rollout.","Which metric can regress even when pauses improve?","Throughput, CPU overhead or peak RSS may worsen even if GC pause times improve; compare end-to-end service SLOs."],["Q115",22,"Is the Vector API permanent in Java 25?","No. It is a tenth-incubator module in 25, used for vector computations with supported CPU/compiler paths.","Compile/run with the appropriate module option:\n--add-modules jdk.incubator.vector","Incubator modules differ from preview language/API opt-in. Hardware, data layout, operation shape and compiler behavior determine useful speedup. Automatic universal SIMD acceleration is not the contract.","--enable-preview alone does not resolve an incubator module.","How would you benchmark scalar and vector implementations fairly?","Benchmark equivalent scalar and vector code with JMH-like warmup, data sizes, JVM flags and correctness checks, including tail and fallback paths."],["Q116",23,"What does LTS mean for these Java versions?","Long-term support is a vendor/distribution support policy; the language/ runtime version number alone does not define your patch, license or support terms.","Java 8, 11, 17, 21, 25 are common LTS baselines\nSelect a distribution and verify its actual support policy.","Feature status such as preview is separate from support duration. A vendor can provide different timelines/packages, and later releases can exist beyond these teaching targets. Avoid assuming one JDK download's terms apply to every distribution.","LTS does not make all preview APIs stable.","Which exact build and patch does your service run?","Record the complete JDK vendor, version, patch/build, deployment image and enabled runtime flags; LTS is a support designation, not one fixed binary."],["Q117",23,"Why use --release instead of only -source and -target?","--release aligns supported source syntax, bytecode target and documented platform API exposure for the selected supported release.","javac --release 8 Lab01.java\n// List.of(...) should be rejected for that Java 8 target.","Only changing bytecode target can still allow accidental calls to newer JDK APIs. A compiler has a supported set of older targets; do not assume every future JDK supports every historical release. Third-party dependencies need their own compatibility checks.","--release does not downgrade a dependency compiled for Java 21.","How would you inspect a dependency's class-file version?","Use javap -verbose or dependency tools to inspect major versions; compile with -- release and test under the oldest supported runtime."],["Q118",23,"How do you compile and run preview code correctly?","Use the matching JDK and release-specific --enable-preview at compilation and runtime; preview class files are tied to that release.","javac --release 25 --enable-preview Lab19.java\njava --enable-preview Lab19","JDK 25 preview code must be built/run as the supported 25 preview, not treated as a portable 21 feature. Incubator modules need their own module flags. Pin release-specific examples so changing API shapes do not silently mix.","A newer JVM does not generally accept another release's preview class files.","How would CI keep permanent and preview examples separate?","Build preview examples in a separate target-JDK profile and run with --enable-preview on the matching release; keep shipping code on permanent features unless approved."],["Q119",23,"What are source, binary and behavioral compatibility?","Source compatibility concerns compilation; binary compatibility concerns linkage/loading; behavioral compatibility concerns the application's observed contract.","Source compiles; binary loads; timezone/encoding output still changes\nEach layer needs evidence, not just a green compile.","Removed APIs, reflective access, serialization, default charset and thread/GC behavior can affect different layers. Mixed versions also affect instrumentation and preview support. Compatibility decisions need your real dependency/workload inventory.","Class-file compatibility is only one part of an upgrade.","Which tests exercise defaults your application relies on?","Test API behavior, serialization, charset/time-zone defaults, reflection, dynamic agents and performance; same bytecode compatibility does not prove same runtime behavior."],["Q120",23,"How would you migrate a production service from Java 8 to 25?","Inventory dependencies/tooling and implicit behavior, verify on staged targets as useful, then deploy a measured compatible build with a rollback plan.","Compile/tests -> packaged startup -> integration/load/soak\nCanary -> compare SLOs and memory -> broaden -> monitor","Update unsupported libraries and agents before replacing every loop with new syntax. Retest I/O encodings, TLS, reflection, time zones, resources and cancellation. Rollback must include artifact/ runtime/configuration compatibility.","A version upgrade is not a reason to rewrite all concurrency at once.","What evidence would block promotion of the canary?","Block the canary for correctness failures, unsafe concurrency/GC regressions, dependency incompatibility or SLO breaches; require a tested rollback path."],["Q121",24,"How do virtual threads compare with reactive programming?","Virtual threads preserve a blocking thread-per-task style; reactive designs model asynchronous signals and backpressure through their own contracts.","Blocking JDBC + virtual threads: connection pool still bounds database work\nReactive pipeline: actual nonblocking dependencies and demand matter","Neither style automatically fixes bottlenecks or business correctness. Existing framework/ dependency support, cancellation and team complexity influence the choice. Calling blocking work inside a nonblocking event loop can still be harmful.","Virtual threads are not a drop-in promise of reactive backpressure.","Which boundary should limit incoming demand?","Use admission control, concurrency limits and backpressure where demand enters the system, rather than unlimited request submission to cheap virtual threads."],["Q122",24,"How do CompletableFuture, virtual threads and structured concurrency differ?","They model completion composition, cheap thread execution and related- task lifetime/policy respectively; they can cooperate but are not synonyms.","Future chain: combine completions\nVirtual thread: execute sequential task code\nStructured scope: own child lifetime and failure policy","Choose how to run work separately from how to aggregate results and stop siblings. StructuredTaskScope is still preview in 25. Cancellation and external effect identity remain application concerns in all three approaches.","An async return type is not proof of nonblocking work.","Which model helps prove children finish before request context closes?","Structured concurrency ties child tasks to the lexical parent scope, making it easier to ensure children finish or are cancelled before context/resources close."],["Q123",24,"Would you convert every DTO/entity to a record?","No. Choose records where a transparent component-based carrier matches the domain/framework contract; assess entities and mutable components separately.","Record request: validate amount and copy a tags list\nEntity: identity, persistence lifecycle and mapping support need review","Generated equality and serialization/framework behavior affect compatibility. A stable record reference can still expose nested mutable state. The goal is a clearer invariant, not a smaller line count alone.","New syntax cannot decide the domain's identity model.","When should two requests compare equal?","Use a record for immutable data where equality by components is intentional; choose entities/ classes when stable identity, lazy mutation or lifecycle dominates."],["Q124",24,"How do you modernize a Java 8 stream solution across versions?","Preserve ordering, duplicates, nulls, mutability and error behavior, then choose a newer API whose contract fits the requirement.","Java 8: collect(toCollection(ArrayList::new)) for a mutable list\nJava 17: Stream.toList() only if unmodifiable output is acceptable\nJava 25: gather windowFixed(...) for true batching semantics","A shorter pipeline can change the caller's ability to mutate or the meaning of prefix selection. Keep a small counterexample test and state the minimum release. New operators must earn their place through clearer semantics.","Syntax modernization is not always behavior-preserving.","Which test catches replacing filter with takeWhile?","Use a non-monotonic input such as [1, 4, 2] with predicate n < 3: filter keeps 1 and 2, while takeWhile stops at 4."],["Q125",24,"What makes a strong multi-version Java interview answer?","State the first permanent release/status, show a small example, explain its guarantee and counterexample, then discuss migration or measurement evidence.","Feature -> exact release/status -> trace -> pitfall -> practical decision\nDo not substitute a list of JEP numbers for reasoning.","Distinguish language, library and JVM changes. Test output/edge cases for code, and use representative profiling/benchmarks for runtime claims. Say when a newer example is reviewed but not executed on its target JDK.","A feature catalog alone does not prove senior engineering judgment.","Which concrete example would disprove your claim?","Produce a tiny executable counterexample that breaks the guarantee being asserted: e.g. mutate a record's contained list to refute deep immutability."]],"labs":[["CODING LAB 01 / 20 · JAVA 8 · PERMANENT / INHERITED — C01 Compose a pricing rule","TASK AND EXPECTED BEHAVIOR Use a captured fixed fee and a primitive function contract to transform a price.","import java.util.function.IntUnaryOperator;\npublic class Lab01 {\npublic static void main(String[] args) {\nint fee = 10;\nIntUnaryOperator addFee = base -> base + fee;\nIntUnaryOperator doublePrice = price -> price * 2;\nint result = addFee.andThen(doublePrice).applyAsInt(100);\nif (result != 220) throw new AssertionError(result);\nSystem.out.println(result);\n}\n}"],["CODING LAB 02 / 20 · JAVA 8 · PERMANENT / INHERITED — C02 Flatten and transform nested input","TASK AND EXPECTED BEHAVIOR Flatten ordered lists, remove duplicate integers and double the distinct values.","import java.util.*;\nimport java.util.stream.*;\npublic class Lab02 {\npublic static void main(String[] args) {\nList<List<Integer>> groups = Arrays.asList(\nArrays.asList(1,2), Arrays.asList(2,3));\nList<Integer> result = groups.stream().flatMap(List::stream)\n.distinct().map(n -> n * 2).collect(Collectors.toList());\nif (!result.equals(Arrays.asList(2,4,6)))\nthrow new AssertionError(result);\nSystem.out.println(result);\n}\n}"],["CODING LAB 03 / 20 · JAVA 8 · PERMANENT / INHERITED — C03 Count words with ordered grouping","TASK AND EXPECTED BEHAVIOR Count exact word values and expose deterministic sorted keys.","import java.util.*;\nimport java.util.function.Function;\nimport java.util.stream.Collectors;\npublic class Lab03 {\npublic static void main(String[] args) {\nList<String> words = Arrays.asList(\"Spring\",\"Java\",\"Spring\",\"Redis\",\"Java\");\nMap<String,Long> counts = words.stream().collect(\nCollectors.groupingBy(Function.identity(),TreeMap::new,\nCollectors.counting()));\nif (counts.get(\"Java\") != 2L || counts.get(\"Redis\") != 1L)\nthrow new AssertionError(counts);\nSystem.out.println(counts);\n}\n}"],["CODING LAB 04 / 20 · JAVA 8 · PERMANENT / INHERITED — C04 Second-highest distinct known salary","TASK AND EXPECTED BEHAVIOR Return the second distinct salary, excluding missing salaries. No second level means an empty Optional.","import java.util.*;\npublic class Lab04 {\nstatic Optional<Integer> second(List<Integer> salaries) {\nreturn salaries.stream().filter(Objects::nonNull).distinct()\n.sorted(Comparator.reverseOrder()).skip(1).findFirst();\n}\npublic static void main(String[] args) {\nOptional<Integer> result = second(Arrays.asList(100,100,90,null,80));\nif (!result.equals(Optional.of(90))) throw new AssertionError(result);\nif (second(Arrays.asList(100,100,null)).isPresent())\nthrow new AssertionError(\"one level\");\nif (second(Collections.emptyList()).isPresent())\nthrow new AssertionError(\"empty input\");\nSystem.out.println(result.get());\n}\n}"],["CODING LAB 05 / 20 · JAVA 8 · PERMANENT / INHERITED — C05 Prove eager and lazy defaults","TASK AND EXPECTED BEHAVIOR Count fallback calls for present and empty Optional values.","import java.util.Optional;\nimport java.util.concurrent.atomic.AtomicInteger;\npublic class Lab05 {\nstatic String fallback(AtomicInteger calls) {\ncalls.incrementAndGet(); return \"fallback\";\n}\npublic static void main(String[] args) {\nAtomicInteger calls = new AtomicInteger();\nString eager = Optional.of(\"saved\").orElse(fallback(calls));\nString lazy = Optional.of(\"saved\").orElseGet(() -> fallback(calls));\nif (calls.get() != 1 || !eager.equals(lazy)) throw new AssertionError();\nString missing = Optional.<String>empty().orElseGet(() -> fallback(calls));\nif (calls.get() != 2 || !missing.equals(\"fallback\"))\nthrow new AssertionError();\nSystem.out.println(\"calls=\" + calls.get());\n}\n}"],["CODING LAB 06 / 20 · JAVA 8 · PERMANENT / INHERITED — C06 Compose futures with owned execution","TASK AND EXPECTED BEHAVIOR Combine two asynchronous values, flatten another stage and verify a separate failure fallback.","import java.util.concurrent.*;\npublic class Lab06 {\npublic static void main(String[] args) throws Exception {\nExecutorService pool = Executors.newFixedThreadPool(2);\ntry {\nCompletableFuture<Integer> a = CompletableFuture.supplyAsync(() -> 10,pool);\nCompletableFuture<Integer> b = CompletableFuture.supplyAsync(() -> 20,pool);\nint total = a.thenCombine(b,Integer::sum).thenCompose(\nn -> CompletableFuture.completedFuture(n * 2)).get();\nCompletableFuture<Integer> failed = new CompletableFuture<>();\nfailed.completeExceptionally(new IllegalStateException(\"sample\"));\nint fallback = failed.exceptionally(ex -> -1).get();\nif (total != 60 || fallback != -1) throw new AssertionError();\nSystem.out.println(total + \"/\" + fallback);\n} finally { pool.shutdown(); }\n}\n}"],["CODING LAB 07 / 20 · JAVA 11 · PERMANENT / INHERITED — C07 View versus snapshot in Java 11","TASK AND EXPECTED BEHAVIOR Demonstrate inferred static typing and the structural difference between a view and a copy.","import java.util.*;\npublic class Lab07 {\npublic static void main(String[] args) {\nvar source = new ArrayList<>(List.of(\"A\"));\nvar view = Collections.unmodifiableList(source);\nvar copy = List.copyOf(source);\nsource.add(\"B\");\nif (!view.equals(List.of(\"A\",\"B\")) || !copy.equals(List.of(\"A\")))\nthrow new AssertionError();\ntry { copy.add(\"C\"); throw new AssertionError(\"mutable copy\"); }\ncatch (UnsupportedOperationException expected) { }\nSystem.out.println(\"view=\" + view + \"; copy=\" + copy);\n}\n}"],["CODING LAB 08 / 20 · JAVA 11 · PERMANENT / INHERITED — C08 Unicode stripping and UTF-8 file round trip","TASK AND EXPECTED BEHAVIOR Check Java 11 text helpers and whole-text file operations on a temporary file.","import java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\npublic class Lab08 {\npublic static void main(String[] args) throws Exception {\nString padded = \"\" + (char)0x2003 + \"Sai\" + (char)0x2003;\nif (!padded.strip().equals(\"Sai\") || padded.trim().length() != 5)\nthrow new AssertionError(\"whitespace rule\");\nPath file = Files.createTempFile(\"java11-\", \".txt\");\ntry {\nFiles.writeString(file,\"caf\\u00e9\\n\",StandardCharsets.UTF_8);\nString read = Files.readString(file,StandardCharsets.UTF_8);\nif (!read.equals(\"caf\\u00e9\\n\") || read.lines().count() != 1)\nthrow new AssertionError(\"round trip\");\nSystem.out.println(\"strip=Sai; lines=1\");\n} finally { Files.deleteIfExists(file); }\n}\n}"],["CODING LAB 09 / 20 · JAVA 11 · PERMANENT / INHERITED — C09 Build an HTTP client and request without network I/O","TASK AND EXPECTED BEHAVIOR Verify Java 11 HTTP configuration. This lab intentionally builds but does not send the request.","import java.net.URI;\nimport java.net.http.*;\nimport java.time.Duration;\npublic class Lab09 {\npublic static void main(String[] args) {\nHttpClient client = HttpClient.newBuilder()\n.connectTimeout(Duration.ofSeconds(2)).build();\nHttpRequest request = HttpRequest.newBuilder(\nURI.create(\"https://example.invalid/api\"))\n.timeout(Duration.ofSeconds(3)).GET().build();\nif (!client.connectTimeout().get().equals(Duration.ofSeconds(2)))\nthrow new AssertionError(\"connect budget\");\nif (!request.method().equals(\"GET\") || request.timeout().get().getSeconds()!=3)\nthrow new AssertionError(\"request contract\");\nSystem.out.println(request.method()+\" \"+request.uri().getPath()+\" 3\");\n}\n}"],["CODING LAB 10 / 20 · JAVA 17 · PERMANENT / INHERITED — C10 Record construction with defensive structure","TASK AND EXPECTED BEHAVIOR Normalize a record component, copy list structure and reject invalid state.","import java.util.*;\npublic class Lab10 {\nrecord Team(String name, List<String> members) {\nTeam {\nname = Objects.requireNonNull(name).strip();\nif (name.isBlank()) throw new IllegalArgumentException(\"blank\");\nmembers = List.copyOf(members);\n}\n}\npublic static void main(String[] args) {\nvar source = new ArrayList<>(List.of(\"Sai\"));\nvar team = new Team(\"  Backend  \",source);\nsource.add(\"Meena\");\nif (!team.name().equals(\"Backend\") || team.members().size()!=1)\nthrow new AssertionError(team);\ntry { new Team(\" \",source); throw new AssertionError(\"accepted blank\"); }\ncatch (IllegalArgumentException expected) { }\nSystem.out.println(team.name()+\" \"+team.members());\n}\n}"],["CODING LAB 11 / 20 · JAVA 17 · PERMANENT / INHERITED — C11 Sealed outcome with Java 17 flow patterns","TASK AND EXPECTED BEHAVIOR Model two payload alternatives without using Java 21 pattern-switch syntax.","public class Lab11 {\nsealed interface Outcome permits Approved, Denied { }\nrecord Approved(long id) implements Outcome { }\nrecord Denied(String reason) implements Outcome { }\nstatic String describe(Outcome outcome) {\nif (outcome instanceof Approved a) return \"approved:\" + a.id();\nif (outcome instanceof Denied d) return \"denied:\" + d.reason();\nthrow new IllegalArgumentException(\"missing outcome\");\n}\npublic static void main(String[] args) {\nString yes = describe(new Approved(7));\nString no = describe(new Denied(\"limit\"));\nif (!yes.equals(\"approved:7\") || !no.equals(\"denied:limit\"))\nthrow new AssertionError();\nSystem.out.println(yes + \"/\" + no);\n}\n}"],["CODING LAB 12 / 20 · JAVA 17 · PERMANENT / INHERITED — C12 Switch result and text-block newline","TASK AND EXPECTED BEHAVIOR Produce a value from a switch block and check text-block processing.","public class Lab12 {\nstatic int fee(String tier) {\nreturn switch (tier) {\ncase \"gold\" -> { int base = 10; yield base + 2; }\ndefault -> 20;\n};\n}\npublic static void main(String[] args) {\nString query = \"\"\"\nSELECT id\nFROM employees\n\"\"\";\nif (!query.equals(\"SELECT id\\nFROM employees\\n\"))\nthrow new AssertionError(query);\nif (fee(\"gold\") != 12 || fee(\"other\") != 20) throw new AssertionError();\nSystem.out.println(\"fee=12; trailingNewline=\" + query.endsWith(\"\\n\"));\n}\n}"],["CODING LAB 13 / 20 · JAVA 21 · PERMANENT / INHERITED — C13 Java 21 record patterns and guarded switch","TASK AND EXPECTED BEHAVIOR Handle a record, guarded text, null and a general object with final Java 21 syntax.","public class Lab13 {\nrecord Point(int x, int y) { }\nstatic String describe(Object value) {\nreturn switch (value) {\ncase null -> \"missing\";\ncase Point(int x, int y) -> \"sum=\" + (x+y);\ncase String s when s.isBlank() -> \"blank\";\ncase String s -> \"text=\" + s;\ndefault -> \"other\";\n};\n}\npublic static void main(String[] args) {\nif (!describe(null).equals(\"missing\") || !describe(\" \").equals(\"blank\"))\nthrow new AssertionError();\nString point = describe(new Point(2,3));\nif (!point.equals(\"sum=5\")) throw new AssertionError(point);\nSystem.out.println(point);\n}\n}"],["CODING LAB 14 / 20 · JAVA 21 · PERMANENT / INHERITED — C14 Sequenced reverse view and snapshot","TASK AND EXPECTED BEHAVIOR Demonstrate a backed reversed view and a separate copied result.","import java.util.*;\npublic class Lab14 {\npublic static void main(String[] args) {\nList<String> source = new ArrayList<>(List.of(\"A\",\"B\"));\nList<String> reversed = source.reversed();\nList<String> snapshot = List.copyOf(reversed);\nsource.addLast(\"C\");\nif (!reversed.equals(List.of(\"C\",\"B\",\"A\"))) throw new AssertionError();\nif (!snapshot.equals(List.of(\"B\",\"A\"))) throw new AssertionError();\nif (!source.getFirst().equals(\"A\")) throw new AssertionError();\nSystem.out.println(reversed + \"/\" + snapshot);\n}\n}"],["CODING LAB 15 / 20 · JAVA 21 · PERMANENT / INHERITED — C15 Virtual tasks with a scarce-resource limit","TASK AND EXPECTED BEHAVIOR Use one virtual thread per task while a semaphore caps concurrent resource use.","import java.util.*;\nimport java.util.concurrent.*;\nimport java.util.concurrent.atomic.AtomicInteger;\npublic class Lab15 {\npublic static void main(String[] args) throws Exception {\nSemaphore slots = new Semaphore(2);\nAtomicInteger active = new AtomicInteger(), peak = new AtomicInteger();\ntry (var executor = Executors.newVirtualThreadPerTaskExecutor()) {\nList<Future<Integer>> tasks = new ArrayList<>();\nfor (int i=0;i<10;i++) {\nfinal int n=i;\ntasks.add(executor.submit(() -> {\nif (!Thread.currentThread().isVirtual()) throw new AssertionError();\nslots.acquire();\ntry {\npeak.accumulateAndGet(active.incrementAndGet(),Math::max);\nThread.sleep(1); return n*n;\n} finally { active.decrementAndGet(); slots.release(); }\n}));\n}\nint sum=0;\nfor (var task:tasks) sum+=task.get();\nif (sum!=285 || peak.get()>2 || active.get()!=0) throw new AssertionError();\nSystem.out.println(\"sum=\"+sum+\"; resourceLimit=2\");\n}\n}\n}"],["CODING LAB 16 / 20 · JAVA 25 · PERMANENT / INHERITED — C16 Java 25 compact source with module import","TASK AND EXPECTED BEHAVIOR Use the permanent simplified program form and an explicit module import.","import module java.base;\nvoid main() {\nList<Integer> numbers = List.of(1,2,3);\nint sum = numbers.stream().mapToInt(Integer::intValue).sum();\nif (sum != 6) throw new AssertionError(sum);\nIO.println(sum);\n}"],["CODING LAB 17 / 20 · JAVA 25 · PERMANENT / INHERITED — C17 Scoped binding and nested restoration","TASK AND EXPECTED BEHAVIOR Check bounded context restoration with the final Java 25 ScopedValue API.","public class Lab17 {\nstatic final ScopedValue<String> TENANT = ScopedValue.newInstance();\npublic static void main(String[] args) {\nScopedValue.where(TENANT,\"outer\").run(() -> {\nif (!TENANT.get().equals(\"outer\")) throw new AssertionError();\nScopedValue.where(TENANT,\"inner\").run(() -> {\nif (!TENANT.get().equals(\"inner\")) throw new AssertionError();\n});\nif (!TENANT.get().equals(\"outer\")) throw new AssertionError();\n});\nif (TENANT.isBound()) throw new AssertionError(\"leaked binding\");\nSystem.out.println(\"restored=true; unbound=true\");\n}\n}"],["CODING LAB 18 / 20 · JAVA 25 · PERMANENT / INHERITED — C18 Gather fixed and sliding windows","TASK AND EXPECTED BEHAVIOR Use APIs permanent from Java 24 to distinguish batch windows from overlapping windows.","import java.util.*;\nimport java.util.stream.*;\npublic class Lab18 {\npublic static void main(String[] args) {\nvar fixed = Stream.of(1,2,3,4,5).gather(Gatherers.windowFixed(3)).toList();\nvar sliding = Stream.of(1,2,3,4,5).gather(Gatherers.windowSliding(3)).toList();\nif (!fixed.equals(List.of(List.of(1,2,3),List.of(4,5))))\nthrow new AssertionError(fixed);\nif (!sliding.equals(List.of(List.of(1,2,3),List.of(2,3,4),List.of(3,4,5))))\nthrow new AssertionError(sliding);\nSystem.out.println(fixed);\nSystem.out.println(sliding);\n}\n}"],["CODING LAB 19 / 20 · JAVA 25 · PREVIEW — C19 Stable initialization and exact primitive matching","TASK AND EXPECTED BEHAVIOR Practice two explicit Java 25 preview features. Supplier failure leaves the holder unset before a retry.","import java.util.concurrent.atomic.AtomicInteger;\npublic class Lab19 {\npublic static void main(String[] args) {\nStableValue<String> holder = StableValue.of();\nAtomicInteger calls = new AtomicInteger();\ntry {\nholder.orElseSet(() -> { calls.incrementAndGet();\nthrow new IllegalStateException(\"retryable sample\"); });\nthrow new AssertionError(\"missing failure\");\n} catch (IllegalStateException expected) { }\nif (holder.isSet()) throw new AssertionError();\nString value = holder.orElseSet(() -> { calls.incrementAndGet(); return \"ok\"; });\nholder.orElseSet(() -> { throw new AssertionError(\"already set\"); });\nint number=127;\nif (!(number instanceof byte small) || small!=127) throw new AssertionError();\nnumber=128;\nif (number instanceof byte tooLarge) throw new AssertionError(tooLarge);\nif (!value.equals(\"ok\") || calls.get()!=2) throw new AssertionError();\nSystem.out.println(\"calls=2; exactMatch=true\");\n}\n}"],["CODING LAB 20 / 20 · JAVA 25 · PREVIEW — C20 Java 25 structured children with scoped context","TASK AND EXPECTED BEHAVIOR Use the Java 25 preview open-based scope, final ScopedValue and deterministic result assembly.","import java.util.concurrent.StructuredTaskScope;\npublic class Lab20 {\nstatic final ScopedValue<String> TENANT = ScopedValue.newInstance();\npublic static void main(String[] args) throws Exception {\nString result = ScopedValue.where(TENANT,\"T1\").call(() -> {\ntry (var scope = StructuredTaskScope.open()) {\nvar a = scope.fork(() -> TENANT.get()+\":A\");\nvar b = scope.fork(() -> TENANT.get()+\":B\");\nscope.join();\nreturn a.get()+\"|\"+b.get();\n}\n});\nif (!result.equals(\"T1:A|T1:B\") || TENANT.isBound())\nthrow new AssertionError(result);\nSystem.out.println(result);\n}\n}"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

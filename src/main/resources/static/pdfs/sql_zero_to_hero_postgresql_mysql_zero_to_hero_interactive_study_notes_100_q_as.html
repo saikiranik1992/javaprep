@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Zero to Hero (PostgreSQL &amp; MySQL) — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #4f46e5;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">SQL Zero to Hero (PostgreSQL &amp; MySQL)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 15 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Premium Interview Notebook &amp; Query Reasoning · Portable SQL · PostgreSQL 17 · MySQL 8.4 · 15 Labs
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (15)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Data &amp; Persistence</span>
+              <span>•</span>
+              <span>128 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              SQL Zero to Hero (PostgreSQL &amp; MySQL) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Premium Interview Notebook &amp; Query Reasoning (Portable SQL · PostgreSQL 17 · MySQL 8.4 · 15 Labs). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">SQL Zero to Hero (PostgreSQL &amp; MySQL)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">SQL Zero to Hero (PostgreSQL &amp; MySQL) — Hands-On Labs &amp; Reference Guides (15)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of SQL Zero to Hero (PostgreSQL &amp; MySQL).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">SQL Zero to Hero (PostgreSQL &amp; MySQL) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"sql","title":"SQL Zero to Hero (PostgreSQL & MySQL)","subtitle":"Premium Interview Notebook & Query Reasoning","category":"Data & Persistence","badge":"Portable SQL · PostgreSQL 17 · MySQL 8.4 · 15 Labs","color":"#4f46e5","pages":128,"chapters":["Sql Foundations And Query Reasoning","Types, Null And Three-Valued Logic","Schema, Constraints And Ddl","Filtering, Dates And Deterministic Ordering","Joins And Result Cardinality","Aggregation And Grouping","Subqueries, Exists And Null-Safe Anti-Joins","Ctes And Recursive Queries","Window Functions","Common Interview Query Challenges","Data Changes, Upsert And Deduplication","Normalization And Schema Design","Indexes And Access-Path Design","Execution Plans And Query Tuning","Transactions And Acid","Isolation And Mvcc","Locks, Deadlocks And Concurrency Control","Views, Routines, Partitioning And Maintenance","Application Sql, Security And Pagination","Senior Scenarios And Query-Review Discipline"],"questions":[["Q001",0,"What is SQL and how is it different from procedural code?","SQL describes the required data result; the database optimizer chooses an execution plan.","SELECT employee_id, name FROM employees WHERE salary >= 80000;","The query specifies columns and eligible rows rather than a loop through storage pages. A relational result can contain duplicate rows unless the query removes them. Explain what one result row represents before writing joins.","Declarative syntax does not guarantee an efficient plan.","What is the grain of this result?","A row represents one employee whose known salary is at least 80,000. employee_id identifies the row."],["Q002",0,"What are DDL, DML, DQL, DCL and TCL?","They are common teaching categories for defining structures, changing/ querying data, controlling privileges and managing transactions.","DDL: CREATE, ALTER, DROP\nDML: INSERT, UPDATE, DELETE; DQL label: SELECT\nDCL: GRANT, REVOKE; TCL: COMMIT, ROLLBACK, SAVEPOINT","The DQL/DML classification of SELECT varies by teaching convention. Learn command behavior rather than treating the categories as a portable transactional specification. DDL commit and rollback behavior differs by database.","Saying all DDL always commits is incorrect across engines.","How does MySQL DDL differ from PostgreSQL DDL?","PostgreSQL can roll back many supported DDL operations inside a transaction; MySQL commonly performs implicit commits for DDL, including TRUNCATE. Check the exact command before migration."],["Q003",0,"What is a relational key?","A key identifies a row according to an invariant; candidate keys are minimal identifiers, and one can be selected as the primary key.","employees.employee_id is primary key\nAn enforced unique business identifier can be another candidate key","A surrogate ID simplifies references but does not enforce business uniqueness by itself. Use appropriate unique constraints for identifiers that must not repeat. Composite keys combine columns when the identity requires them.","A generated ID does not prevent duplicate business records.","Which business uniqueness constraint would you add?","For accounts, enforce UNIQUE on the immutable account number (and NOT NULL). For tenant-scoped IDs, consider UNIQUE(tenant_id, external_id)."],["Q004",0,"What is the logical processing order of a SELECT?","Reason roughly from FROM/JOIN to WHERE, GROUP BY, HAVING, window evaluation, projection/distinct, ORDER BY and limiting, subject to SQL semantics.","FROM -> WHERE -> GROUP BY -> HAVING\nWindow calculations -> SELECT / DISTINCT -> ORDER BY -> LIMIT","This is a reasoning model, not a promise about the physical operator schedule. The optimizer can reorder equivalent operations. Alias visibility and supported clauses vary by dialect, so use a subquery when a derived result must be filtered.","Physical execution is not a literal top-to-bottom reading of SQL.","Why cannot WHERE normally use a window result?","WHERE filters rows before window values are calculated in the logical query model. Calculate the window in a CTE or subquery, then filter outside."],["Q005",0,"Does SQL return rows in insertion order?","No. A required order needs ORDER BY, including a deterministic tie-breaker when pagination or ranking needs it.","SELECT employee_id, salary FROM employees\nORDER BY salary DESC, employee_id ASC;","Indexes and current plans can make an unordered result appear stable, but that is not a contract. Null placement differs by database/defaults; define it explicitly when required. Ties need additional ordering for exact row selection.","LIMIT without ORDER BY is not a reliable top-N query.","How would you order null salaries last portably?","ORDER BY CASE WHEN salary IS NULL THEN 1 ELSE 0 END, salary DESC, employee_id. The CASE places missing salaries last and ID breaks ties."],["Q006",1,"How is NULL different from zero or an empty string?","NULL represents an absent/unknown value; zero and an empty string are actual values under the chosen database semantics.","SELECT employee_id FROM employees WHERE salary IS NULL;","A normal equality comparison to NULL produces unknown rather than true. WHERE keeps rows where its predicate is true. Use IS NULL/IS NOT NULL and decide whether missing data is valid in the domain.","salary = NULL does not find null salaries.","What does NOT(salary = 1000) do for NULL?","NULL = 1000 is UNKNOWN, and NOT UNKNOWN is still UNKNOWN. WHERE therefore excludes that row."],["Q007",1,"What is SQL three-valued logic?","Predicates can evaluate to true, false or unknown, and unknown affects filtering and Boolean combinations.","TRUE AND UNKNOWN -> UNKNOWN\nFALSE AND UNKNOWN -> FALSE\nTRUE OR UNKNOWN -> TRUE","Unknown commonly comes from comparisons involving NULL. Do not assume programming-language Boolean rules with a null simply replaced by false. A CHECK constraint can accept unknown, so NOT NULL may be required separately.","CHECK(salary > 0) alone does not reject NULL salary.","How do you require a positive known salary?","Use salary DECIMAL(12,2) NOT NULL CHECK (salary > 0). NOT NULL rejects unknown, while CHECK rejects nonpositive values."],["Q008",1,"How do COALESCE and NULLIF help?","COALESCE chooses the first non-null expression; NULLIF returns NULL when its arguments compare equal.","SELECT COALESCE(salary, 0) FROM employees;\nSELECT 100.0 / NULLIF(denominator, 0) FROM calculation;","Substitution is a business choice: unknown salary is not automatically zero. NULLIF can avoid a division-by-zero failure by producing a null result. Compatible types and engine arithmetic behavior still matter.","A null ratio and a zero ratio have different meanings.","What should the report show for an undefined denominator?","Return NULL or an explicit 'not applicable' indicator, not a made-up zero. Document the rule for consumers."],["Q009",1,"Why use DECIMAL/NUMERIC rather than floating point for money?","Exact decimal types avoid binary floating-point approximation for the supported precision and scale.","amount DECIMAL(12,2)\n-- 12 total digits, 2 fractional digits","Specify rounding, currency and permitted range. Exact storage does not decide business rounding or stop arithmetic overflow automatically. Integer minor units are another deliberate option; not every currency uses two decimal places.","FLOAT is not an exact currency ledger type.","How would you model currencies with different scales?","Store currency code and amount using a defined decimal scale or integer minor units according to each currency. Convert and round with an explicit policy."],["Q010",1,"How do DATE and timestamp types differ?","DATE stores a calendar date; timestamp types store time-of-day, with engine- specific time-zone semantics.","-- PostgreSQL: timestamp without time zone vs timestamptz\n-- MySQL: DATETIME vs TIMESTAMP have different conversion/range rules","Choose whether the value is a local civil time, an instant, or a date. Session time zone affects some displays/conversions. Keep inclusive start/exclusive end bounds for time intervals, and define the business reporting zone.","Timestamp type names are not portable semantic guarantees.","How do you report one day across a daylight-saving change?","Define the business time zone; construct local midnight-to-next-midnight bounds in that zone, convert both to instants and query a half-open interval."],["Q011",2,"How do PRIMARY KEY, UNIQUE and NOT NULL differ?","Primary key identifies each row and disallows null key parts; UNIQUE enforces uniqueness under engine rules; NOT NULL forbids absence.","CREATE TABLE tags (\ntag_id INTEGER PRIMARY KEY,\nname VARCHAR(100) NOT NULL UNIQUE\n);","A table can have multiple unique constraints but one primary key declaration. NULL handling in unique constraints differs by database/options. Do not infer that UNIQUE alone always makes a column a non-null business identifier.","Nullable unique behavior is not identical to a primary key.","How do you require one unique known email?","Use email VARCHAR(...) NOT NULL with a UNIQUE constraint; decide whether normalized/case-insensitive uniqueness is needed and implement it for your engine."],["Q012",2,"What does a foreign key enforce?","It requires referenced identity to exist for applicable referencing values and constrains related modifications through its action policy.","FOREIGN KEY (department_id) REFERENCES departments(department_id)","Nullable foreign keys can represent optional relationships under the configured match semantics. Deletion actions such as RESTRICT or CASCADE have business consequences. PostgreSQL does not automatically create a referencing-column index; MySQL InnoDB has index requirements/creation behavior.","A foreign key does not automatically prove a query's join is one-to-one.","Which side can have many rows?","The referencing/child table can contain many rows pointing to one parent. For example, many employees can reference one department."],["Q013",2,"When should you use a CHECK constraint?","Use it for supported row-level validity rules, along with required nullability constraints.","quantity INTEGER NOT NULL CHECK (quantity > 0)","A check can validate a row's values but is not a general cross-row aggregate invariant. Expressions and enforcement differ by engine/version. A uniqueness constraint or proper transaction protocol is needed for concurrent cross-row rules.","A positive check without NOT NULL can permit unknown values.","How would you enforce one active booking per slot?","Enforce a uniqueness rule on the slot identity for active bookings: in PostgreSQL a partial unique index may work; otherwise use a modeled active-slot claim with a unique key and transaction."],["Q014",2,"How do DELETE, TRUNCATE and DROP differ?","DELETE removes selected rows; TRUNCATE removes table contents through a different engine operation; DROP removes the object definition.","DELETE FROM demo_rows WHERE id = 1;\n-- TRUNCATE demo_rows; DROP TABLE demo_rows; use only disposable fixtures.","Do not summarize them only as slow/fast. PostgreSQL TRUNCATE can be rolled back in a transaction, while MySQL TRUNCATE causes an implicit commit. Locking, triggers, identity behavior and foreign-key restrictions differ.","TRUNCATE rollback behavior is not portable.","Which operation preserves the table schema?","DELETE and TRUNCATE preserve the table definition; DROP TABLE removes it. Other behavior differs by engine."],["Q015",2,"How do you change a large production table safely?","Plan compatibility, lock duration, backfill load, constraints and rollback around the specific engine operation.","Add nullable column -> deploy compatible code\nBackfill in bounded batches -> validate -> enforce required constraint","Online/concurrent options have engine-specific limitations and still consume resources. Avoid assuming every ALTER is instant. Mixed old/new application versions must tolerate the transitional schema. Test on representative volume and inspect locks.","A migration that works on ten rows can block a large live table.","What evidence would you collect before rollout?","Collect row counts, disk and index sizes, traffic, lock duration, rollback plan, representative rehearsal timings and old/new app compatibility evidence."],["Q016",3,"How do WHERE, BETWEEN, IN and LIKE differ?","They express general predicates, inclusive bounds, membership and pattern matching respectively.","WHERE salary BETWEEN 60000 AND 90000\nWHERE department_id IN (10,20)\nWHERE name LIKE 'M%'","BETWEEN includes both ends, which can be awkward for timestamp ranges. LIKE case sensitivity follows collation/type rules rather than one universal SQL behavior. Escape literal wildcard characters when needed.","BETWEEN day-start and next-day-start includes the next boundary.","How would you filter exactly one month?","Use >= the first instant of the month and < the first instant of the next month. Bind both boundaries with the reporting time zone."],["Q017",3,"Why use a half-open timestamp range?","It includes the start and excludes the next boundary without guessing the last representable instant.","WHERE ordered_at >= :start\nAND ordered_at < :next_start","Bind timestamps derived in the intended business zone. This can also be more index- friendly than wrapping the column in a date-extraction function. Account for timestamp precision and session conversion behavior.","'23:59:59' can miss fractional-second rows.","How do you build month bounds correctly?","Compute the first day of this month and the first day of the following month in the business zone; use start inclusive and next-start exclusive."],["Q018",3,"How do CASE expressions help in reporting?","CASE maps conditions to values while keeping the rule inside a set-based query.","SELECT employee_id,\nCASE WHEN salary IS NULL THEN 'UNKNOWN'\nWHEN salary >= 90000 THEN 'HIGH' ELSE 'OTHER' END AS band\nFROM employees;","Branches are considered in order and the resulting types must be compatible. Explicit handling of NULL prevents unknown values from being mislabeled. Use CASE for conditional aggregation as well as display values.","A label does not replace the original value's semantics.","What happens when two conditions overlap?","CASE returns the value from the first matching WHEN branch. Order overlapping conditions from most specific to general."],["Q019",3,"How do you paginate deterministically with LIMIT?","Apply an explicit stable ordering with a unique tie-breaker; then choose offset or seek behavior deliberately.","SELECT order_id, ordered_at FROM orders\nORDER BY ordered_at DESC, order_id DESC LIMIT 20 OFFSET 40;","LIMIT/OFFSET syntax works in the main PostgreSQL/MySQL examples. Other engines use alternatives. Inserts/deletes between requests can shift offset pages; stable ordering alone does not provide a cross-request snapshot.","Deep offsets still require work on preceding rows.","When would seek pagination be better?","Seek/keyset pagination is better for deep sequential browsing with a stable unique sort key; it avoids scanning large OFFSET prefixes and reduces page drift."],["Q020",3,"How do you write portable date arithmetic?","Do not assume interval syntax is identical; label the engine and bind computed bounds when useful.","-- PostgreSQL:\nSELECT CURRENT_TIMESTAMP - INTERVAL '7 days';\n-- MySQL:\nSELECT CURRENT_TIMESTAMP - INTERVAL 7 DAY;","Functions such as date truncation, date differences and formatting differ. Parameterized start/end timestamps often keep application queries simple and consistent. Define whether seven days means elapsed hours or calendar days.","Calendar arithmetic can differ from fixed elapsed seconds.","Which time zone controls the report?","Use the business/reporting time zone selected by the product contract, not an accidental database session default."],["Q021",4,"How do INNER and LEFT JOIN differ?","INNER JOIN returns matching pairs; LEFT JOIN also preserves unmatched left rows with null-extended right columns.","SELECT d.name, e.name FROM departments d\nLEFT JOIN employees e ON e.department_id = d.department_id;","A department with no employees still appears in the left-join result. A department with many employees appears once for every matching employee. Understand the keys and multiplicity before aggregating.","LEFT JOIN does not guarantee one result row per left row.","How many rows does Engineering produce here?","Engineering has three matching employees: Sai, Meena and Arun. LEFT JOIN returns one row per match."],["Q022",4,"Why can a WHERE predicate turn a LEFT JOIN into inner-like behavior?","A predicate requiring a non-null right-side match discards null-extended rows after the join.","LEFT JOIN employees e ON e.department_id=d.department_id\nWHERE e.salary > 80000","If the requirement is preserve every department while matching only high earners, place the right-side condition in ON. If the requirement is departments with a high earner, filtering may be intentional. Explain the requirement first.","Moving a condition between ON and WHERE can change semantics.","How do you preserve empty departments?","Move the right-side salary condition into JOIN ... ON and preserve each department; count employee_id to get zero for unmatched departments."],["Q023",4,"Why do joins multiply rows?","Each matching pair produces a row; multiple one-to-many relationships can create a multiplication of combinations.","Order has 2 items and 3 payments\nJoining both detail tables directly can create 6 rows","Declare the intended grain and aggregate each detail relation to that grain before joining. DISTINCT on final values can hide symptoms but cannot generally repair duplicated totals. Validate constraints rather than assuming uniqueness.","SUM(DISTINCT amount) also collapses genuinely equal amounts.","How would you avoid doubled order revenue?","Aggregate order-items to order_id before joining, or sum header amounts from the orders table directly. Never fix duplicated headers with SUM(DISTINCT amount)."],["Q024",4,"What are self joins and cross joins?","A self join relates rows of one table through aliases; a cross join produces every pair of rows from its inputs.","SELECT e.name, m.name AS manager FROM employees e\nLEFT JOIN employees m ON m.employee_id=e.manager_id;","Use clear aliases for employee/manager roles. A cross join can intentionally generate a calendar/product matrix, but an accidental missing join condition can explode row counts. Multiply input cardinalities to estimate the result.","Sharing a table name does not remove the need for a relationship condition.","How would you find employees without a manager?","LEFT JOIN employees m ON m.employee_id=e.manager_id WHERE e.manager_id IS NULL; this includes top-level and unassigned employees."],["Q025",4,"Does MySQL support FULL OUTER JOIN like PostgreSQL?","MySQL 8.4 does not provide native FULL OUTER JOIN; PostgreSQL does. Emulation needs careful duplicate and match handling.","-- PostgreSQL:\nSELECT * FROM a FULL OUTER JOIN b ON a.id=b.id;\n-- MySQL: left branch UNION ALL right-only branch with NOT EXISTS.","Keep unmatched rows from both sides without returning matched rows twice. Use explicit columns and a non-null key or null-safe anti-match policy. Many interview questions do not require a full join, so verify the actual goal.","UNION can unintentionally remove legitimate duplicate rows in an emulation.","How do you isolate the right-only branch?","Use the left-join rows from B with no match in A, commonly WHERE a.id IS NULL when the left key is non-null; add them with UNION ALL."],["Q026",5,"How do GROUP BY and DISTINCT differ?","GROUP BY forms groups for aggregate reasoning; DISTINCT removes duplicate projected result rows.","SELECT DISTINCT department_id FROM employees;\nSELECT department_id, COUNT(*) FROM employees GROUP BY department_id;","They can sometimes produce the same columns but express different intent. Choose grouping keys representing the report grain. PostgreSQL/MySQL have specific functional- dependency rules; avoid relying on arbitrary ungrouped columns.","Disabling strict group rules can yield misleading selected values.","Which columns define one report row?","Choose grouping columns that uniquely define the report entity: for example, customer_id for one row per customer."],["Q027",5,"How do COUNT(*), COUNT(column) and COUNT(DISTINCT column) differ?","They count rows, non-null column values and distinct non-null values respectively.","SELECT COUNT(*), COUNT(salary), COUNT(DISTINCT salary) FROM employees;\n-- Fixture result: 6, 5, 4","Null salaries contribute to row count but not salary-value counts. With a left join, COUNT(*) also counts a preserved row for an empty department; count a non-null employee key instead.","COUNT(*) after LEFT JOIN can report one employee for an empty group.","How do you count zero employees correctly?","SELECT d.department_id, COUNT(e.employee_id) FROM departments d LEFT JOIN employees e ON e.department_id=d.department_id GROUP BY d.department_id; empty HR returns zero."],["Q028",5,"How do WHERE and HAVING differ?","WHERE filters input rows; HAVING filters groups after aggregation.","SELECT department_id, COUNT(*) FROM employees\nWHERE salary IS NOT NULL GROUP BY department_id HAVING COUNT(*) >= 2;","Row predicates reduce eligible inputs, while aggregate predicates belong at group level. Some engines allow HAVING in additional forms, but the distinction remains useful. Do not filter rows needed by another aggregate unintentionally.","HAVING is not merely a slower version of WHERE.","What changes if salary filtering is removed?","Removing WHERE salary IS NOT NULL allows the unknown-salary employee into their group, changing counts if included; averages still ignore null salaries."],["Q029",5,"How do you calculate conditional totals?","Aggregate CASE expressions or a supported engine-specific filtered aggregate.","SELECT SUM(CASE WHEN status='PAID' THEN amount ELSE 0 END) AS paid_total\nFROM orders;","CASE makes this query portable across the main engines. SUM over no input rows returns NULL, so use COALESCE when a zero total is the required contract. Keep cancelled/pending amounts separate when the report demands them.","Returning zero is a business/reporting choice, not automatic SUM behavior.","How do you compute paid and pending counts together?","SUM(CASE WHEN status='PAID' THEN 1 ELSE 0 END) and SUM(CASE WHEN status='PENDING' THEN 1 ELSE 0 END), together in one SELECT."],["Q030",5,"Why can AVG(salary) differ from SUM(salary)/ COUNT(*)?","AVG ignores null salary values, while COUNT(*) includes rows without a known salary.","Known salaries total=410000; known count=5; all rows=6\nAVG(salary)=82000; total/all rows is a different measure","Use the correct denominator and a decimal arithmetic expression if computing ratios. Some engines perform integer division for integer operands, so cast or use an appropriate numeric literal.","Missing salary does not automatically mean zero compensation.","What denominator does your business metric require?","For mean known salary, divide by COUNT(salary); for payroll per headcount, choose a documented rule for unknown salary and use the appropriate population."],["Q031",6,"What is a scalar subquery?","A scalar subquery supplies one value; no row normally yields NULL, and more than one row is an error under PostgreSQL/MySQL semantics.","SELECT name FROM employees\nWHERE salary > (SELECT AVG(salary) FROM employees);","An aggregate without grouping supplies one value even for empty input, though AVG may return NULL. A grouped subquery can produce many rows and cannot simply act as one scalar. Keep cardinality explicit.","SQLite's scalar-subquery behavior differs for multiple rows.","How would you guarantee one returned value?","Make the subquery aggregate without GROUP BY, or use a unique-key filter. Do not arbitrarily LIMIT 1 unless that is a valid business selection."],["Q032",6,"What is a correlated subquery?","It references an outer row, making its logical result depend on that row's values.","SELECT e.name FROM employees e WHERE e.salary >\n(SELECT AVG(x.salary) FROM employees x WHERE x.department_id=e.department_id);","This finds employees above their department average. The optimizer may transform the query rather than literally execute one independent full scan per row. Verify the plan instead of making a universal performance claim.","Correlated does not automatically mean slow.","Can a window aggregate express the same rule?","Yes: AVG(salary) OVER (PARTITION BY department_id) in a CTE, then filter salary > department_avg outside the CTE."],["Q033",6,"When should you use EXISTS?","Use EXISTS when the requirement is whether at least one matching row exists, without multiplying the outer rows.","SELECT c.customer_id FROM customers c WHERE EXISTS\n(SELECT 1 FROM orders o WHERE o.customer_id=c.customer_id AND o.status='PAID');","A customer qualifies once even with several paid orders. A join needs DISTINCT or aggregation if the required result is one row per customer. EXISTS does not depend on the selected literal being 1.","SELECT 1 is convention, not a special guarantee of faster execution.","How would you find customers with no orders?","SELECT c.customer_id FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id=c.customer_id); it naturally includes customers without rows."],["Q034",6,"Why is NOT IN dangerous with NULLs?","If the membership set contains NULL, nonmatching comparisons can become unknown and be filtered out.","SELECT c.customer_id FROM customers c WHERE c.customer_id NOT IN\n(SELECT manager_id FROM employees);","The fixture has NULL manager IDs, so this is a poor exclusion rule. Prefer a logically appropriate NOT EXISTS, or prove/filter non-null values on both sides. Do not replace one construct with another without checking outer null semantics.","NOT IN and NOT EXISTS are not universally equivalent.","What if the outer identifier is NULL?","An outer NULL requires explicit meaning. With NOT EXISTS, null-safe correlation is necessary only if NULL is a legitimate identity; usually a NOT NULL key is preferable."],["Q035",6,"How do anti-joins find missing relationships?","NOT EXISTS can retain rows for which no qualifying related row is present.","SELECT c.customer_id FROM customers c WHERE NOT EXISTS\n(SELECT 1 FROM orders o WHERE o.customer_id=c.customer_id);","A left join plus IS NULL on a non-null right-side key can also express absence. Keep additional matching filters in the appropriate place. Use the business definition of missing: no orders differs from no paid orders.","Testing a nullable right-side field can misclassify a real match.","Which key should the IS NULL test use?","Check a non-null, guaranteed right-side key such as o.order_id IS NULL after LEFT JOIN; do not use a nullable payload column."],["Q036",7,"What is a CTE?","A common table expression names a query result within one statement using WITH.","WITH paid AS (SELECT * FROM orders WHERE status='PAID')\nSELECT customer_id, SUM(amount) FROM paid GROUP BY customer_id;","It improves readability and supports reuse within that statement. It is not automatically a stored table or permanently cached result. Optimization/materialization behavior differs by engine, version and query structure.","A CTE is not always faster than a subquery.","What would you inspect to see its physical treatment?","Check EXPLAIN or EXPLAIN ANALYZE and the engine/version rules; CTEs may be inlined or materialized depending on plan and syntax."],["Q037",7,"How do a CTE, derived table and temporary table differ?","A CTE and derived table are statement-local query constructs; a temporary table is a separate session/transaction-scoped object under engine rules.","Derived: FROM (SELECT ...) AS q\nCTE: WITH q AS (SELECT ...)\nTemporary: CREATE TEMPORARY TABLE q (...)","A temporary table can support explicit staging/indexes and reuse across statements, with creation/cleanup and transaction semantics to review. Choose from reuse, plan control and lifecycle needs rather than style alone.","Temporary-table scope and DDL behavior vary by database.","When is materialized staging worth the cost?","Stage results when expensive intermediate data is reused or needs indexing and stable lifetime. Measure creation, cleanup and statistics costs."],["Q038",7,"What does a recursive CTE contain?","It combines an anchor term with a recursive term that consumes prior results until no new rows are produced.","WITH RECURSIVE org AS (\nSELECT employee_id, manager_id, 0 AS depth FROM employees WHERE employee_id=1\nUNION ALL\nSELECT e.employee_id,e.manager_id,o.depth+1 FROM employees e\nJOIN org o ON e.manager_id=o.employee_id WHERE o.depth<10)\nSELECT * FROM org;","This walks Sai's reporting subtree in the fixture. Add a path/cycle policy for general graphs; a depth cap is a bound, not proof the graph is acyclic. Output order needs ORDER BY separately.","Recursion does not imply deterministic traversal order.","How would you report a detected cycle?","Carry a visited-ID path or a cycle marker and emit the offending edge; do not confuse a shared descendant with a loop."],["Q039",7,"How do you prevent a recursive query running indefinitely?","Use valid hierarchy constraints, cycle detection and a reviewed bound; do not depend only on unlimited data being well formed.","Track visited IDs or use supported cycle syntax\nReject revisiting a node on the current path","UNION deduplication may stop some recursions but does not generally replace path- aware cycle logic when rows include changing depth/path values. Engine recursion limits differ. Test cyclic, deep and shared-descendant cases.","Incrementing depth makes repeated visits distinct rows.","Is a shared child a cycle?","No. A cycle revisits a node on the current traversal path. Two independent parent paths reaching the same child form a DAG, not necessarily a cycle."],["Q040",7,"What is a useful multi-stage CTE interview pattern?","Break grain-changing operations into named stages, then join/filter their documented outputs.","WITH paid_totals AS (\nSELECT customer_id, SUM(amount) AS total FROM orders\nWHERE status='PAID' GROUP BY customer_id)\nSELECT c.name,p.total FROM customers c JOIN paid_totals p\nON p.customer_id=c.customer_id;","The first stage creates one row per paying customer. The next joins that grain to customers without detail multiplication. Readable stages make correctness easier to assess, while the optimizer still chooses physical operations.","Naming a stage does not enforce uniqueness without the query/constraints.","How would you include zero-paying customers?","Start with customers and LEFT JOIN the per-customer payment aggregate, COALESCE total to zero if required; preserve the empty customer."],["Q041",8,"How do window functions differ from GROUP BY?","Window functions calculate across related rows without collapsing detail rows into one group row.","SELECT employee_id, department_id, salary,\nAVG(salary) OVER(PARTITION BY department_id) AS dept_avg\nFROM employees;","Each employee retains an output row with its department average. A partition is a calculation grouping, not table storage partitioning. Window ordering and final result ordering are separate.","OVER(ORDER BY ...) does not guarantee final display order.","What is the output grain here?","The output remains one row per base order because the window annotates rows; GROUP BY would collapse rows into groups."],["Q042",8,"How do ROW_NUMBER, RANK and DENSE_RANK differ?","ROW_NUMBER numbers rows; RANK gives peers the same rank with gaps; DENSE_RANK gives peers the same rank without gaps.","Salaries 100000,80000,80000,60000\nROW_NUMBER: 1,2,3,4; RANK: 1,2,2,4; DENSE_RANK: 1,2,2,3","Peer equality follows the window ORDER BY expressions. Adding employee_id to a salary- ranking order breaks salary ties. Use a separate deterministic tie-breaker for row- number selection when exactly N rows are required.","Top two rows and top two distinct salaries are different requirements.","Which function fits second distinct salary?","DENSE_RANK on salary DESC finds the second distinct level including ties. Filter rank=2 in an outer query."],["Q043",8,"Why specify an explicit running-total frame?","ROWS with a unique order makes the intended per-row accumulation explicit instead of relying on a default peer-sensitive frame.","SUM(amount) OVER (ORDER BY ordered_at, order_id\nROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)","With ordered aggregate windows, default frames can include all peers at the current ordering value. An order_id tie-breaker plus ROWS makes row progression clear. Partition when each customer needs a separate total.","Same-date rows can share a total under a peer-based frame.","What changes if order_id is removed?","Without order_id, equal-date rows become peers; RANGE or default frame behavior may produce jumps. Specify ROWS and a unique tie-breaker for deterministic progression."],["Q044",8,"How do LAG and LEAD help?","They access values from earlier/later rows in the window's logical order without a self join.","SELECT order_id, amount,\nLAG(amount) OVER(PARTITION BY customer_id ORDER BY ordered_at,order_id) AS prev\nFROM orders;","The first row has no preceding value unless a default is supplied. Distinguish a missing preceding row from a preceding row whose value is NULL. Add deterministic ordering and decide whether cancelled rows belong in the sequence.","Offset means row position, not elapsed days.","How would you calculate a change from the previous paid order?","Use LAG(amount) OVER (PARTITION BY customer_id ORDER BY ordered_at, order_id) on paid orders, then subtract the prior amount."],["Q045",8,"How do you filter a window result in PostgreSQL/ MySQL?","Compute it in a CTE/derived table, then filter in an outer query.","WITH ranked AS (\nSELECT employee_id,salary,DENSE_RANK() OVER(ORDER BY salary DESC) AS r\nFROM employees WHERE salary IS NOT NULL)\nSELECT employee_id,salary FROM ranked WHERE r=2;","WHERE in the same query level runs before the window result is available. QUALIFY exists in some other engines but is not part of these baseline examples. Keep final ORDER BY explicit.","A window alias in same-level WHERE is not portable SQL.","How do you return exactly two rows instead of ties?","Use ROW_NUMBER with unique ordering and filter row_num<=2, instead of DENSE_RANK which may include extra tied rows."],["Q046",9,"How do you find the second-highest distinct salary?","Rank non-null distinct salary levels, or take the maximum salary below the global maximum.","SELECT MAX(salary) AS second_salary FROM employees\nWHERE salary < (SELECT MAX(salary) FROM employees);","This returns 90000 in the fixture and NULL if fewer than two distinct known salaries exist. It returns a salary, not all employees earning it. Use DENSE_RANK when employee rows at a selected level are required.","OFFSET 1 on raw employee rows can select another tied maximum.","How do you return all second-level employees?","Compute the second distinct amount in a CTE and filter employees whose salary equals it; tied employees are all included."],["Q047",9,"How do you select top N salaries per department?","Use DENSE_RANK for salary levels or ROW_NUMBER for an exact row count, with an explicit tie policy.","WITH r AS (\nSELECT employee_id,department_id,salary,\nDENSE_RANK() OVER(PARTITION BY department_id ORDER BY salary DESC) AS pos\nFROM employees WHERE salary IS NOT NULL)\nSELECT * FROM r WHERE pos<=2;","Engineering returns three employees because two share its second level. Exclude or handle unassigned/null values as required. For exactly two people, ROW_NUMBER with salary then employee_id gives deterministic selection.","Adding a unique ID to DENSE_RANK changes the salary-level definition.","How many rows should Engineering return?","Engineering has three people across two distinct salary levels: one at 100,000 and two tied at 80,000."],["Q048",9,"How do you find duplicate business values?","Group by the business identity columns and retain groups with more than one row.","SELECT email,COUNT(*) FROM contacts GROUP BY email HAVING COUNT(*)>1;","Define case/space normalization and NULL policy before calling values duplicates. For removal, first choose a deterministic retained row and review references. Duplicates by email are not necessarily duplicates by the entire row.","DISTINCT only hides duplicates in one result; it does not repair stored data.","Which row should survive a cleanup?","Choose a survivor by a documented rule such as earliest verified row, then use ROW_NUMBER partitioned by the normalized business key, ordered by chosen priority and ID."],["Q049",9,"How do you solve gaps-and-islands questions?","Derive a stable group key or change marker for consecutive runs, then aggregate by that group.","Consecutive integer values: value - ROW_NUMBER() OVER(ORDER BY value)\nEqual differences identify one island after deduplication","Define consecutive precisely: integer +1, adjacent dates or adjacent events. Deduplicate input when necessary, handle partitions and use dialect-specific date arithmetic carefully. A LAG-based start marker is another useful method.","Missing weekends are not a gap if the business uses working days.","What interval defines adjacency?","Define whether adjacent means consecutive integers, dates, or gaps no larger than a threshold; derive groups using that specific definition."],["Q050",9,"How do you find customers who bought every required product?","Use relational division, often expressed as no required product lacking a corresponding purchase.","SELECT c.customer_id FROM customers c WHERE NOT EXISTS (\nSELECT 1 FROM required_products p WHERE NOT EXISTS (\nSELECT 1 FROM purchases x WHERE x.customer_id=c.customer_id\nAND x.product_id=p.product_id));","The two NOT EXISTS clauses express universal coverage. Decide whether duplicate purchases, cancelled orders and an empty required-product set count. Under this formulation, an empty required set qualifies every customer.","Counting raw purchase rows can overcount duplicates.","What should the empty-set case mean for the business?","Mathematically every customer qualifies when the required set is empty, but the product may choose no result; state the intended business rule explicitly."],["Q051",10,"How do INSERT, UPDATE and DELETE target data?","INSERT adds rows; UPDATE modifies qualifying rows; DELETE removes qualifying rows.","UPDATE employees SET salary=salary+1000 WHERE employee_id=5;","An omitted or incorrect predicate can affect many rows. For practice, use disposable fixtures and inspect the same predicate with SELECT. Production changes need reviewed transactions, scope and affected-row evidence.","A precheck SELECT does not prevent concurrent changes.","Which invariant belongs in the write predicate?","Put the stock or version check in UPDATE ... WHERE, and verify affected rows. Constraints still enforce the final invariant."],["Q052",10,"What is an upsert?","It inserts or updates according to a conflict rule, with engine-specific syntax and semantics.","-- PostgreSQL: INSERT ... ON CONFLICT (...) DO UPDATE ...\n-- MySQL: INSERT ... ON DUPLICATE KEY UPDATE ...","A unique constraint defines conflict identity. Concurrency, affected-row counts and chosen update expressions matter. Do not treat upsert as a universal replacement for domain state-transition checks.","PostgreSQL conflict-target behavior differs from MySQL unique-key conflict handling.","Which columns define the conflict?","Use the business's unique identifier, for example (tenant_id, external_payment_id), rather than choosing any convenient column."],["Q053",10,"Why is SELECT-then-INSERT unsafe for uniqueness?","Two transactions can both observe absence and attempt insertion; the database constraint must arbitrate concurrent writers.","A: no booking -> insert\nB: no booking -> insert\nUNIQUE(slot_id) decides whether both can exist","Handle the conflict as a documented outcome or retry where appropriate. Locking one nonexistent row is not a universal solution. For a request ID, persist the result/claim under an appropriate transaction contract.","Application prechecks are not a substitute for UNIQUE.","How do you distinguish duplicate request from conflicting booking?","Use a unique idempotency/slot key; on conflict read the stored request hash and return its prior result only if the new request matches."],["Q054",10,"How do you remove duplicates deterministically?","Identify candidates using ROW_NUMBER over the business identity, retain one chosen key, then perform an engine-specific reviewed delete.","SELECT contact_id,email,\nROW_NUMBER() OVER(PARTITION BY email ORDER BY contact_id) AS n\nFROM contacts;\n-- n>1 are candidates, not automatically safe to delete.","References, merged fields and audit requirements determine whether deletion is valid. Use a migration workflow and enforce future uniqueness after cleanup. MySQL/ PostgreSQL delete-from-CTE syntax differs.","The minimum ID is not necessarily the best business record.","What if another table references the row being removed?","Update foreign-key references to the chosen survivor inside a safe transaction before deleting duplicate rows; verify referential integrity."],["Q055",10,"How do you prevent lost updates in a write?","Use a resource-level atomic expression or an expected-version predicate instead of blindly writing a stale value.","UPDATE inventory SET available=available-1\nWHERE item_id=:id AND available>0;","Inspect affected rows: one means the guarded mutation succeeded, zero means unavailable/missing under the contract. A broader workflow may still require a transaction and stable request identity. Version checks fit replacing complex stale state.","Atomic stock decrement alone does not deduplicate repeated requests.","How would you handle a timeout after the update committed?","Use a stable request ID, check transaction outcome and read current version/state before retrying. A timeout does not prove rollback."],["Q056",11,"What is normalization and why use it?","Normalization organizes facts according to dependencies to reduce update, insert and delete anomalies.","Store department name once in departments\nemployees reference department_id","Duplicating department names across employee rows can create conflicting copies. Normalization improves representation, while constraints and transaction logic enforce actual integrity. Query needs may justify deliberate derived read models.","More tables do not automatically mean a better model.","What update anomaly does the split remove?","The split stops one customer's detail being repeated in many independent rows, so updating a customer name no longer requires editing each order."],["Q057",11,"What do 1NF, 2NF and 3NF mean?","In the common teaching model, 1NF avoids repeating groups, 2NF removes partial-key dependencies, and 3NF removes inappropriate transitive dependencies of non-key facts.","Enrollment(student_id,course_id,student_name,grade)\nstudent_name depends on student_id, not the whole composite key","Treat 2NF/3NF definitions through candidate keys and functional dependencies, not merely the presence of foreign keys. Atomicity of a value depends on the modeled domain. Decompose carefully and preserve correct joins/constraints.","A single-column surrogate key does not cure all business dependency anomalies.","Which relation should own student_name?","student_name belongs to Students keyed by student_id, not repeated on each enrollment relationship."],["Q058",11,"How does BCNF differ from 3NF?","BCNF requires every nontrivial functional dependency's determinant to be a superkey; 3NF permits certain dependencies involving prime attributes.","R(student,course,instructor)\nFDs: (student,course) -> instructor; instructor -> course\nCandidate keys: (student,course), (student,instructor)","Assume each instructor teaches one course, and each student has one instructor for a course. Instructor determines course but is not a superkey, so the relation violates BCNF. Course is a prime attribute (part of a candidate key), so this dependency is permitted by 3NF. Decomposing into InstructorCourse and StudentInstructor can lose direct preservation of the student/course instructor rule. BCNF can remove anomalies remaining in a 3NF design, but dependency preservation can be a tradeoff. Interview answers should state actual dependencies for an example rather than label a table from its column count.","Every determinant is not automatically a primary key.","What is a prime attribute?","A prime attribute is part of some candidate key. BCNF requires every determinant to be a superkey; 3NF allows some dependencies whose dependent attribute is prime."],["Q059",11,"How do you model many-to-many relationships?","Use an association table with references and an appropriate uniqueness identity.","CREATE TABLE enrollment (\nstudent_id INTEGER, course_id INTEGER,\nPRIMARY KEY(student_id,course_id)\n);","Add foreign keys to the relevant tables in a real schema and store relationship attributes such as grade on the association. Some domains allow repeated enrollment attempts, requiring another identity dimension.","A comma-separated list of course IDs weakens relational integrity/querying.","How would multiple attempts change the key?","Use an enrollment/attempt identity, e.g. PRIMARY KEY(student_id, course_id, attempt_number) or a unique attempt_id plus a documented composite uniqueness rule."],["Q060",11,"When is denormalization reasonable?","Use it for measured read needs with an explicit source, refresh/invalidation policy and reconciliation plan.","Reporting projection stores paid_total per customer\nSource orders remain authoritative","Duplicated/derived facts trade write complexity and freshness for read speed. Materialized summaries need correct handling of updates, deletes and late events. Establish whether an inconsistent read is acceptable.","Storing a total does not ensure it stays correct.","How do you rebuild or verify the projection?","Rebuild from authoritative events/rows and compare row counts, totals, checksums or sampled business invariants before switching readers."],["Q061",12,"What does an index provide?","It supplies an alternative access path that can reduce lookup, filtering or ordering work at storage and write-maintenance cost.","CREATE INDEX ix_orders_customer_date\nON orders(customer_id,ordered_at,order_id);","An index is not guaranteed to be selected. Selectivity, statistics, row width and ordering needs affect cost. Additional indexes consume space and make inserts/updates/deletes more expensive.","More indexes do not monotonically improve performance.","Which workload justifies this index?","A measured query repeatedly filters by customer_id and ordered_at, so an index beginning with customer_id then date may be useful. Verify with the plan."],["Q062",12,"How does composite-index column order matter?","The ordered key structure makes some leading-column predicates and ordering combinations more useful than others.","(customer_id,ordered_at,order_id)\nWHERE customer_id=? ORDER BY ordered_at,order_id","Equality, range and requested ordering should guide the design. Leftmost-prefix rules are a useful baseline, but optimizer/index features can offer exceptions or alternative scans. Measure rather than declaring later columns never usable.","An index on (a,b) is not generally equivalent to (b,a).","What happens with only ordered_at in the predicate?","A composite index beginning with customer_id may not efficiently locate only ordered_at; test a separate date-leading index based on actual workload."],["Q063",12,"What is a covering or index-only query?","The access path may supply required columns from an index, reducing table/ heap visits, subject to engine visibility and storage rules.","Query projects columns present in a chosen index","PostgreSQL index-only scans still depend on visibility information and can require heap checks. MySQL InnoDB secondary indexes include primary-key information. Include/ payload syntax and index size tradeoffs differ.","Covering does not mean zero I/O in every engine.","How would you verify actual heap/table reads?","Use EXPLAIN (ANALYZE, BUFFERS) in PostgreSQL and check heap fetches; in MySQL compare index coverage and actual row reads using execution evidence."],["Q064",12,"What makes a predicate sargable?","It can be matched effectively to an available indexed access path, depending on types, expressions and engine capabilities.","Better baseline: ordered_at>=:start AND ordered_at<:end\nPotential issue: DATE(ordered_at)=:day without matching expression index","Functions, implicit casts, leading wildcards and mismatched collation can affect access. Expression/generated-column indexes can support some transformed predicates. Explain the actual plan, not a universal ban on functions.","WHERE syntax alone does not prove an index seek.","How would you support a case-insensitive search?","Use an appropriate normalized/search column with an index, or an engine-supported expression/function index; compare collation behavior."],["Q065",12,"How do clustered storage and secondary indexes differ across engines?","MySQL InnoDB stores rows in its clustered primary-key organization; PostgreSQL commonly uses a heap with separate indexes.","InnoDB secondary entry includes primary-key columns\nPostgreSQL secondary index points to heap tuples","PostgreSQL CLUSTER can physically reorder a table but does not continuously maintain InnoDB-like clustering. A wide InnoDB primary key increases secondary-index storage. These details affect design and lookup cost.","Saying every table has the same kind of clustered index is incorrect.","Why might a compact primary key matter?","InnoDB secondary indexes store primary-key values as row locators; a large primary key increases secondary index size and lookup work."],["Q066",13,"What does EXPLAIN show?","It shows the chosen plan and estimates; execution-aware variants can add actual timing and row counts.","-- PostgreSQL example:\nEXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE customer_id=1;","Analyze forms execute the statement, so do not casually run them on mutating production SQL. Interpret scan, join, filter, sort and aggregate nodes. Engine output and timing semantics differ.","Estimated cost is not a duration in milliseconds.","Where would you look for unexpected row multiplication?","Find where actual rows exceed estimates after a join; unexpected many-to-many multiplication often begins at that operator."],["Q067",13,"Why can estimated and actual row counts differ?","Statistics, data skew, correlations and parameter distributions can make cardinality estimates inaccurate.","Estimated 10 rows; actual 100000 -> downstream plan may be poor","Refresh appropriate statistics and investigate distribution/correlation rather than only forcing an index. Small sample fixtures cannot reproduce every production estimate. Include representative parameter values.","Statistics can be current and still miss important correlations.","Which columns are correlated in this workload?","Correlated tenant_id, status and ordered_at values can mislead independent estimates; inspect per-tenant distribution and supported statistics."],["Q068",13,"What are nested-loop, hash and merge joins?","They are physical join strategies using repeated lookups, hashing or ordered matching, chosen according to supported operators and costs.","Small outer + indexed inner -> nested loop can be good\nLarge equijoin -> hash may fit, subject to memory/support","No algorithm is always best. A nested loop can be disastrous with a huge outer result and expensive inner scans, while efficient indexed lookups can make it ideal. Plan names and availability differ by engine.","Rewriting SQL text does not guarantee a specific physical join.","How would a row-estimate error change the decision?","An underestimated outer input may lead to nested-loop work that is much larger than expected; a correct estimate might favor hash/merge join or a different access path."],["Q069",13,"Why can a sequential/table scan be the best plan?","When much of a table is needed or the table is small, scanning can cost less than many scattered index/table lookups.","SELECT most columns WHERE status matches 90% of rows","Evaluate total work and latency rather than treating every scan as a defect. Storage/ cache state and column width matter. A tiny practice database often favors scans even with an appropriate production index.","Index presence is not proof the optimizer should use it.","What measurement would justify a different access path?","Measure elapsed time, buffers/I/O, row counts and selection ratio on representative data. An index helps only when savings exceed lookup cost."],["Q070",13,"How do you approach a slow SQL query systematically?","Verify semantics and workload, inspect actual plan/rows/waits, then change the dominant cause and compare results.","Evidence: parameters, row counts, plan, lock waits,\nI/O, spills, latency distribution and before/after outputs","Fix incorrect joins first, then access paths/statistics and resource constraints. Changes should preserve results on edge cases and representative data. Measure end-to-end impact, including application fetch and network cost.","Optimizing an incorrect query preserves the wrong answer faster.","How would you validate equivalence after rewriting?","Check that the rewrite yields the same columns, row identities and counts for empty, NULL, tie and multi-child cases, preferably with EXCEPT comparisons."],["Q071",14,"What is an SQL transaction?","It groups supported database work into a commit/rollback boundary with configured isolation and engine behavior.","BEGIN;\nUPDATE accounts SET balance=balance-10 WHERE account_id=1;\nUPDATE accounts SET balance=balance+10 WHERE account_id=2;\nCOMMIT;","The fragment assumes valid rows and business checks within a reviewed transaction. In MySQL, use a transactional engine such as InnoDB and account for autocommit/implicit commits. A single connection owns the local transaction.","Two separate autocommitted updates are not one transfer.","What if the destination row is absent?","Abort the unit of work; do not debit if the destination is absent. A foreign key and guarded updates help prevent partial transfer."],["Q072",14,"What does ACID mean?","Atomicity is a database unit-of-work boundary; consistency preserves enforced invariants; isolation governs concurrent interaction; durability preserves committed work under configured guarantees.","Atomic rollback != automatic business correctness\nIsolation level != universally serial execution","Application rules and constraints must define a valid transfer or order. Durability depends on database/storage configuration and acknowledged commit boundaries. Avoid saying ACID automatically makes external calls transactional.","Consistency is not proof the database inferred every business rule.","Which invariant is actually enforced?","State a concrete invariant, e.g. all committed ledger postings for a transfer balance to zero; enforce it using constraints plus one transaction."],["Q073",14,"How do COMMIT, ROLLBACK and SAVEPOINT differ?","Commit finalizes the transaction; rollback abandons its supported changes; a savepoint can allow partial rollback within it.","SAVEPOINT before_optional;\n-- optional work\nROLLBACK TO SAVEPOINT before_optional;","Savepoints do not commit the earlier work and are not autonomous nested transactions. Error behavior differs: PostgreSQL commonly leaves a failed transaction needing rollback/recovery, while MySQL statement/transaction effects vary by error.","Catching an SQL exception does not guarantee the connection is ready to continue.","What would the transaction manager do after failure?","Roll back failed work (or to a savepoint when safe), then mark the transaction rollback- only under the framework's rules and return an accurate outcome."],["Q074",14,"Why keep transactions short?","Long transactions can hold locks/resources and retain old visibility/version state, increasing contention and maintenance cost.","Read required data -> mutate -> commit\nAvoid slow HTTP call while holding important row locks","A correct workflow may need an external call, but design it with explicit intent/outcome handling instead of unlimited lock time. Deadlines and connection-pool capacity matter. PostgreSQL vacuum and InnoDB history cleanup are affected by long-lived snapshots in different ways.","Short does not mean splitting an invariant across unsafe commits.","Which work can move outside the transaction?","Move external HTTP calls, reporting and noncritical messages outside the lock-holding transaction; publish committed intent via an outbox when needed."],["Q075",14,"Does a database transaction atomically include Kafka or HTTP?","Not by itself. External effects have separate commit/outcome boundaries unless a specific supported distributed protocol is used.","DB commit succeeds -> event publish fails\nTransactional outbox records publication intent with DB work","An outbox publisher can resend, so downstream deduplication remains required. For payments, use stable provider idempotency and reconciliation of unknown outcomes. Spring transaction annotations do not create universal cross-system atomicity.","A method-level transaction cannot roll back an already sent email.","How do you recover a confirmed but unrecorded payment?","Reconcile by the provider idempotency key and persisted intent. If the charge succeeded, record the confirmation without charging again."],["Q076",15,"What anomalies do isolation levels address?","Common phenomena include dirty reads, nonrepeatable reads, phantoms and broader serialization anomalies such as write skew.","Nonrepeatable read: same row value changes between reads\nPhantom: a predicate query returns a changed matching row set","The SQL level names set expectations, but implementations can provide stronger or different details. Snapshot reads and locking reads may behave differently within one engine. Describe a concrete two-session schedule.","Repeatable reads of one row do not alone prove a cross-row invariant.","What does write skew look like?","Write skew: two doctors each see the other on call, both update their own on-call flag, and both commit, leaving none available unless protected."],["Q077",15,"How does PostgreSQL Read Committed behave?","Each statement normally sees a snapshot of committed data as that statement begins; later statements can see newer commits.","T1 SELECT -> salary 80000\nT2 UPDATE + COMMIT\nT1 next SELECT -> may see updated salary","PostgreSQL treats Read Uncommitted as Read Committed. Locking/data-changing commands have additional rules for concurrent target-row changes. Do not extrapolate ordinary SELECT snapshot behavior to every operation.","Transaction begin does not freeze one snapshot at Read Committed.","What changes at Repeatable Read?","In PostgreSQL Repeatable Read, ordinary reads use a stable transaction snapshot; concurrent update conflicts can abort transactions. Recheck whole transaction semantics."],["Q078",15,"How does MySQL InnoDB Repeatable Read differ from a generic slogan?","Consistent reads typically use a transaction snapshot, while locking reads and writes use additional current-read/locking behavior.","Ordinary SELECT snapshot != SELECT ... FOR UPDATE semantics","InnoDB's default Repeatable Read and PostgreSQL's default Read Committed are distinct baselines. Gap/next-key locks and access paths affect locking operations. Explain the exact statements and indexes instead of claiming every read sees an identical universe.","Mixing consistent reads and writes needs engine-specific reasoning.","Which read establishes the InnoDB snapshot?","Under InnoDB Repeatable Read, the first consistent (nonlocking) read typically establishes the transaction read view, subject to transaction setup."],["Q079",15,"What is MVCC?","Multi-version concurrency control lets readers use suitable row versions while writers manage changes and visibility under engine rules.","Reader snapshot -> visible older version\nWriter commits newer version for later applicable snapshots","MVCC can reduce reader/writer blocking but does not eliminate every lock or conflict. Old versions need cleanup and long snapshots can retain them. Foreign keys, DDL and explicit locking add other interactions.","MVCC is not lock-free execution for all SQL.","What does a long report do to version cleanup?","Long snapshots retain obsolete versions or delay cleanup; monitor long transactions, undo/history in InnoDB, and vacuum dead tuples in PostgreSQL."],["Q080",15,"What does Serializable require from the application?","It targets results equivalent to some serial execution, but the application must handle engine-specific blocking/conflict failures and retries.","Two concurrent decisions conflict -> one may need retry\nRetry the complete transaction with a bounded policy","PostgreSQL uses serialization-conflict detection; MySQL InnoDB has its own stronger locking behavior for this level. Preserve idempotency for external effects around retries. Serializable is a correctness choice, not a promise of no exceptions.","Retrying just the final statement may reuse a stale decision.","Which work must be repeated together?","On serialization failure, retry the entire transaction with all dependent reads and writes, bounded attempts and idempotent external effects."],["Q081",16,"What does SELECT FOR UPDATE do?","It acquires locking-read protection on qualifying rows under engine semantics until the transaction releases it.","BEGIN;\nSELECT available FROM inventory WHERE item_id=:id FOR UPDATE;\n-- validate and update within this transaction\nCOMMIT;","Exact lock scope depends on engine, access path and isolation. It does not universally lock all future rows matching any predicate. Use constraints and guarded writes where simpler. Keep lock duration bounded.","Locking an existing row is not a universal solution for absence checks.","What if the row does not exist?","Locking a missing row may not protect absence under every engine/isolation. Use a unique constraint, insert claim, advisory lock, or proper range-lock protocol."],["Q082",16,"How do optimistic and pessimistic concurrency differ?","Optimistic control detects conflicting state/version at write time; pessimistic control coordinates through locks before completing the operation.","UPDATE orders SET status=:new,version=version+1\nWHERE order_id=:id AND version=:expected;","Zero affected rows means conflict/missing under the contract. Optimistic approaches suit certain lower-contention workflows; repeated conflicts can make them expensive. Pessimistic locks can avoid wasted work but increase waits/deadlock risk.","Versioning is ineffective if other writers bypass the version rule.","Which option fits a highly contended stock item?","A highly contended stock item usually needs a short guarded atomic UPDATE (or controlled pessimistic lock); optimistic retries may thrash under heavy contention."],["Q083",16,"What causes a deadlock and how do you reduce it?","Transactions hold resources while waiting cyclically for each other; consistent lock order and short transactions reduce opportunities.","T1 locks account 1 -> waits for 2\nT2 locks account 2 -> waits for 1","The database detects/handles victims under engine rules. Retry a failed transaction with bounds/backoff and safe effect identity. Indexes and statement ordering can influence lock footprints. Inspect deadlock evidence rather than only raising timeouts.","Deadlock and ordinary long lock wait are different.","How would you impose a transfer lock order?","Always acquire account locks in deterministic ascending account_id order; keep transactions short and retry the entire failed transfer on deadlock."],["Q084",16,"What is SKIP LOCKED useful for?","It lets workers skip currently locked qualifying rows for queue-like claiming, with engine/version-specific syntax.","SELECT job_id FROM jobs WHERE state='READY'\nORDER BY job_id LIMIT 10 FOR UPDATE SKIP LOCKED;","This is not a consistent general-purpose report: locked rows are deliberately omitted. Claim/update in the same transaction, then define lease/recovery for workers that die after claim. Avoid starvation and keep batches bounded.","Skipping a row does not mean the work was completed.","How do you recover abandoned jobs?","Persist a claimed/lease state with deadline and unique job identity; a worker can requeue timed-out claims and processing remains idempotent."],["Q085",16,"How do unique constraints support idempotent processing?","They atomically reject duplicate identities while business effects commit in the same durable transaction.","processed_event(consumer_name,event_id) PRIMARY KEY\nInsert identity + apply effect + commit together","Handle engine-specific conflict/transaction behavior correctly. A precheck or Redis flag stored separately leaves a failure gap. The key must remain stable across retries, and record cleanup must respect replay policy.","Unique event identity alone does not atomically protect a remote provider call.","How do you return the prior result for a repeated API request?","Persist the request ID and immutable request fingerprint with status/result. On duplicate, return the stored result, or explicit in-progress/unknown status."],["Q086",17,"How do views and materialized views differ?","An ordinary view is a stored query definition; a materialized view stores results that require a refresh/maintenance strategy.","CREATE VIEW paid_orders AS SELECT * FROM orders WHERE status='PAID';","PostgreSQL offers native materialized views; MySQL does not offer the same native materialized-view feature. Views do not automatically index or cache their results. Updatability and security behavior depend on the definition/engine.","A view can still execute expensive joins for every request.","When would a maintained summary table help?","Maintain a summary table when live aggregation is too costly and updates can be controlled; define refresh lag, atomic replacement and reconciliation."],["Q087",17,"How do stored procedures and functions differ?","They are database-side routines with engine-specific invocation, return, side- effect and transaction rules.","Function used as an expression where supported\nProcedure invoked with CALL under engine rules","Do not assert functions can never mutate or procedures always commit: semantics differ across PostgreSQL/MySQL and languages. Centralized routines can reduce round trips but introduce deployment/test ownership. Document boundaries.","A routine does not automatically protect invariants better than ordinary SQL.","Who versions and tests the routine?","Database routines should be versioned in migrations, reviewed with application code, and tested on the target engine with rollback practices."],["Q088",17,"What are triggers useful for and what are their costs?","Triggers react to supported data events and can enforce/maintain selected behavior, but introduce less visible work and ordering/error complexity.","INSERT order -> configured trigger maintains an audit row","Review per-row/per-statement support, transaction behavior and recursion. A durable audit needs clear identity and access policy. Avoid making remote calls or hidden cross- table workflows without controlled failure semantics.","The application's one INSERT can cause more work than the visible statement suggests.","How would you trace a trigger-induced failure?","Log the database exception and statement/trigger context without secrets, inspect trigger definitions and reproduce with a small transaction."],["Q089",17,"How does table partitioning differ from indexing and sharding?","Partitioning divides a logical table into managed pieces; indexing creates access paths; sharding distributes data across independent database boundaries.","Partition orders by ordered_at range\nIndex each relevant access path\nShard tenants across databases only with an explicit routing design","Partition pruning helps only when predicates and bounds permit it. Constraints, uniqueness, joins and maintenance differ by engine. More partitions are not automatically faster. Sharding adds cross-boundary consistency and operations costs.","Partitioning does not replace all indexes.","Which query can prune to one month?","A half-open time range on the partition key, e.g. ordered_at >= month_start AND ordered_at < next_month, allows pruning when partitions align."],["Q090",17,"Why do statistics and version cleanup matter?","The optimizer needs distribution evidence, and MVCC storage needs cleanup to avoid uncontrolled old-version accumulation.","PostgreSQL: ANALYZE / VACUUM / autovacuum\nMySQL InnoDB: statistics and purge/history mechanisms","Maintenance tasks have different roles; ordinary PostgreSQL VACUUM does not generally shrink every table file to the minimum size. Diagnose long transactions, growth and stale estimates. Avoid treating every engine's maintenance commands as interchangeable.","A single maintenance command is not a universal slow-query fix.","What evidence indicates old snapshots are delaying cleanup?","PostgreSQL: long-running transactions/replication slots and retained dead tuples; MySQL: long-running read views and growing InnoDB history list length."],["Q091",18,"How do parameterized queries prevent SQL injection?","They bind values separately from SQL structure rather than concatenating untrusted text into executable syntax.","SELECT * FROM customers WHERE customer_id = ?\n-- Bind a value through JDBC; do not concatenate request text.","Placeholders generally represent values, not arbitrary table names or ORDER BY identifiers. Choose dynamic identifiers from an allow-list and keep privilege minimal. ORM usage is not proof every query path is parameterized.","Concatenating a sort expression remains unsafe.","How do you allow multiple safe sort columns?","Use an allowlist mapping user sort choices to fixed column names and ASC/DESC tokens; bind values, never raw SQL identifiers."],["Q092",18,"How do you prevent cross-tenant SQL leakage?","Constrain access through authenticated tenant identity and enforce it consistently across reads, writes and relationship checks.","SELECT * FROM orders WHERE tenant_id=:trustedTenant AND order_id=:id;","A globally unique order ID does not remove authorization requirements. Composite constraints and database row-level policies can help where supported. Dynamic/report/ admin paths need deliberate ownership rules too.","A tenantId from the request is not automatically trusted.","What happens when joining tenant-scoped tables?","Join using both tenant_id and entity ID, keep tenant predicates/row-level security enforced, and test crossed-ID attacks."],["Q093",18,"What is the N+1 query problem?","One initial query causes many additional per-row queries, increasing round trips and total work.","Load 100 orders -> 100 separate customer/item lookups","Use appropriate joins, batching or staged fetching, while respecting result cardinality and pagination. Joining several collections can create a different row-explosion problem. Count queries and inspect actual rows, not only ORM method names.","One giant join is not always the correct N+1 fix.","How do you page orders while fetching their items?","First page a stable list of order IDs, then fetch items for those IDs in one query or batch; assemble results without multiplying page rows."],["Q094",18,"How does keyset pagination work?","It requests rows after the last ordered key rather than skipping a growing offset.","SELECT order_id,ordered_at FROM orders\nWHERE ordered_at<:lastTime OR\n(ordered_at=:lastTime AND order_id<:lastId)\nORDER BY ordered_at DESC,order_id DESC LIMIT 20;","Use a stable unique tie-breaker, matching sort directions and useful index. Null ordering and mutable sort values require explicit handling. It improves deep navigation but does not promise one immutable snapshot across requests.","Changing an ordering value can move a row across the cursor.","What if the user needs random page numbers?","Use offset pagination for bounded random access, or page-number metadata plus a stable snapshot; seek pagination is cursor-based by nature."],["Q095",18,"How should connection pools and query deadlines be designed?","Bound concurrency, wait time and transaction/query duration according to database capacity and application SLOs.","Pool wait budget + query budget + response work <= request budget","More connections can increase contention rather than throughput. A connection must return in clean transaction/session state. Cancellation/timeout can leave an uncertain write outcome, so correct identity and reconciliation matter.","Client timeout does not prove a database write rolled back.","What should the API do after an unknown commit outcome?","Reconcile commit outcome via stable request identity before repeating work; return a pending/unknown status rather than falsely claiming failure."],["Q096",19,"A revenue query doubled totals. Where do you investigate?","Check join grain and detail multiplicity before blaming SUM or the database.","orders -> order_items multiplies order amount per item\nAggregate item totals or avoid unnecessary detail join","Compare counts per order and trace a tiny counterexample. Aggregating each many- side before joining can restore the desired grain. Add constraints where one-to-one assumptions are real. Preserve equal-valued legitimate orders.","SUM(DISTINCT order.amount) is not a general repair.","Which table owns the revenue fact?","The orders header owns order-level booked revenue; order_items owns line-level revenue if that is the metric. Define grain before summing."],["Q097",19,"A second-highest salary answer is disputed. What do you clarify?","Ask whether the requirement is the second row, second distinct value, rank position or all employees at that value.","100,100,90 -> second row 100; second distinct salary 90","Specify null treatment and no-second-value behavior. Choose ROW_NUMBER, RANK, DENSE_RANK or scalar MAX accordingly. Tests with ties are essential because simple all- distinct data hides mistakes.","A syntactically valid query can solve the wrong ranking question.","What should an empty result mean?","No second level should return NULL for a scalar aggregate, or zero rows for a filtered employee list; specify the API requirement."],["Q098",19,"The same query is slow for one tenant. What is likely?","Data skew, cardinality estimates, access paths, plan reuse or contention may differ for that parameter.","Small tenant=100 rows; large tenant=10 million rows\nSame text does not imply same optimal plan","Compare representative plans and waits with real parameters, statistics and index distribution. Do not force an index globally without evaluating smaller and larger workloads. Use tenancy/partitioning only if requirements justify it.","One fast benchmark does not prove all parameter cases.","How would you measure a plan regression?","Capture representative actual plans, buffers, row estimates, latency by tenant and parameter, before/after deploy. Compare statistics and selectivity."],["Q099",19,"How would you design a safe bank transfer?","Enforce account validity/funds invariants in one reviewed transaction, lock or guard writes coherently, and use stable transfer identity for retries.","Transaction: validate both accounts -> debit -> credit -> ledger -> commit\nConsistent account lock order; same currency/amount contract","Check affected rows and constraints. External notifications publish from durable intent after the database outcome. A timeout after commit is an uncertain result, so reusing the transfer identity should return/reconcile the existing outcome.","Two balance updates alone omit important validation and idempotency.","What if the destination does not exist?","Reject/rollback the full transaction if destination row is missing; constrain accounts and verify affected row counts before committing."],["Q100",19,"What makes a strong senior SQL interview answer?","State the result grain, NULL/tie policy, invariants, dialect, query, expected output and performance/concurrency evidence.","Correctness: edge-case fixture and expected rows\nPerformance: representative plan and measurements\nConcurrency: two-session schedule and recovery policy","A small query with correct semantics is better than clever syntax solving the wrong problem. Explain assumptions and compare alternatives from evidence. Distinguish portable query checks from engine-specific transaction/optimizer verification.","Passing one happy-path dataset is not sufficient proof.","Which counterexample would you add first?","Try NULLs and duplicates in a one-to-many JOIN first; they expose many incorrect SQL answers very quickly."]],"labs":[["SQL WORKED LAB C01 — Second-highest distinct salary","Return one row containing the second-highest known salary value. Tied employees count as one salary level.","SELECT MAX(salary) AS second_salary\nFROM employees\nWHERE salary < (SELECT MAX(salary) FROM employees);\nEXPECTED RESULTS • 1 ROWS\nsecond_salary\n90000"],["SQL WORKED LAB C02 — T op two salary levels per department","Return all employees in the two highest distinct salary levels of each assigned department. Include ties and exclude unknown salaries.","WITH ranked AS (\nSELECT department_id, employee_id, name, salary,\nDENSE_RANK() OVER (\nPARTITION BY department_id ORDER BY salary DESC\n) AS salary_rank\nFROM employees\nWHERE department_id IS NOT NULL AND salary IS NOT NULL\n)\nSELECT department_id, employee_id, name, salary, salary_rank\nFROM ranked WHERE salary_rank <= 2\nORDER BY department_id, salary_rank, employee_id;\nEXPECTED RESULTS • 5 ROWS\ndepartment_id employee_id name salary salary_rank\n10 1 Sai 100000 1\n10 2 Meena 80000 2\n10 3 Arun 80000 2\n20 4 Priya 90000 1\n20 5 Ravi 60000 2"],["SQL WORKED LAB C03 — Customers with no orders","Return customers with no order of any status. Preserve the meaning if the orders table is empty.","SELECT c.customer_id, c.name\nFROM customers c\nWHERE NOT EXISTS (\nSELECT 1 FROM orders o WHERE o.customer_id = c.customer_id\n)\nORDER BY c.customer_id;\nEXPECTED RESULTS • 1 ROWS\ncustomer_id name\n4 Priya"],["SQL WORKED LAB C04 — Employee count for every department","Include empty departments and count matched employees, not null-extended rows.","SELECT d.department_id, d.name,\nCOUNT(e.employee_id) AS employees_count\nFROM departments d\nLEFT JOIN employees e ON e.department_id = d.department_id\nGROUP BY d.department_id, d.name\nORDER BY d.department_id;\nEXPECTED RESULTS • 3 ROWS\ndepartment_id name employees_count\n10 Engineering 3\n20 Sales 2\n30 HR 0"],["SQL WORKED LAB C05 — Paid revenue including customers with zero","Return one paid order-header total per customer; include customers with no qualifying order.","WITH paid AS (\nSELECT customer_id, SUM(amount) AS revenue\nFROM orders WHERE status = 'PAID'\nGROUP BY customer_id\n)\nSELECT c.customer_id, c.name,\nCOALESCE(p.revenue, 0) AS revenue\nFROM customers c\nLEFT JOIN paid p ON p.customer_id = c.customer_id\nORDER BY c.customer_id;\nEXPECTED RESULTS • 4 ROWS\ncustomer_id name revenue\n1 Sai 350\n2 Meena 270\n3 Arun 80\n4 Priya 0"],["SQL WORKED LAB C06 — Running paid total per customer","Return each paid order and the cumulative amount for that customer in date/ID order.","SELECT customer_id, order_id, amount,\nSUM(amount) OVER (\nPARTITION BY customer_id ORDER BY ordered_at, order_id\nROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n) AS running_total\nFROM orders WHERE status = 'PAID'\nORDER BY customer_id, ordered_at, order_id;\nEXPECTED RESULTS • 6 ROWS\ncustomer_id order_id amount running_total\n1 101 100 100\n1 102 150 250\n1 106 100 350\n2 103 200 200\n2 108 70 270\n3 105 80 80"],["SQL WORKED LAB C07 — Previous paid amount and difference","Compare each paid order amount with the previous paid order for the same customer.","WITH history AS (\nSELECT customer_id, order_id, ordered_at, amount,\nLAG(amount) OVER (\nPARTITION BY customer_id ORDER BY ordered_at, order_id\n) AS previous_amount\nFROM orders WHERE status = 'PAID'\n)\nSELECT customer_id, order_id, previous_amount,\namount - previous_amount AS difference\nFROM history\nORDER BY customer_id, ordered_at, order_id;\nEXPECTED RESULTS • 6 ROWS\ncustomer_id order_id previous_amount difference\n1 101 NULL NULL\n1 102 100 50\n1 106 150 -50\n2 103 NULL NULL\n2 108 200 -130\n3 105 NULL NULL"],["SQL WORKED LAB C08 — Employees above their department average","Return assigned employees whose known salary is strictly greater than their department average.","WITH averages AS (\nSELECT department_id, AVG(salary) AS avg_salary\nFROM employees WHERE department_id IS NOT NULL\nGROUP BY department_id\n)\nSELECT e.employee_id, e.name, e.department_id, e.salary\nFROM employees e\nJOIN averages a ON a.department_id = e.department_id\nWHERE e.salary > a.avg_salary\nORDER BY e.employee_id;\nEXPECTED RESULTS • 2 ROWS\nemployee_id name department_id salary\n1 Sai 10 100000\n4 Priya 20 90000"],["SQL WORKED LAB C09 — Latest order per customer","Return the latest order of any status for each customer who has orders. Higher order_id breaks equal-date ties.","WITH ranked AS (\nSELECT customer_id, order_id, ordered_at, status,\nROW_NUMBER() OVER (\nPARTITION BY customer_id\nORDER BY ordered_at DESC, order_id DESC\n) AS rn\nFROM orders\n)\nSELECT customer_id, order_id, ordered_at, status\nFROM ranked WHERE rn = 1\nORDER BY customer_id;\nEXPECTED RESULTS • 3 ROWS\ncustomer_id order_id ordered_at status\n1 106 2026-01-04 PAID\n2 108 2026-02-01 PAID\n3 107 2026-01-05 PENDING"],["SQL WORKED LAB C10 — Revenue without detail-join inflation","Compute paid header revenue and paid item value. Collapse item rows to one row per order before joining.","WITH item_totals AS (\nSELECT order_id, SUM(quantity * unit_price) AS item_value\nFROM order_items GROUP BY order_id\n)\nSELECT SUM(o.amount) AS header_revenue,\nSUM(COALESCE(i.item_value, 0)) AS item_value\nFROM orders o\nLEFT JOIN item_totals i ON i.order_id = o.order_id\nWHERE o.status = 'PAID';\nEXPECTED RESULTS • 1 ROWS\nheader_revenue item_value\n700 700"],["SQL WORKED LAB C11 — Deterministic duplicate candidates","For each non-null exact email, keep the smallest contact_id and return the other IDs. Do not delete anything yet.","WITH ranked AS (\nSELECT contact_id, email,\nROW_NUMBER() OVER (\nPARTITION BY email ORDER BY contact_id\n) AS rn\nFROM contacts WHERE email IS NOT NULL\n)\nSELECT contact_id, email FROM ranked\nWHERE rn > 1 ORDER BY contact_id;\nEXPECTED RESULTS • 1 ROWS\ncontact_id email\n2 a@example.com"],["SQL WORKED LAB C12 — Consecutive integer islands","Find consecutive groups of distinct integers and return their start, end and length.","WITH distinct_values AS (\nSELECT DISTINCT n FROM sequence_values\n), numbered AS (\nSELECT n, n - ROW_NUMBER() OVER (ORDER BY n) AS island_key\nFROM distinct_values\n)\nSELECT MIN(n) AS start_n, MAX(n) AS end_n, COUNT(*) AS length\nFROM numbered GROUP BY island_key\nORDER BY start_n;\nEXPECTED RESULTS • 3 ROWS\nstart_n end_n length\n1 3 3\n5 6 2\n9 9 1"],["SQL WORKED LAB C13 — Bounded organization traversal","Starting at Sai (employee 1), list the reporting tree with depth. The fixture is acyclic; limit depth to ten.","WITH RECURSIVE org AS (\nSELECT employee_id, name, manager_id, 0 AS depth\nFROM employees WHERE employee_id = 1\nUNION ALL\nSELECT e.employee_id, e.name, e.manager_id, o.depth + 1\nFROM employees e JOIN org o ON e.manager_id = o.employee_id\nWHERE o.depth < 10\n)\nSELECT employee_id, name, depth FROM org\nORDER BY depth, employee_id;\nEXPECTED RESULTS • 3 ROWS\nemployee_id name depth\n1 Sai 0\n2 Meena 1\n3 Arun 1"],["SQL WORKED LAB C14 — Seek pagination with tied dates","Return the next three orders after cursor (2026-01-03, 105), sorted by date descending then ID descending.","SELECT order_id, ordered_at\nFROM orders\nWHERE ordered_at < '2026-01-03'\nOR (ordered_at = '2026-01-03' AND order_id < 105)\nORDER BY ordered_at DESC, order_id DESC\nLIMIT 3;\nEXPECTED RESULTS • 3 ROWS\norder_id ordered_at\n104 2026-01-03\n103 2026-01-02\n102 2026-01-02"],["SQL WORKED LAB C15 — Conditional order-status report","Return paid, pending and cancelled counts for every customer, including customers with no orders.","SELECT c.customer_id,\nSUM(CASE WHEN o.status = 'PAID' THEN 1 ELSE 0 END) AS paid,\nSUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END) AS pending,\nSUM(CASE WHEN o.status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled\nFROM customers c\nLEFT JOIN orders o ON o.customer_id = c.customer_id\nGROUP BY c.customer_id\nORDER BY c.customer_id;\nEXPECTED RESULTS • 4 ROWS\ncustomer_id paid pending cancelled\n1 3 0 0\n2 2 0 1\n3 1 1 0\n4 0 0 0"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>
