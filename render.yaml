@@ -3,7 +3,7 @@ services:
     name: architect-zero-to-hero-thymeleaf-portal
     runtime: docker
     plan: free
-    region: oregon
+    region: singapore
     healthCheckPath: /actuator/health
     envVars:
       - key: PORT
@@ -16,3 +16,22 @@ services:
         value: 20
       - key: JAVA_TOOL_OPTIONS
         value: "-XX:+UseSerialGC -XX:MaxRAMPercentage=70.0 -XX:TieredStopAtLevel=1"
+      # Render PostgreSQL Database Connection Environment Variables
+      - key: DATABASE_URL
+        value: postgresql://javaprep_user:2ZytgjY0mCr1dNJzEmSildzD33mZ7Ij5@dpg-dbiaam67bikc73ajhe80-a/javaprep
+      - key: EXTERNAL_DATABASE_URL
+        value: postgresql://javaprep_user:2ZytgjY0mCr1dNJzEmSildzD33mZ7Ij5@dpg-dbiaam67bikc73ajhe80-a.singapore-postgres.render.com/javaprep
+      - key: DB_HOST
+        value: dpg-dbiaam67bikc73ajhe80-a
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: javaprep
+      - key: DB_USER
+        value: javaprep_user
+      - key: DB_PASSWORD
+        value: 2ZytgjY0mCr1dNJzEmSildzD33mZ7Ij5
+      - key: SPRING_DATASOURCE_USERNAME
+        value: javaprep_user
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: 2ZytgjY0mCr1dNJzEmSildzD33mZ7Ij5

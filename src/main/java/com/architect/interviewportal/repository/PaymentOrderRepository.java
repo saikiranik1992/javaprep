@@ -1,0 +1,14 @@
+package com.architect.interviewportal.repository;
+
+import com.architect.interviewportal.entity.PaymentOrder;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface PaymentOrderRepository extends JpaRepository<PaymentOrder, Long> {
+    Optional<PaymentOrder> findByOrderId(String orderId);
+    List<PaymentOrder> findByUserEmailOrderByCreatedAtDesc(String userEmail);
+}

@@ -44,6 +44,12 @@ public class InterviewPortalController {
         return "index";
     }
 
+    @GetMapping("/packs")
+    public String dedicatedPacksPage(Model model) {
+        populatePortalModel("core-java", "ALL", "", false, "packs", model);
+        return "index";
+    }
+
     private void populatePortalModel(
             String activeTabId,
             String selectedChapter,
