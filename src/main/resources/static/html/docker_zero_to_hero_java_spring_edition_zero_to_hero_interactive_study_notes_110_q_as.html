@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docker Zero to Hero (Java &amp; Spring Edition) — Zero to Hero Interactive Study Notes (110 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #0284c7;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Docker Zero to Hero (Java &amp; Spring Edition)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              22 Chapters · 110 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            The Premium Handwritten Interview Notebook · Images · Multi-Stage · Compose · Security · 12 Labs
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (22)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (110)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 110</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Cloud &amp; Containers</span>
+              <span>•</span>
+              <span>142 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Docker Zero to Hero (Java &amp; Spring Edition) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              The Premium Handwritten Interview Notebook (Images · Multi-Stage · Compose · Security · 12 Labs). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 110 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">110</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (22)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 22 Chapters (110 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Docker Zero to Hero (Java &amp; Spring Edition)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 110</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Docker Zero to Hero (Java &amp; Spring Edition) — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Docker Zero to Hero (Java &amp; Spring Edition).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Docker Zero to Hero (Java &amp; Spring Edition) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"docker","title":"Docker Zero to Hero (Java & Spring Edition)","subtitle":"The Premium Handwritten Interview Notebook","category":"Cloud & Containers","badge":"Images · Multi-Stage · Compose · Security · 12 Labs","color":"#0284c7","pages":142,"chapters":["Docker foundations","Engine architecture and Linux isolation","Container lifecycle and essential commands","Images, tags, digests and registries","Dockerfile instructions and build context","ENTRYPOINT, CMD, PID 1 and signals","BuildKit, caching and build performance","Multi-stage builds and Java packaging","Persistent storage and mount behavior","Networks, DNS and published ports","Docker Compose applications","Configuration and secrets","Health checks, restart policies and shutdown","CPU, memory and JVM container behavior","Logs, inspection and troubleshooting","Runtime security and least privilege","Image maintenance and supply-chain evidence","CI/CD and release delivery","Multi-platform images and native compatibility","Databases, Kafka and stateful workloads","Orchestration, scaling and operational boundaries","Senior interview scenarios"],"questions":[["Q001",0,"What is Docker, and what problem does it solve?","Docker packages an application and its user-space dependencies into an image, then runs that image as an isolated process environment.","Developer: Java 21 + app.jar + OS libraries\nImage:     the same packaged runtime and application\nServer:    starts that image with its own configuration","A service can use the same image in test and production while receiving a different database URL at startup. Packaging removes many installation differences; it does not remove network, permission or configuration differences.","A container image does not include its own running kernel. External services still need compatible contracts and credentials.","Which production problems remain even when the image is identical?","The image does not control network access, database availability, secrets, CPU/memory limits, file permissions, or deployment configuration. Check these separately in production."],["Q002",0,"What is the difference between an image and a container?","An image is a reusable template; a container is a created runtime instance with configuration, process state and a writable filesystem layer.","docker pull nginx:stable\ndocker create --name dk-q-web nginx:stable\ndocker start dk-q-web\ndocker inspect dk-q-web","Pulling downloads an image. Creating records a container without starting its main process. Starting launches that process. Several containers can use one image and have separate writable layers.","Editing a running container does not modify the source image or the other containers created from it.","What survives a restart, and what disappears when the container is removed?","A restart keeps the container object's configuration and writable layer. Removing the container removes its writable layer; named volumes and images normally remain unless explicitly removed."],["Q003",0,"How are containers different from virtual machines?","A conventional VM has a guest kernel; Linux containers isolate processes that share the kernel of the Linux host or Docker Desktop VM.","VM workload:        app + libraries + guest kernel\nLinux container:    app + libraries\nShared foundation:  Linux host or Desktop VM kernel","Containers commonly start faster because they launch processes rather than boot a full guest OS. A VM can run a different guest OS; a Linux image requires a compatible Linux execution environment.","Shared-kernel isolation has a different threat boundary from a separate guest kernel. Startup and memory savings depend on the workload.","When would you combine VMs and containers?","Run containers inside VMs when you need stronger host isolation, different tenant security boundaries, or cloud VM management combined with fast container deployment."],["Q004",0,"Why can a Docker image run on different computers?","It supplies a consistent user-space filesystem, but portability still depends on OS, CPU architecture, kernel features and runtime configuration.","docker image inspect IMAGE \\\n--format '{{.Os}}/{{.Architecture}}'\n# Example platform: linux/amd64\n# An ARM laptop needs an ARM image or supported emulation.","A Linux image on macOS or Windows usually runs through Docker Desktop's Linux VM. Multi-platform images can supply separate variants for AMD64 and ARM64. Native libraries inside a Java image must match the selected platform.","Windows containers use Windows compatibility rules. Java bytecode portability does not make every image architecture-neutral.","Why can a JNI library work on one image variant and fail on another?","JNI contains CPU- and OS-specific native binaries. An amd64 Linux .so cannot automatically load on arm64 or another OS; package and test the right binary for each platform."],["Q005",0,"What are Docker Engine, Docker Desktop, Compose and a registry?","Engine manages container objects; Desktop provides a workstation environment; Compose describes a multi-container application; a registry distributes images.","docker version          # client and engine information\ndocker compose version  # Compose plugin information\ndocker pull REGISTRY/TEAM/SERVICE:TAG","Compose uses the Docker API to create services, networks and volumes from configuration. A registry can store images without running them. Desktop adds integration around the engine for supported desktop systems.","Installing the CLI alone does not prove that a daemon is running or that your selected context points to the intended machine.","How would you confirm which engine receives your commands?","Use `docker context show`, `docker context inspect`, and `docker info`. Check the daemon endpoint and engine identity before running builds or deleting containers."],["Q006",1,"How does a Docker command reach a container process?","The CLI calls the selected engine API; the engine coordinates container creation and execution through lower-level runtime components.","docker context show\ndocker context ls\ndocker info\n# The selected context can address a remote engine.","The terminal runs on the client machine, but containers and volumes live on the engine's machine. A remote context can therefore change where data is stored and where published ports appear.","A client-side file path is not automatically a path on a remote daemon host. Check context before troubleshooting mounts or cleanup.","Where does a bind mount come from when the engine is remote?","A bind mount path is resolved on the Docker Engine host, not necessarily on your local CLI computer. With Docker Desktop, check its VM/file-sharing behavior."],["Q007",1,"What do Linux namespaces do?","Namespaces give processes separate views of resources such as process IDs, network interfaces and mounts.","docker run --rm alpine:3.22 \\\nsh -c 'echo \"container view\"; ps; hostname'\n# Compare this view with the Linux host's process list.","The process may see a small process tree and its own hostname while still being a process on the host kernel. Namespaces change visibility and association; they do not allocate CPU or memory budgets.","Explicit host namespace options reduce that isolation. Namespace separation alone is not a complete security boundary.","How is namespace isolation different from resource limiting?","Namespaces control which resources a process can see; cgroups limit how much CPU/memory it may use. Isolation and resource budgets are different controls."],["Q008",1,"What are cgroups, and why do containers need them?","Linux control groups account for and constrain resources consumed by groups of processes.","docker run --rm --memory=256m --cpus=0.5 \\\nalpine:3.22 sleep 10","The process receives a memory ceiling and CPU bandwidth allowance. This keeps a runaway workload from consuming unrestricted resources, provided the host and runtime support the relevant controls.","A CPU quota is not a dedicated physical core. Container limits also do not reserve sufficient cluster capacity by themselves.","What happens when a process exceeds its memory limit?","The Linux memory controller can kill a process in the container; Docker may report OOMKilled. Inspect the memory limit, exit details, and host events."],["Q009",1,"What are containerd, runc and OCI?","containerd manages runtime lifecycle and image-related tasks; runc is a low-level Linux container runtime; OCI defines interoperable image and runtime specifications.","Application artifact -> OCI-compatible image\nEngine/runtime stack -> container process\n# The registry stores content, not a running runc process.","Separating these responsibilities helps explain why an image built with Docker can be consumed by other compatible runtimes. It also helps locate failures: image retrieval, runtime creation and application startup are different steps.","Product architecture can evolve. Do not assume a specific daemon chain is required by every OCI-compatible platform.","Does Kubernetes need Docker Engine to run a Docker-built image?","No. Kubernetes talks to a CRI-compatible runtime such as containerd or CRI-O; it can run OCI images built with Docker without using Docker Engine."],["Q010",1,"How does the writable container layer work?","Filesystem changes go into the container's own layer above the image's read-only layers; mounted storage has separate behavior.","docker run --name dk-q-edit alpine:3.22 \\\nsh -c 'echo changed > /note.txt'\ndocker diff dk-q-edit\ndocker rm dk-q-edit","The change can be inspected after the process exits while the container object exists. Removing that object removes its writable layer. A later container from the same image has no note.txt unless it was in the image or a mount.","This is not a persistence strategy for a database. A committed image also is not a consistent backup of a running database.","How does a named volume change this lifecycle?","A named volume has its own lifecycle. It keeps mounted data when the container is removed and can be attached to a replacement container."],["Q011",2,"What is the difference between run, create and start?","run creates and starts a new container; create only creates it; start launches an existing stopped container.","docker create --name dk-q-once alpine:3.22 echo hello\ndocker start -a dk-q-once\ndocker start -a dk-q-once\ndocker rm dk-q-once","The two start commands execute the existing container's configured command again. They do not create two new objects. In contrast, two unnamed run commands create two separate containers.","start does not rebuild an image or pick up a new image tag automatically. Recreate to change most container configuration.","Can you change the startup environment with docker start?","No. `docker start` reuses the container's original environment and configuration. Create a replacement container with updated `-e` or Compose settings."],["Q012",2,"Why does a container exit immediately after starting?","A container normally lives as long as its main process. A command that finishes, crashes or cannot execute makes the container exit.","docker run --name dk-q-short alpine:3.22 echo done\ndocker ps -a --filter name=dk-q-short\ndocker logs dk-q-short\ndocker inspect dk-q-short --format '{{.State.ExitCode}}'","echo prints once and exits successfully, so an exited container is expected. A missing executable or application exception requires a different diagnosis. Detached mode changes terminal attachment, not process lifetime.","Adding sleep forever hides startup failure and does not turn a broken service into a healthy one.","How would you distinguish a successful batch job from a failed API server?","Check exit code, logs, and the expected process type. Exit 0 is fine for a short batch task; an API that should stay up is failing its service contract."],["Q013",2,"What is the difference between exec and attach?","exec starts an additional process inside a running container; attach connects to the main process's standard streams.","docker exec dk-q-web nginx -t\ndocker exec -it dk-q-web sh\n# attach targets the existing main process streams.","nginx -t runs a separate configuration check. An exec shell can inspect files if the image contains a shell. Attach does not create a shell and interactive signals may affect the main process.","exec requires a running container and a present executable. Minimal images may provide neither sh nor bash.","How would you inspect a crashed container when exec cannot run?","Use `docker logs`, `docker inspect`, `docker cp` on a retained container, and image metadata. Reproduce or debug with a separate disposable container if needed."],["Q014",2,"How do stop, kill and rm differ?","stop requests graceful termination before a timeout; kill sends a signal directly; rm removes the container object.","docker stop --time 30 dk-q-web\ndocker inspect dk-q-web --format '{{.State.Status}}'\ndocker rm dk-q-web","The default stop signal is SIGTERM unless configured otherwise; a surviving process is forcibly killed after the timeout. Removing the stopped container discards its writable layer, while its image remains available.","rm -f combines forced termination with removal. It gives the application no normal drain window and can erase useful diagnosis state.","How do you align Docker's timeout with a Spring shutdown timeout?","Set Docker's stop grace period longer than the Spring shutdown phases plus request drain and cleanup time. Verify SIGTERM reaches the JVM."],["Q015",2,"When should you use --rm, -d and -it?","--rm removes an exiting container, -d detaches the terminal, and -it supplies interactive input plus a pseudo-terminal.","docker run --rm alpine:3.22 echo temporary\ndocker run -d --name dk-q-server nginx:stable\ndocker run --rm -it alpine:3.22 sh","An ephemeral command is suitable for --rm; a server can run detached; a shell benefits from interactive terminal behavior. The flags solve different problems and can sometimes be combined.","--rm does not remove explicitly named volumes. Automatic removal can also discard container metadata needed after a failure.","Would you use --rm on a container whose crash you must investigate?","Usually no. Retain the exited container so `inspect`, filesystem differences, and logs are available; remove it after capturing incident evidence."],["Q016",3,"What is the difference between a tag and a digest?","A tag is a mutable name; a digest identifies specific manifest content, including an image or multi-platform image index.","docker pull nginx:stable\ndocker image inspect nginx:stable \\\n--format '{{json .RepoDigests}}'\ndocker pull REGISTRY/TEAM/APP@sha256:DIGEST_HEX","A registry owner can move stable to a new release. Recording a digest identifies the exact published content that was selected. An index digest can identify multiple platform variants; an individual manifest digest identifies one variant.","A digest establishes content identity, not publisher trust, freshness or absence of vulnerabilities.","What extra evidence would you require before deploying a pinned image?","Require trusted publisher/signature or provenance evidence, a reviewed SBOM and vulnerability findings, correct platform, license policy, and successful image tests."],["Q017",3,"Does latest mean the newest or safest image?","No. latest is a conventional tag whose meaning is chosen by the publisher; Docker does not compare all versions to calculate it.","docker pull TEAM/APP:latest\ndocker pull TEAM/APP:1.7.0\n# Either tag can be moved if registry policy permits.","An absent tag commonly selects latest, but that name may lag a release or point to an unsuitable build. A release tag improves readability; an enforced immutable tag or recorded digest improves reproducibility.","A version-looking tag is also mutable unless the registry or workflow prevents reassignment.","How would you identify a rollback target reliably?","Record the exact working image digest and release configuration in your deployment record. Roll back to that digest, not whatever a mutable tag means later."],["Q018",3,"What are image layers, and why are they useful?","Layers represent reusable filesystem changes; images reference those layers together with configuration metadata.","docker image history IMAGE\ndocker image inspect IMAGE\n# Two related images may reuse a common base layer.","Shared layers reduce transfer and storage when builds reuse common content. A later deletion can hide a file in the resulting filesystem while its bytes remain in an earlier layer. Some instructions alter metadata rather than add filesystem content.","history is not a complete audit of all file contents or of the supply chain. Never bake a credential into a layer and expect a later delete to erase it.","Why should dependency downloads happen before frequently changing source code?","Stable dependency files are copied first so Docker can reuse the dependency layer when only source code changes, avoiding unnecessary package downloads."],["Q019",3,"What is the difference between save/load and export/import?","save/load transfers image data and tags; export/import operates on a container filesystem snapshot with different metadata and history behavior.","docker image save -o app-image.tar TEAM/APP:1.7.0\ndocker image load -i app-image.tar\n# Registry push/pull is normally preferable for delivery.","An image archive suits an offline image transfer. A container export is not equivalent to its original layered image and does not include mounted volume contents. Importing a filesystem also does not automatically restore the original runtime configuration.","Neither path is a substitute for application-consistent database backup. Protect archives that may contain private code or configuration.","How would you move a service image and its database data separately?","Move the image using a registry or `docker save/load`. Back up and restore database data with database-aware tools and separately verify integrity."],["Q020",3,"How do you push a local image to a private registry?","Authenticate to the registry, tag the image under its repository name, push it, and record the resulting content identity.","docker login registry.example.com\ndocker tag dk-app:local registry.example.com/team/app:1.7.0\ndocker push registry.example.com/team/app:1.7.0","The registry hostname and repository path identify the destination. Authentication and repository write permission must both be valid. CI should use a protected credential mechanism and capture the digest produced by publishing.","A local image name does not create a remote repository or grant access. Avoid embedding credentials in command history or image build arguments.","Why should a CI release deploy the pushed digest rather than rebuild from source?","A second build might resolve changed base tags, dependencies, or build inputs. Promoting the tested digest deploys exactly the reviewed artifact."],["Q021",4,"What are FROM, WORKDIR, COPY and RUN used for?","FROM selects a stage base, WORKDIR sets a path, COPY adds files from a source, and RUN executes a build-time command.","FROM eclipse-temurin:21-jre\nWORKDIR /app\nCOPY target/app.jar /app/app.jar\nRUN test -r /app/app.jar","The Dockerfile assumes target/app.jar exists in the build context. The test runs during image construction, not whenever a container starts. WORKDIR also creates a missing directory as part of its defined behavior.","RUN java -jar app.jar starts the server during the build and is usually the wrong lifecycle for a web application.","Which instruction should launch the server at container startup?","Use exec-form `ENTRYPOINT` for the main server command; use `CMD` for optional default arguments. `RUN` is for image build time."],["Q022",4,"What is the build context, and what does .dockerignore do?","The context is the set of build inputs made available to the builder; .dockerignore removes matching inputs from that context.","# .dockerignore\n.git\n.env\nsecrets/\ntarget/\n# For a Dockerfile that copies a prebuilt JAR, do NOT ignore target/.","A source-build context can exclude old artifacts and private local files. A prebuilt-JAR workflow needs a different ignore policy. COPY cannot simply reach an arbitrary parent directory outside the selected context.",".gitignore and .dockerignore serve different tools. A .gitignored secret can still enter the Docker context unless excluded there too.","Why can a working local build fail when CI uses a smaller context?","CI may exclude files that a broad local context supplied accidentally. Compare context paths, `.dockerignore`, COPY sources, and required build artifacts."],["Q023",4,"How are COPY and ADD different?","COPY performs explicit copying; ADD also supports capabilities such as fetching supported remote sources and extracting local tar archives.","COPY app.jar /app/app.jar\nCOPY config/ /app/config/\n# Choose ADD only when its extra source behavior is intentional.","Explicit copying makes application packaging easier to audit. If remote retrieval is required, account for source identity, validation and cache behavior rather than hiding that decision in a generic instruction.","Do not assume a remote archive is extracted like a local tar archive. Features and flags can depend on the Dockerfile frontend version.","How would you verify the bytes of a downloaded dependency?","Pin the expected SHA-256 hash or signed release and verify it during the build. Prefer trusted artifact repositories rather than an unchecked URL."],["Q024",4,"Does EXPOSE make a port reachable from the host?","No. EXPOSE documents intended container ports; runtime publication or another network path provides reachability.","# Dockerfile\nEXPOSE 8080\n# Runtime on a local development machine\ndocker run -p 127.0.0.1:18080:8080 TEAM/APP:1.7.0","The application must actually listen on port 8080 inside the container. The runtime mapping directs host port 18080 to it. Same-network containers usually connect directly to the container port without a host mapping.","Writing EXPOSE 8080 does not change a Spring server configured to listen on 9090.","Can two containers expose 8080 while one host cannot bind 18080 twice?","Yes. Each container has its own port 8080. Host port 18080 is one binding, so use different host ports or a reverse proxy."],["Q025",4,"What is the difference between ARG and ENV?","ARG is a build-time variable; ENV establishes image environment defaults that runtime configuration can override.","ARG APP_VERSION=dev\nLABEL org.opencontainers.image.version=$APP_VERSION\nENV SERVER_PORT=8080\n# Runtime override:\ndocker run -e SERVER_PORT=9090 TEAM/APP:1.7.0","APP_VERSION helps label the build; SERVER_PORT is available to the application at startup. ARG scope matters across stages and before FROM. Neither instruction is designed to safely hide credentials.","Build arguments and environment values can surface in image metadata, history, provenance or process configuration. Use dedicated secret mechanisms.","Should a database password be a build input or a runtime dependency?","It is a runtime dependency: inject it through an approved secret provider or mounted secret at startup. Never bake production passwords into images or build args."],["Q026",5,"How do ENTRYPOINT and CMD work together?","ENTRYPOINT supplies the executable; CMD supplies a default command or default arguments depending on the chosen configuration.","ENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]\nCMD [\"--server.port=8080\"]\n# docker run IMAGE --server.port=9090\n# Starts: java -jar /app/app.jar --server.port=9090","Arguments after the image replace CMD but keep the exec-form ENTRYPOINT. The application receives the supplied Spring argument. This makes a fixed executable configurable without a shell wrapper.","If an image has only CMD, arguments after the image can replace the entire command. Always inspect the image's actual defaults.","What does --entrypoint change, and when is it useful?","`--entrypoint` replaces the image's default executable. Use it for an authorized one-off diagnostic or alternate program, taking care with arguments and privileges."],["Q027",5,"Why is exec form often preferred for a server?","Exec form avoids an implicit shell and makes the configured executable directly receive container-level signals in the normal setup.","ENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]\n# Shell form adds a shell layer:\n# ENTRYPOINT java -jar /app/app.jar","Direct Java startup removes a common reason that SIGTERM never reaches the JVM. Shell form can have different argument and signal behavior, especially when a wrapper launches children without replacing itself.","Exec form does not perform shell expansion: [\"echo\", \"$NAME\"] prints a literal argument. Use application configuration or a deliberate wrapper when needed.","Why can a container stop take exactly its forced-kill timeout?","The main process may ignore SIGTERM, a wrapper may not forward it, or shutdown may exceed the grace period. Docker then sends SIGKILL at the deadline."],["Q028",5,"What is special about PID 1 in a Linux container?","The main process occupies the container's initial process role and must handle termination and any child-process lifecycle responsibilities it creates.","docker run --init IMAGE\n# If a wrapper is needed:\n#!/bin/sh\nset -eu\nexec java -jar /app/app.jar \"$@\"","exec replaces the wrapper so Java becomes the main application process. --init inserts a small init process that can forward signals and reap orphaned children. These solve distinct process-management concerns.","A Java server that does not spawn unmanaged children may not require an extra init. Adding one does not repair an application that ignores shutdown.","How would you detect accumulating zombie child processes?","Inspect process states with `docker top` or host process tools; zombie children usually appear with state `Z`. Check whether PID 1 reaps exited children."],["Q029",5,"How do you pass JVM options without breaking arguments?","Use Java's supported option environment variables or a wrapper with deliberate argument handling; do not expect shell expansion inside an exec array.","ENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]\ndocker run -e JAVA_TOOL_OPTIONS='-Xms128m -Xmx384m' IMAGE\n# Do not write [\"java\", \"$JAVA_OPTS\", \"-jar\", \"app.jar\"].","The JVM consumes JAVA_TOOL_OPTIONS when it initializes; the application still receives normal command arguments. The literal $JAVA_OPTS in an exec array would not be expanded into JVM flags.","Supported option variables have specific parsing and applicability. Avoid secrets in JVM flags and confirm effective settings on the exact JDK.","How would you verify the heap size used inside the running container?","Inspect `jcmd <pid> VM.flags` or `java -XX:+PrintFlagsFinal -version` inside a suitable image, plus container cgroup values and runtime telemetry."],["Q030",5,"Why should a Spring Boot container stop gracefully?","Graceful shutdown drains accepted work and closes resources before the runtime forcibly ends the process.","# application.properties - supported Spring Boot baseline\nserver.shutdown=graceful\nspring.lifecycle.timeout-per-shutdown-phase=20s\n# Docker gives the process a larger total budget:\ndocker stop --time 45 APP_CONTAINER","The JVM must receive the stop signal, and the platform must withdraw traffic while the application drains. Spring's timeout is per shutdown phase; total shutdown and load-balancer propagation can need additional time.","Graceful HTTP shutdown does not automatically make Kafka processing, scheduled jobs or external side effects exactly once.","What happens to an in-flight database transaction when the process is finally killed?","If the process is killed before commit, the database ordinarily rolls back the open transaction when its connection closes. External effects may still need reconciliation."],["Q031",6,"How does Docker build caching work?","The builder reuses results when relevant instruction inputs match its cache; a changed dependency can invalidate later dependent steps.","COPY pom.xml ./\nRUN --mount=type=cache,target=/root/.m2 \\\nmvn -B dependency:go-offline\nCOPY src/ src/\nRUN --mount=type=cache,target=/root/.m2 mvn -B package","Changing only source can reuse the earlier dependency step, while changing pom.xml invalidates it. A cache mount preserves downloaded artifacts between builds without copying that cache into the final image by itself.","dependency:go-offline does not guarantee every project will later build without network access. Maven extensions and profiles can introduce extra inputs.","How would you measure whether this change actually speeds up CI?","Record cold and warm CI build durations and cache-hit output over repeated representative changes. Compare medians, total pipeline time, and correctness."],["Q032",6,"Why is COPY . . near the start of a Dockerfile often inefficient?","It makes unrelated context changes inputs to expensive downstream build steps.","# Less selective:\nCOPY . .\nRUN mvn -B package\n# Better structure separates stable build files from changing source.","A changed README can cause a rebuild if it is included in the broad copy. Copying the required build descriptors first and source later narrows invalidation, provided all required project files are included.","Incorrectly excluding generated sources or parent POMs makes the optimization fail. Correct inputs matter more than a high cache-hit percentage.","Which files must a multi-module Maven dependency step receive?","Copy the root POM, module POMs, parent descriptors, Maven wrapper/config, and any version catalogs or files used for dependency resolution."],["Q033",6,"Does a cached RUN automatically refresh remote package versions?","No. Reusing a cached result does not rerun its network requests just because a repository changed.","docker build --pull -t dk-app:fresh-base .\ndocker build --no-cache --pull -t dk-app:rebuild .\n# --pull and --no-cache address different sources of reuse.","--pull checks referenced image sources for updates. --no-cache avoids reusing ordinary build-step results. Neither alone pins application dependencies or makes two builds bit-for-bit reproducible.","Persistent cache mounts may still contain downloaded artifacts. Floating package versions can change during a fresh build.","How do you combine update automation with reproducible release builds?","Use automated dependency/base updates that create reviewed changes; pin dependencies and digests for release builds, then test and promote one exact image."],["Q034",6,"How do build secrets differ from copying a secret file?","A BuildKit secret mount makes a secret available to a selected build step without deliberately adding it as ordinary image content.","RUN --mount=type=secret,id=maven_settings,required=true \\\nmvn -B -s /run/secrets/maven_settings package\ndocker build --secret id=maven_settings,src=settings.xml .","The build step reads Maven credentials from its temporary secret mount. The final image should contain the application artifact, not settings.xml. The command must still avoid writing the secret into logs or generated files.","Secret rotation alone does not invalidate a cached step. Secret mounts reduce exposure but do not make a malicious build trustworthy.","How would you force a credential-sensitive build step to rerun safely?","Change a non-secret cache-busting version argument or use `--no-cache` for the relevant rebuild. Never put the secret content in an ARG or build log."],["Q035",6,"How can ephemeral CI workers share build cache?","Import and export cache through a supported external backend, while keeping cache identity and permissions separate from release identity.","docker buildx build \\\n--cache-from type=registry,ref=REGISTRY/APP:buildcache \\\n--cache-to type=registry,ref=REGISTRY/APP:buildcache,mode=max \\\n--tag REGISTRY/APP:BUILD_ID --push .","A new worker can reuse prior results instead of rebuilding everything. The cache reference is an optimization artifact; the published application digest remains the release identity. Backend support depends on builder configuration.","Do not grant untrusted pull-request builds permission to overwrite trusted caches or release tags. Cache misses must not break correctness.","What prevents two concurrent jobs from replacing each other's cache?","Use cache keys unique to branch/build, immutable keys where possible, and restricted write permissions. Promote a selected cache only with controlled updates."],["Q036",7,"What is a multi-stage build?","It uses separate build stages and selectively transfers outputs into a final runtime stage.","FROM maven:3.9-eclipse-temurin-21 AS build\nWORKDIR /src\nCOPY pom.xml .\nCOPY src/ src/\nRUN mvn -B package\nFROM eclipse-temurin:21-jre\nCOPY --from=build /src/target/app.jar /app/app.jar\nENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]","Maven and source files stay in the build stage unless explicitly copied to the final stage. This example requires the Maven project to produce target/app.jar and run appropriate tests.","Multi-stage packaging does not prove that the JAR is valid or that unused secrets never entered intermediate build output.","Which artifacts would you keep for debugging without shipping them in the runtime image?","Keep test reports, SBOMs, JAR checksums, symbol/debug artifacts, and build logs in protected CI storage. Ship only the necessary runtime outputs."],["Q037",7,"Should a Java runtime image use a JDK, JRE, distroless base or jlink?","Choose the smallest maintained runtime that satisfies application modules, native dependencies, observability and operational needs.","JDK image:        compiler and diagnostic tools available\nJRE image:        runtime-focused packaging\nCustom jlink:     selected modules and explicit maintenance\nDistroless:       reduced OS tools; inspect by other means","A JRE-based server can run an executable Spring JAR without a compiler. A stripped runtime may need explicit modules, CA certificates or native libraries. Reduced package count can help, but support and diagnosis remain design requirements.","A shell-free image cannot run a shell-based health check. jlink does not automatically discover every dynamically loaded dependency.","How would you investigate a JVM issue when jcmd is absent?","Collect JVM metrics, JFR or thread dumps via supported attach/debug tools or a separate debug image; temporarily reproduce with a diagnostic JDK image."],["Q038",7,"How do you run a Java container as a non- root user?","Set a runtime UID and GID, make application files readable, and provide writable directories only where required.","FROM eclipse-temurin:21-jre\nWORKDIR /app\nCOPY --chown=10001:10001 target/app.jar /app/app.jar\nUSER 10001:10001\nENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]","Linux can run this process with a numeric identity even without a named account. The application needs readable code and a writable temp location. Mounted files are governed by their actual ownership and mount permissions.","COPY --chown changes copied image files, not arbitrary host bind mounts. Applications that look up a named user may need an account entry.","How would you fix a permission error without making the whole application root?","Check numeric UID/GID and actual mount permissions. Grant only the necessary directory access using ownership, group IDs, or a dedicated writable mount."],["Q039",7,"Why avoid COPY target/*.jar app.jar without checking the outputs?","Builds can produce multiple JARs, and a wildcard can select unintended artifacts or fail when several sources target a single filename.","# pom.xml build configuration\n<build>\n<finalName>app</finalName>\n</build>\n# Dockerfile\nCOPY target/app.jar /app/app.jar","An explicit output name makes the Dockerfile contract clear. Spring repackage plugins and project conventions can produce auxiliary files, so inspect actual build output rather than guessing from a wildcard.","The example is a POM fragment, not a complete Maven project. Multi-module builds need the correct module artifact path.","How would CI verify that the copied JAR came from the tested build?","CI should test the JAR, compute its SHA-256, and copy that same named artifact into the image. Check the hash or build attestation after packaging."],["Q040",7,"How are Spring Boot buildpacks different from a hand-written Dockerfile?","Buildpacks automate supported application detection and runtime image assembly; a Dockerfile gives direct control over packaging instructions.","./mvnw spring-boot:build-image \\\n-Dspring-boot.build-image.imageName=dk-app:local\n# Dockerfile alternative:\ndocker build -t dk-app:local .","Buildpacks can standardize Java runtime selection and image layers across teams. A Dockerfile can handle specialized native libraries or startup contracts explicitly. Both approaches need maintained bases and a reproducible delivery policy.","Plugin version, builder and run image affect the result. Neither approach removes the need to test the produced image and record its digest.","Which approach would you standardize for twenty Spring services, and why?","For standard Spring services, use approved buildpacks when they fit: simpler shared updates. Use a reviewed Dockerfile for special native or startup needs."],["Q041",8,"What is the difference between a volume and a bind mount?","A volume is managed by Docker; a bind mount exposes a specific path from the engine host inside the container.","docker volume create dk-q-data\ndocker run --rm --mount type=volume,src=dk-q-data,dst=/data \\\nalpine:3.22 sh -c 'echo hello > /data/message'\n# Bind example: --mount type=bind,src=HOST_PATH,dst=/config,readonly","The named volume outlives the temporary writer container. A bind mount connects directly to an existing host path, useful for development or managed config files. The storage location belongs to the engine host.","Remote engines and Desktop file sharing change how host paths are reached. A bind mount can allow modification of host files unless restricted.","Which mount would you choose for a disposable source checkout versus database data?","Use a bind mount for disposable development source files; choose a managed named volume or dedicated persistent storage for database files, plus backups."],["Q042",8,"What happens when a mount targets a non- empty image directory?","The mount obscures the image content at that path; empty named volumes also have defined initial copy behavior unless disabled.","docker run --rm \\\n--mount type=bind,src=HOST_CONFIG,dst=/app/config,readonly \\\nIMAGE\n# Files from /app/config in the image are hidden by this mount.","A missing configuration file can be caused by the mount overlay rather than a broken COPY. Docker can populate a fresh empty volume from existing container-path content; a bind mount does not perform that volume initialization.","Do not rely on volume initialization as an application migration system. Existing data and volume-nocopy alter the outcome.","Why might two deployments see different initial directory contents?","One deployment might mount a fresh volume that gets initial image content copied in; another may mount an existing volume or host bind that hides the image files."],["Q043",8,"What does tmpfs provide, and when is it appropriate?","A Linux tmpfs mount supplies temporary memory-backed filesystem storage outside the container's writable image layer.","docker run --rm --read-only \\\n--tmpfs /tmp:rw,size=64m \\\nalpine:3.22 sh -c 'echo scratch > /tmp/note'","The root filesystem is read-only but /tmp accepts temporary files. This suits scratch data that need not survive a stop. Its capacity still contributes to host and applicable container memory pressure.","tmpfs is not durable storage or a guarantee that data never reaches swap. Availability and behavior are platform-dependent.","How would a Java application that creates large temporary files behave with this limit?","Large temp files consume tmpfs memory and can hit the tmpfs or container memory limit. Prefer bounded disk-backed temporary storage when files can be large."],["Q044",8,"Why can a non-root container fail to write to a mounted directory?","The process UID/GID, mounted file ownership, permissions and security labels must permit the operation.","docker inspect APP_CONTAINER --format '{{json .Mounts}}'\ndocker exec APP_CONTAINER id\n# On the engine host, inspect the specific mount's ownership.\n# Provide the needed directory permissions for UID 10001.","An image directory owned by UID 10001 does not make a replacement bind mount owned by that UID. On Linux, user namespace mappings and SELinux policy may add further considerations.","chmod 777 or switching to root can mask the underlying mismatch. Avoid recursively changing ownership of an unrelated host tree.","How do user namespace mappings change the host UID you should inspect?","Container UIDs may map to different host UIDs under user-namespace remapping. Inspect `/ proc/*/uid_map` and effective ownership at the host mount path."],["Q045",8,"Does removing a container delete its named volume?","Normally no. Named volumes have a separate lifecycle and require explicit removal when no longer needed.","docker rm STOPPED_CONTAINER\ndocker volume inspect NAMED_VOLUME\n# Only for disposable, identified data:\ndocker volume rm NAMED_VOLUME","A replacement container can mount the retained volume. That separation enables persistence, but also leaves data behind after a service is removed. Anonymous volume cleanup and Compose down -v have additional rules.","Broad prune commands and down -v can remove valuable data. Volume persistence does not imply backup, replication or disaster recovery.","How would you prove that restoring a backup recreates the required application state?","Restore the backup into a disposable clean environment, start the service, and verify data counts, application invariants, permissions, and a known test transaction."],["Q046",9,"Why does localhost fail when one container calls another?","localhost refers to the calling container's own network namespace in the normal isolated setup.","# app and db share a user-defined network:\nSPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/orders\n# Incorrect for a separate db container:\n# jdbc:postgresql://localhost:5432/orders","The app connects to the service DNS name db and its internal port. It does not use the host's published database port. A host-side test client instead uses a published endpoint appropriate to the host.","Sharing a network does not guarantee the database is accepting connections or that authentication succeeds.","What address should a third container use to call the app?","Use the service name and container port, such as `http://api:8080`, when both containers share a user-defined network. Do not use localhost."],["Q047",9,"What is the difference between the default bridge and a user-defined bridge?","User-defined bridges provide automatic name-based discovery for connected containers and a configurable grouping boundary.","docker network create dk-q-net\ndocker run -d --name dk-q-web --network dk-q-net nginx:stable\ndocker run --rm --network dk-q-net alpine:3.22 \\\nwget -qO- http://dk-q-web","The client resolves dk-q-web through Docker networking and reaches port 80 directly. Default bridge containers do not receive the same automatic container-name discovery behavior. Compose usually creates a project network for services.","Network membership is not fine-grained application authorization. Any reachable service still needs its own access policy.","Why would you attach an API to two networks but keep a database on only one?","Put the API on both public-facing and private database networks. Keep the database only on the private network to reduce direct reachability."],["Q048",9,"How do you interpret -p 127.0.0.1:18080:8080?","It maps TCP port 18080 on the engine host's loopback address to port 8080 in the container.","docker run -d --name dk-q-api \\\n-p 127.0.0.1:18080:8080 IMAGE\ndocker port dk-q-api\n# Host client: http://127.0.0.1:18080","The application listens inside on 8080, typically on 0.0.0.0. Omitting the host IP commonly publishes on all host interfaces. For a remote engine, the mapping belongs to the remote host, not the local terminal.","Loopback publication had an L2 reachability caveat in Engine releases older than 28.0.0. Use a maintained engine and verify the actual network boundary.","How would you expose the service through a reverse proxy while restricting direct access?","Bind the backend only on a private/loopback interface and publish the reverse proxy's intended listener. Apply firewall, routing, and TLS policies at the proxy."],["Q049",9,"Why can a published port still return connection refused?","Publication cannot make an absent, incorrectly bound or incorrectly addressed application listener work.","docker logs APP_CONTAINER\ndocker inspect APP_CONTAINER --format '{{json .NetworkSettings.Ports}}'\n# Check actual app port and whether it binds to 0.0.0.0.\n# A listener on container 127.0.0.1 may reject mapped traffic.","Follow the path: host mapping, container target port, listener address, process readiness. If the process is not ready, a correct mapping can still fail temporarily. Authentication or HTTP errors mean a different layer was reached.","Do not treat a successful ping as proof of a working HTTP or database connection. Test the required protocol.","What is the difference between timeout, refused connection and HTTP 503?","Refused means a reachable endpoint actively has no listener; timeout suggests a dropped/ unreachable path; HTTP 503 means an HTTP server replied but cannot serve."],["Q050",9,"When would you choose bridge, host, none or overlay networking?","Choose a driver for the needed isolation and reach: bridge for local groups, host for intentional host-stack sharing, none for no normal network, overlay for supported multi-host networking.","docker run --rm --network none alpine:3.22 \\\nsh -c 'cat /proc/net/route'\n# Host networking requires a supported platform/configuration.\n# A plain bridge does not become a multi-host fabric.","An offline utility can use none; ordinary local service stacks fit a bridge. Host networking changes port conflict and isolation behavior. Swarm overlay networking connects services across participating engines.","Desktop host-network support and operating-system behavior require version-specific checking. Driver choice alone does not provide encryption or a complete network policy.","What additional routing and security decisions arise across multiple hosts?","Across hosts you need overlay/routed connectivity, service discovery, ingress, firewall rules, encrypted traffic, and policies controlling service-to-service access."],["Q051",10,"What does Docker Compose do?","Compose describes and manages a related set of services, networks and volumes using a declarative application configuration.","# compose.yaml fragment\nservices:\nweb:\nimage: nginx:stable\nports:\n- \"127.0.0.1:18080:80\"\n# Start with: docker compose up -d","Compose creates the required objects and starts the service. A service definition can also declare a build, environment and mounts. Current examples use the Compose plugin command with a space.","A Compose service definition is not an automatic multi-host scheduler or high-availability plan. An obsolete top-level version key is not needed in this guide's files.","What operational responsibilities remain on a single-host Compose deployment?","You still manage host availability, backups, upgrades, security patches, monitoring, secrets, capacity, and disaster recovery. Compose is not a full cluster orchestrator."],["Q052",10,"Does depends_on guarantee a database is ready?","The basic form orders startup; a health-conditioned dependency can wait for the configured health check to pass.","depends_on:\ndb:\ncondition: service_healthy\n# db must define a meaningful healthcheck.\n# API connection retry still handles later database outages.","Waiting for PostgreSQL to accept connections reduces an initial race. It does not prove migrations finished, credentials work for the app, or the database will stay available. A completed migration job can use a different dependency condition.","Dependency-level restart behavior in Compose is distinct from the container's restart policy. Check what operation triggers each.","How would you distinguish database readiness from application schema readiness?","Database readiness proves the server accepts suitable connections; schema readiness needs a migration/version check verifying the tables and columns the app requires."],["Q053",10,"What is the difference between up, start, restart and down in Compose?","up reconciles the application and can recreate services; start starts existing containers; restart restarts them; down removes the project's runtime objects.","docker compose up -d --build\ndocker compose ps\ndocker compose logs --tail=100 web\n# After a configuration change, normally use up again.","Editing an environment value in YAML and running restart does not recreate the container with the new configuration. up evaluates the desired definition; --build asks it to build eligible service images.","down normally preserves named volumes; down -v requests volume removal. A restart does not pull or rebuild a new image by itself.","What command would you use after changing a port mapping?","Run `docker compose up -d` so Compose recreates services when configuration changes. `restart` does not generally apply new port mappings."],["Q054",10,"How does Compose configuration interpolation differ from container environment?","Compose substitutes variables while reading YAML; service environment and env_file determine variables passed into the container.","services:\nweb:\nimage: nginx:stable\nenvironment:\nAPP_LABEL: \"${APP_LABEL:-local}\"\n# Inspect the resolved model: docker compose config","A project .env file commonly supplies interpolation values, but it does not automatically inject every value into every container. $$ can defer a dollar sign to a later container shell where appropriate.","config can print resolved sensitive values. Different sources have defined precedence; inspect the final model in a safe environment.","Why can a variable be visible to Compose but absent from the application?","Compose interpolation reads shell/.env values while rendering configuration. A variable reaches the app only if the service's environment/secrets configuration passes it."],["Q055",10,"Can you scale a Compose service with fixed names and published ports?","Scaling works only when the configuration avoids collisions such as a fixed container_name or one identical host port for every replica.","docker compose up -d --scale api=3\n# api must allow replicas: no fixed container_name.\n# Put replicas behind a proxy instead of sharing one fixed host bind.","Replica containers can listen on the same internal port because they have separate network stacks. The host cannot bind one address/port pair three times. A proxy provides a stable client endpoint and chooses a replica.","Scaling a database service does not configure database replication. Horizontal capacity also depends on shared state and downstream limits.","How would you handle HTTP sessions and scheduled jobs across three API replicas?","Use shared session storage or stateless tokens, and protect scheduled jobs with leader election, partitioned ownership, or idempotent processing."],["Q056",11,"Why should one image serve multiple environments?","Promoting the same tested artifact separates code identity from environment- specific configuration and reduces rebuild drift.","docker run -e SPRING_PROFILES_ACTIVE=test APP_IMAGE\ndocker run -e SPRING_PROFILES_ACTIVE=prod APP_IMAGE\n# These are separate deployment alternatives, not one stack.","The executable content stays fixed while configuration changes. Environment-specific values can include database endpoints and feature policy. Runtime configuration must still be validated before the service accepts traffic.","A prod profile name is not an access-control mechanism. Startup overrides can change behavior dramatically even with an identical digest.","Which configuration values should be recorded in release evidence?","Record the image digest, env/config version, secret references, resource limits, networks, mounts, health policy, and migration version for every release."],["Q057",11,"Are environment variables a secure secret store?","They are a convenient configuration channel, but authorized inspection, process tooling and accidental logging can expose their values.","docker run --env-file local-settings.env IMAGE\n# Appropriate for disposable local values with restricted file access.\n# Prefer a platform secret facility for real deployment credentials.","Using a file avoids typing every value in the command, but the resulting variables remain part of container configuration. Threat modeling must include who can inspect the daemon and the process.","Do not paste docker inspect output containing secrets into support tickets. An env file still needs access control and must stay out of source and build context.","How would you rotate a secret without publishing a new application image?","Place the new secret in a runtime secret provider or mounted file, then restart/refresh affected services safely. The application image need not change."],["Q058",11,"How do Compose secrets reach a service?","A granted secret is typically made available as a mounted file; the application must explicitly read that file or support a corresponding file-based setting.","services:\ndb:\nimage: postgres:17\nenvironment:\nPOSTGRES_PASSWORD_FILE: /run/secrets/db_password\nsecrets: [db_password]\nsecrets:\ndb_password:\nfile: ./secrets/db_password.txt","The PostgreSQL image understands its _FILE option and reads the mounted content. That is an image- specific contract. Compose does not turn every arbitrary secret name into an environment variable automatically.","Local Compose file-backed secrets are not the same as Swarm's managed encrypted secret distribution. Protect the source file and the engine host.","How can a Spring application consume a mounted secret directory?","Mount the secret directory and configure Spring Boot to read config-tree properties, for example `spring.config.import=optional:configtree:/run/secrets/`."],["Q059",11,"How can Spring Boot read file-mounted configuration secrets?","A supported Spring Boot configuration tree import maps files in a directory into configuration properties.","# Runtime environment value:\nSPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/\n# Example mounted file:\n# /run/secrets/spring.datasource.password\n# File contents become that property's value.","The trailing slash marks a directory import. The optional prefix permits a missing directory, which can be useful locally but may be wrong for mandatory production credentials. Choose file names that map to the intended properties.","A missing secret should fail startup when required. Restrict endpoint exposure and logs so configuration values are not disclosed.","Would file replacement immediately refresh every Spring configuration property?","No. File replacement does not automatically refresh every bound property or live database connection. Use a supported refresh strategy or rolling restart."],["Q060",11,"How should secrets be rotated in a containerized service?","Coordinate secret delivery, application reload or recreation, credential overlap and verification; replacing bytes alone is not a universal reload mechanism.","1. Create a new credential with a controlled overlap window.\n2. Deliver it through the runtime secret mechanism.\n3. Reload or recreate consumers according to their contract.\n4. Verify new connections, then revoke the old credential.","A connection pool may retain old authenticated sessions after a file changes. A staged rotation avoids a sudden outage and lets you observe whether new connections use the intended credential. The exact sequence depends on the credential provider.","Avoid assuming every bind-mounted file update or Compose secret change is hot-reloaded. Do not leave both credentials valid indefinitely.","How would you test rotation while the database has active traffic?","Introduce new credentials with an overlap window, rotate one replica at a time, test reads/ writes and connection recovery, then revoke the old secret."],["Q061",12,"What does a Docker HEALTHCHECK do?","It executes a probe and records a health status independently of whether the container's main process is running.","# Only if curl exists in this image:\nHEALTHCHECK --interval=30s --timeout=5s --retries=3 \\\nCMD curl -fsS http://127.0.0.1:8080/health || exit 1\ndocker inspect APP_CONTAINER --format '{{json .State.Health}}'","Consecutive probe failures can mark the container unhealthy while its process keeps running. Inspect probe output to distinguish a failing service from a missing curl executable or incorrect endpoint.","A Docker health status by itself does not automatically restart an ordinary standalone container. A controller must act if that behavior is required.","Who routes traffic away from an unhealthy instance in your deployment?","Docker records health status but does not automatically remove the instance from an external load balancer. Compose/orchestrator/proxy must consume readiness or health appropriately."],["Q062",12,"How are liveness, readiness and startup checks different?","Liveness asks whether restart can help; readiness asks whether traffic should be admitted; startup allows initialization before normal failure decisions.","Startup:   has initial boot completed?\nLiveness:  is the process making progress?\nReadiness: can this instance serve the required traffic?\n# These are application/platform concepts, not three Dockerfile probes.","An unavailable shared database may make an API unready without making every JVM dead. Restarting all instances during a dependency outage can worsen recovery. A slow first boot needs a realistic initialization budget.","One Docker HEALTHCHECK cannot express every orchestration policy. Actuator endpoint availability and access rules must be configured and verified.","What should readiness return during graceful shutdown?","Readiness should become false before accepting new work is stopped, so the router drains traffic while current requests can finish."],["Q063",12,"How do no, on-failure, always and unless- stopped restart policies differ?","They define restart behavior for exits and daemon lifecycle events, with important handling for intentional stops.","docker run -d --restart=unless-stopped \\\n--name dk-q-managed IMAGE\ndocker inspect dk-q-managed \\\n--format '{{json .HostConfig.RestartPolicy}}'","on-failure targets nonzero exits; always and unless-stopped provide broader restart behavior. Their treatment of a deliberately stopped container across daemon restarts differs. They operate on exit state rather than HTTP readiness.","A restart policy is not multi-host failover and is unsuitable for a batch job that must not repeat side effects. Apply backoff and diagnosis at the right layer.","Why could a container be unhealthy with a restart count of zero?","A failed HEALTHCHECK changes health status, not necessarily process exit. Docker restart policies react to container stopping, not health status alone."],["Q064",12,"Why do services get stuck in a restart loop?","A deterministic startup failure repeats because restart policy changes process lifecycle, not its invalid inputs or broken dependencies.","docker logs --tail=100 APP_CONTAINER\ndocker inspect APP_CONTAINER \\\n--format 'exit={{.State.ExitCode}} restarts={{.RestartCount}}'\n# Inspect mounts, command, credentials and required dependencies.","A missing JAR, invalid JVM flag or required secret can make each attempt fail identically. Preserve evidence, repair the configuration or artifact, and recreate with the intended inputs.","Repeated restarts can overwrite logs, consume CPU and repeat non-idempotent startup work. Do not raise retry counts as the only repair.","What should a migration job do if the schema is already updated?","A migration should be idempotent: check its applied version, verify state, and exit successfully if the required schema change already exists."],["Q065",12,"What makes graceful deployment work end to end?","Withdraw new traffic, allow in-flight work to finish within a budget, handle worker shutdown, then terminate and verify the replacement.","Traffic controller: stop admitting new requests\nApplication: drain accepted work and close resources\nRuntime: deliver signal; enforce final timeout\nDeployment: confirm healthy replacement and observed behavior","Correct signal forwarding is necessary but insufficient. Proxy connections, request durations, Kafka acknowledgments and transaction boundaries all influence the outcome. Deployment verification must cover user-visible errors and unfinished work.","A zero-downtime HTTP rollout cannot promise zero message redelivery or exactly-once external effects. Design idempotency and recovery explicitly.","How would you test shutdown during an order request that publishes an event?","Start an order request, trigger shutdown, and verify the accepted request completes or is safely retried; inspect outbox records to prevent a lost event."],["Q066",13,"Why can a container be OOM-killed even when Java has free heap?","The memory budget includes heap plus native allocations, thread stacks, metaspace, direct buffers and other charged memory, not just live Java objects.","docker run --memory=512m \\\n-e JAVA_TOOL_OPTIONS='-Xms128m -Xmx320m' IMAGE\n# Illustrative starting point: leaves 192 MiB outside max heap.","The remaining space must cover the actual non-heap workload and any other processes. A process can be killed by the kernel before Java can produce a heap dump or OutOfMemoryError. Measure peak memory under representative load.","The example is a budget sketch, not a safe universal ratio. Page cache and runtime accounting also affect observed numbers.","Which evidence separates a Java heap failure from a cgroup memory kill?","Compare JVM OOM exceptions/heap dumps with `docker inspect` OOMKilled, cgroup memory.events, RSS/native memory and host/kernel logs."],["Q067",13,"Do modern JVMs understand container resource limits?","Supported modern JDKs on Linux detect relevant container CPU and memory constraints, but exact behavior depends on JDK update, cgroup setup and flags.","docker run --rm --memory=512m --cpus=1 \\\neclipse-temurin:21-jre \\\njava -XshowSettings:system -XshowSettings:vm -version","Inspect the JVM's reported limits and heap settings inside the constrained container. This is more reliable than assuming an old Java 8 build behaves like a current Java 21 runtime.","Host resource detection and container detection can differ across versions. Do not disable container support without understanding the resulting sizing.","How would you compare the exact JDK updates used in development and production?","Log `java -version` and inspect exact image digests in both places; compare `UseContainerSupport`, heap defaults, CPU count and patch-level fixes."],["Q068",13,"How do -Xmx and MaxRAMPercentage differ?","Xmx explicitly caps heap size; MaxRAMPercentage participates in ergonomic heap sizing from the JVM's detected available memory when an explicit heap maximum is not supplied.","JAVA_TOOL_OPTIONS='-XX:MaxRAMPercentage=60'\n# Alternative explicit policy:\nJAVA_TOOL_OPTIONS='-Xmx320m'\n# Inspect effective MaxHeapSize on the selected JDK.","A percentage can adapt one image to several memory limits; an explicit cap gives a direct budget. Small- memory heuristics and other flags can affect the ergonomic result, so verify actual sizing rather than multiplying blindly.","Neither option caps all process memory. Setting heap near the container limit can leave too little room for native use.","What changes if a health probe starts a second JVM in the same container?","Two JVMs share one container budget. A health JVM adds heap and native memory, so size the main JVM to leave room for probes and other processes."],["Q069",13,"What is the difference between --cpus, -- cpu-shares and --cpuset-cpus?","They represent CPU bandwidth limiting, relative scheduling weight and allowed CPU placement respectively, subject to platform and cgroup support.","docker run --cpus=1.5 IMAGE\n# Separate alternative: --cpuset-cpus=0,1\n# Relative weight example: --cpu-shares=512","A 1.5-CPU quota permits a limited amount of scheduled CPU time rather than guaranteeing two dedicated cores. Placement chooses eligible cores; weight influences competition. Inspect throttling when latency grows at high load.","CPU shares are not a hard ceiling. Quotas can affect tail latency and GC even when host- wide utilization looks modest.","Why might adding more application threads worsen latency under a small quota?","Under CPU quota, too many runnable threads add context switching and throttling; queues and p99 latency can grow despite more threads."],["Q070",13,"How should thread pools and connection pools be sized in a container?","Use measured workload, CPU budget, blocking behavior and downstream capacity; do not size every pool from unconstrained host hardware.","API replicas: 4\nDB pool per replica: 25\nPotential app connections: 4 x 25 = 100\n# Add migration jobs, administration and failover headroom.","A modest per-instance pool can collectively overload a database after scaling. Virtual threads improve waiting-task economics but do not create extra CPU or unlimited database connections. Bound expensive concurrency separately.","A single benchmark number cannot establish production capacity. Measure throughput, tail latency, queueing, throttling and dependency saturation.","How would you choose a safe maximum replica count from a database connection limit?","Reserve database capacity for admin work and other consumers; divide the safe connection budget by max pool size per replica, then include headroom."],["Q071",14,"Where should a containerized application write logs?","Usually to stdout and stderr, with runtime log collection, retention and external aggregation configured separately.","docker logs --since=10m --tail=200 APP_CONTAINER\ndocker run --log-driver=local IMAGE\n# Java application logging: console output with request context.","The logging driver captures supported container output. Central aggregation enables searching across recreated replicas. The local driver provides rotation behavior; json-file deployments should explicitly manage rotation and disk use.","docker logs availability depends on the driver and configuration. File-only application logging is not automatically collected from an arbitrary image path.","How would you correlate one failed request across several services?","Propagate a correlation/trace ID across services, record it in structured logs and tracing spans, and search all systems using that same identifier."],["Q072",14,"What are inspect, stats, top and events useful for?","They expose configuration and state, live resource use, process information and lifecycle events respectively.","docker inspect APP_CONTAINER\ndocker stats --no-stream APP_CONTAINER\ndocker top APP_CONTAINER\ndocker events --since 10m --filter container=APP_CONTAINER","Use inspect for actual limits and mounts, stats for a resource snapshot, top for process relationships, and events for transitions. Combine these with application metrics and timestamps rather than interpreting one number in isolation.","On Linux, CLI memory presentation may subtract cache differently from API data. A snapshot can miss a short spike.","Which additional time-series data would support a CPU-throttling diagnosis?","Collect cgroup throttled-period counts/time, container CPU usage, host CPU saturation, request latency, runnable-thread counts and queue depth over time."],["Q073",14,"Does exit code 137 always mean an OOM kill?","No. 137 commonly corresponds to SIGKILL termination, which can result from memory enforcement, a forced stop or another kill source.","docker inspect APP_CONTAINER \\\n--format 'exit={{.State.ExitCode}} oom={{.State.OOMKilled}}'\ndocker logs --tail=100 APP_CONTAINER\n# Correlate with runtime events and host/cgroup evidence.","OOMKilled is a useful clue, but diagnosis needs the relevant time window and memory evidence. A stop timeout ending in SIGKILL can also produce 137. Java can independently fail with a managed OutOfMemoryError.","A process can deliberately exit with a numeric code, so status alone is not a proof of cause. Preserve logs and termination context.","Why might an OOM kill produce no Java heap dump?","The kernel may kill the JVM abruptly without letting it handle a Java `OutOfMemoryError` or write a heap dump."],["Q074",14,"How do you debug an image that has no shell or a container that has exited?","Use metadata, logs and copied artifacts; use an approved diagnostic image or platform tooling when live process inspection is required.","docker inspect FAILED_CONTAINER\ndocker logs FAILED_CONTAINER\ndocker cp FAILED_CONTAINER:/app/diagnostic.txt ./diagnostic.txt\n# Only if the file exists and is appropriate to export.","docker cp can retrieve files from a stopped container, unlike exec. For a shell-free running image, diagnostics must match access, PID namespace and tool compatibility constraints. A dedicated debug variant can be useful in test environments.","Installing tools into the live production container creates drift. Copied files may contain personal data or credentials.","How would you collect a thread dump without permanently expanding the runtime image?","Use a debug-capable sidecar/ephemeral container where supported, JFR endpoints, or a controlled JVM diagnostic signal/attach method; keep the production image minimal."],["Q075",14,"How do you diagnose Docker disk usage before cleanup?","Inspect image, writable-layer, cache, log and volume usage, then remove only identified disposable objects.","docker system df -v\ndocker ps -a --size\ndocker volume ls\ndocker image ls\n# Select explicit obsolete objects after checking ownership and data.","A large database volume needs a different response from stale build cache. Reclaimable image sizes include sharing relationships, so sum carefully. Retention policies prevent recurring exhaustion better than emergency broad deletion.","system prune is destructive, has category-specific rules, and is not a database cleanup strategy. Never assume all unused volumes contain worthless data.","Which backup and restore evidence is needed before retiring a database volume?","Before deletion, confirm a recent tested backup, verified restore on a separate host, recovery point, credentials, schema compatibility and owner approval."],["Q076",15,"Why should application containers normally avoid root?","A non-root process reduces available authority inside the container and limits some consequences of an application compromise.","docker run --user 10001:10001 \\\n--cap-drop=ALL --security-opt=no-new-privileges \\\nIMAGE","The application must work with that UID and any required writable directories. Dropping capabilities and restricting privilege acquisition add separate controls. Test the actual workload under the intended policy.","Non-root is not immunity to kernel vulnerabilities, vulnerable application code or overly permissive mounted files. Capabilities and security profiles are distinct.","What explicit privilege would your API need to listen on port 8080?","None: port 8080 is unprivileged on normal Linux defaults. Non-root can listen there without adding privileged-port capabilities."],["Q077",15,"What is the difference between non-root, rootless Docker and user namespace remapping?","They change application identity, daemon authority and host-to-container UID mapping at different layers.","Non-root USER:    application UID is not zero\nRootless engine:  daemon and containers run without host root\nUser remapping:   container IDs map to different host IDs","These controls can overlap but are not interchangeable. Rootless mode changes daemon-level privileges and can affect supported resource or networking features. Remapping affects how mounted ownership is interpreted on the host.","Setting USER in a Dockerfile does not make a rootful engine rootless. Inspect runtime capabilities on the actual supported platform.","How would rootless operation affect your bind mount and CPU-limit setup?","Rootless changes UID mappings, host path access, network behavior, and availability of resource controls. Test bind mounts and cgroups on the actual host."],["Q078",15,"Why is mounting the Docker socket into a container dangerous?","Engine API access can grant broad control over containers and host resources within that engine's authority.","# Review this sensitive mount in CI definitions:\n# /var/run/docker.sock:/var/run/docker.sock\n# Prefer isolated builders and carefully bounded credentials.","A job with a rootful engine socket can often create privileged workloads or mount sensitive host paths. Making the socket bind read-only does not turn the API into a read-only API. Rootless engines still expose the owning user's authority.","A convenient build agent must not receive the production engine socket by default. Isolation between trusted and untrusted jobs matters.","What separate trust boundary would you choose for pull-request image builds?","Run untrusted pull-request builds on isolated workers without production registry credentials or privileged daemon access. Use short-lived scoped tokens only for trusted jobs."],["Q079",15,"What do capabilities, seccomp and AppArmor/SELinux control?","Capabilities divide privileged operations, seccomp filters system calls, and mandatory access controls constrain operations through host policy.","docker run --cap-drop=ALL \\\n--security-opt=no-new-privileges \\\nIMAGE\n# Retain the platform's supported default seccomp policy.","These mechanisms address different paths to abuse. If the application fails, identify the required operation before adding a narrowly justified capability or policy change. Keep host kernel and runtime patches current.","--privileged or an unconfined policy removes important protections and is not a general fix for permission errors. Host policy can differ across environments.","How would you investigate a denied syscall without disabling all confinement?","Check audit/denial logs, seccomp profiles and effective capabilities. Temporarily reproduce with a narrowly adjusted policy, then permit only the needed operation."],["Q080",15,"Can a container run with a read-only filesystem?","Yes, when the application has explicit writable mounts for its real requirements and can avoid writing elsewhere.","docker run --read-only \\\n--tmpfs /tmp:rw,size=64m \\\n--user 10001:10001 --cap-drop=ALL IMAGE","The image filesystem cannot be changed through ordinary writes, while /tmp supplies bounded scratch space. Logs can go to stdout. Persistent uploads or caches require explicitly designed storage rather than arbitrary writes under /app.","A read-only root filesystem does not make every mounted volume read-only. Audit actual write paths, native-library extraction and JVM temporary files.","Which startup behavior would you test before enforcing this policy on Spring Boot?","Test temp-file creation, Java extracted libraries, logs, cache writes and startup scripts. Provide specific writable tmpfs/volume paths such as `/tmp` if required."],["Q081",16,"Why should base images be maintained and periodically rebuilt?","Application security depends on runtime and OS components too; an unchanged application can still require an updated base and retesting.","FROM eclipse-temurin:21-jre\n# Production policy can pin a reviewed digest.\n# An update job proposes the new digest and runs verification.","Pinning provides a stable input; an update process prevents that stable input from becoming indefinitely stale. Rebuild, scan and test the new artifact, then record the new release digest.","A smaller image is not automatically supported or vulnerability-free. Deleting package managers does not patch vulnerable runtime libraries.","How would you roll out a base-only patch across many Java services?","Update the approved base digest, rebuild all dependent services in CI, scan/test images, and roll out gradually with rollback digests recorded."],["Q082",16,"What is an SBOM, and what does it tell you?","A software bill of materials inventories detected components and versions; it supports assessment but is not proof that an image is secure.","docker buildx build --sbom=true \\\n--tag REGISTRY/APP:BUILD_ID --push .\n# Consume the attached inventory with your assessment tools.","An inventory helps determine whether an affected package may be present. Detection coverage differs for OS packages, shaded Java dependencies and custom binaries. Pair the inventory with vulnerability information and actual usage analysis.","An absent finding can reflect scanner limitations. An SBOM does not establish a publisher's identity or that the application passed tests.","How would you assess a CVE affecting a transitive Java dependency?","Check the vulnerable package and exact version in the SBOM, actual runtime reachability, exploit conditions, fixed version, and transitive upgrade path."],["Q083",16,"What is build provenance?","It records information about how an artifact was produced, such as builder, inputs and build parameters, according to the chosen format and mode.","docker buildx build --provenance=mode=max \\\n--tag REGISTRY/APP:BUILD_ID --push .\n# Review the evidence attached to the published artifact.","Provenance supports tracing a release back to source and build inputs. Its usefulness depends on a trusted builder and verifiable binding to the image digest. Richer records can also disclose more build details.","Build arguments can appear in provenance. Credentials belong in secret mechanisms, not ARG. Attestation support also depends on export and storage configuration.","What makes an attestation trustworthy rather than merely present?","Validate a trusted signature and attestation issuer, authorized build identity, subject digest, source revision and policy. An arbitrary attached JSON file is not enough."],["Q084",16,"How are image signatures different from digests and vulnerability scans?","A digest identifies content, a signature can authenticate an assertion about that content, and a scan assesses known issues under a specific policy and database.","Content check:   compare approved image digest\nPublisher check: verify signature identity and policy\nRisk check:      inspect findings and allowed exceptions\nRuntime check:   test application behavior and access policy","Each answers a different question. Signature verification must check the expected identity and trust policy, not merely find a signature. A legitimate publisher can still publish vulnerable or broken software.","Signing technology and registry integration vary. A deployment policy must enforce verification rather than rely on a developer remembering a manual step.","Which evidence would you retain when approving a temporary vulnerability exception?","Store CVE details, exploitability analysis, mitigation, business risk owner, exception expiry, evidence links and a planned update date."],["Q085",16,"Why can deleting a secret in a later Dockerfile step still leak it?","Earlier image layers or build output may retain the original bytes even when the final filesystem view hides the file.","# Unsafe pattern:\n# COPY credentials.txt /tmp/credentials.txt\n# RUN use-credentials && rm /tmp/credentials.txt\n# Use a build secret mount and prevent output leakage instead.","Layered storage means a later deletion does not rewrite all prior content. The response to a real exposure includes revoking the secret and correcting the build pipeline, not just removing the final visible file.","Private registries do not make embedded long-lived credentials an acceptable design. Intermediate caches and logs also need review.","How would you investigate where the exposed image and credential were distributed?","List affected image digests, registries, tags, build logs and deployed clusters; revoke the leaked credential, rotate it, and search for unauthorized access."],["Q086",17,"What should a container CI pipeline verify?","Source tests, build inputs, the produced image's startup and behavior, security policy and release identity all need appropriate checks.","Source commit -> unit/integration tests -> image build\nImage candidate -> runtime smoke test -> assessment\nPublished digest -> deployment -> observed verification","A JAR passing unit tests can still fail because the runtime lacks a library, uses the wrong UID or receives the wrong arguments. Image tests should exercise the packaging and runtime contract, not only repeat compilation.","A pipeline step named test proves nothing without the assertion and failure policy. Verify exit codes and readiness deadlines.","What smoke test catches a wrong container port or missing certificate bundle?","Boot the exact built image under test settings, call the expected HTTP health endpoint, and confirm SSL/TLS connections or CA trust to a test dependency."],["Q087",17,"Why deploy the same digest that passed image testing?","It ties production deployment to the verified artifact and avoids rebuild differences between stages.","Test:   registry.example.com/team/app@sha256:APP_DIGEST\nStage:  same digest + stage configuration\nProd:   same digest + production configuration","Source, dependencies, timestamped output or a base tag can change when rebuilding. Digest promotion removes that specific drift while preserving environment-specific values. Record which platform image or index was approved.","Production behavior can still differ because configuration, architecture, data and dependencies differ. Test the relevant variant and environment contract.","How would you prove which digest an incident-affected replica actually ran?","Inspect orchestrator-reported image IDs/digests and `docker inspect` for each replica, then compare them with the signed release manifest."],["Q088",17,"How should image-build credentials be handled in CI?","Provide short-lived or narrowly scoped credentials through protected CI channels, with separate permissions for reading, building and release publication.","Untrusted PR: read-only dependencies; no production secrets\nTrusted release: authorized publish identity\nDeployment: permission to deploy an approved digest","The source of a build can execute code during dependency resolution and compilation. An external pull request must not inherit a trusted release job's secrets or engine access. Limit credentials by destination and purpose.","Hiding a secret in logs does not stop malicious code from transmitting it elsewhere. Trust separation must occur before executing the job.","How would you test contributions from forks while protecting a private registry?","Build fork contributions without secrets or write permissions. Run trusted publishing only after review on protected branches/workflows."],["Q089",17,"What is the difference between rolling, blue- green and canary deployment?","Rolling replaces instances incrementally; blue-green switches between complete environments; canary admits limited traffic to a candidate before expansion.","Rolling:    old and new replicas overlap\nBlue-green: two deployment groups; controlled traffic switch\nCanary:     measured small candidate share, then promotion","All need readiness, capacity, version compatibility and a rollback decision. Blue-green may require more temporary resources. Canary decisions need meaningful traffic and user-impact signals, not only an alive process.","Container tooling alone does not provide every traffic strategy. Shared database changes can prevent a simple application rollback.","What metrics would stop a canary before most users are affected?","Stop rollout if error rates, p95/p99 latency, saturation, business failures or health checks breach preset thresholds relative to baseline."],["Q090",17,"Why do database migrations complicate container rollback?","Rolling back an image does not automatically restore the schema, data or external effects changed by the newer release.","Expand: add compatible schema without removing old fields\nDeploy: allow old and new code to coexist safely\nMigrate: backfill and verify\nContract: remove old paths after the rollback window closes","An expand-contract strategy gives overlapping application versions a compatible period. A migration job needs ownership, retries and a clear completion result. Destructive transformations require a separate recovery plan.","A container restart is not a migration lock. Running every replica's startup migration concurrently can create contention or failure.","How would you roll back code after a non-reversible data transformation?","Roll code forward with a compatibility adapter or restore transformed data from a validated backup. A simple old-image rollback cannot reverse changed data."],["Q091",18,"What is a multi-platform image?","It uses an image index or manifest list to reference distinct image variants for supported operating-system and CPU combinations.","docker buildx imagetools inspect REGISTRY/APP:TAG\n# Example variants: linux/amd64 and linux/arm64\n# A pull normally selects a compatible variant for the target.","The same readable tag can lead an AMD64 host and an ARM64 host to different manifests. The variants should provide equivalent application behavior but their binary layers need not be identical.","Attestation descriptors can also appear in an index. Do not mistake every descriptor for a runnable platform variant.","What exactly does pinning the index digest fix?","Pinning the index digest locks the manifest list and which platform variants it references, but different hosts still select their respective platform-specific manifests."],["Q092",18,"How do you build and publish AMD64 and ARM64 variants?","Use a builder configured for the platforms through native workers, supported emulation or a deliberate cross-compilation approach.","docker buildx build \\\n--platform linux/amd64,linux/arm64 \\\n--tag REGISTRY/APP:BUILD_ID --push .","The resulting registry reference can contain both variants. The Java runtime base must support the platforms, and native dependencies must be compatible. Exporting directly to a registry avoids assuming the local image store supports every multi-platform output.","The command does not provision missing builders or emulators. Test each target variant; a successful build is not a compatibility test.","When is a native ARM worker preferable to emulation?","Native ARM workers avoid emulation overhead and can test native libraries on real ARM behavior, especially for expensive builds and platform-specific tests."],["Q093",18,"Why does exec format error happen?","An executable can have an incompatible architecture or format, or a script can lack a valid interpreter contract.","docker image inspect IMAGE \\\n--format '{{.Os}}/{{.Architecture}}'\n# Check copied native binaries, script shebang and line endings.\n# Also confirm the interpreter actually exists in the image.","Compare the image's declared platform with the host and the file being launched. A manually copied AMD64 binary can still be wrong inside an ARM64 image. Script failures can also stem from CRLF or a missing interpreter.","A platform label does not validate every copied file. permission denied is a related but different failure that needs permission and mount checks.","How would you prevent a developer's native build output entering a cross-platform image?","Build dependencies inside the selected target architecture or cross-compile with verified target flags. Never blindly COPY a developer's host-built native executable."],["Q094",18,"Can Java bytecode portability hide OS-library incompatibility?","Yes. JNI, native agents, TLS providers and other libraries can depend on architecture, libc and available system components.","Java class: portable within its supported Java runtime contract\nNative .so: requires matching architecture and ABI\nBase choice: verify glibc/musl and required library support","A smaller Alpine-based image uses a different libc family from many conventional Linux bases. Pure Java code can run while a native transport or agent fails at load time. Exercise the actual features under the target image.","Do not claim Alpine is always wrong or always better. Choose from supported dependencies and operational needs, then measure size and performance.","Which integration test would detect a failing native compression library?","Run a container integration test on each target architecture that loads the compression library and performs actual compress/decompress with checked output."],["Q095",18,"How do BUILDPLATFORM and TARGETPLATFORM help cross-platform builds?","They identify the builder's execution platform and requested output platform, enabling explicit control of stages and compiler targets.","# Dockerfile sketch, not a complete cross compiler:\nFROM --platform=$BUILDPLATFORM TOOLCHAIN_IMAGE AS build\nARG TARGETPLATFORM\n# Build the target artifact using a toolchain that supports it.\nFROM RUNTIME_IMAGE","A native build stage can run on the builder while producing an artifact for the target, if the toolchain actually supports that cross-compilation. Automatic platform arguments must be declared where their values are used in stage instructions.","Merely printing TARGETPLATFORM does not cross-compile a binary. Java-native packaging and generated libraries still need a target-aware workflow.","Why can a Dockerfile run quickly but produce the wrong native artifact?","A fast build might accidentally compile for BUILDPLATFORM and copy that output into a TARGETPLATFORM image. Confirm target architecture and run it in a target test."],["Q096",19,"Can you run a database in Docker safely?","Yes, with a supported image, correctly mounted durable storage, resource planning, backup/restore verification and an operational recovery policy.","# PostgreSQL 17 image-specific data path:\n--mount type=volume,src=orders-db,dst=/var/lib/postgresql/data\n# Do not publish its port unless a host client needs access.\n# Review data path and upgrade guidance for the chosen major version.","Separating data from the container lets you recreate the process without discarding the database. Database upgrades still require compatible data handling. Single-host storage remains dependent on that host's reliability.","A volume is not a replica or an off-host backup. PostgreSQL 18+ image layout differs, so do not blindly reuse a 17 mount recipe.","How would you recover after losing both the container and its host disk?","Restore a tested off-host backup and transaction logs onto replacement storage, recreate the database container, verify integrity, then bring clients back carefully."],["Q097",19,"Why are raw volume copies risky for a running database?","A filesystem copy can capture an inconsistent point unless the database and storage snapshot procedure provide the required consistency.","docker exec DB_CONTAINER \\\npg_dump -U app -d orders > orders.sql\n# Example logical backup; authenticate through an approved mechanism.\n# Validate by restoring into a separate disposable database.","A logical backup tool understands database consistency better than copying arbitrary live files. The example covers one database; roles, global objects and point-in-time recovery require additional planning. Avoid a TTY for streamed backup bytes.","A successful dump command is not a tested restore. Preserve encryption, retention, integrity and recovery-time requirements.","When would physical backup plus transaction-log archival be preferable?","Use physical backups plus WAL/archive logs for large databases, low RPO and point-in-time recovery, when the database's tooling supports it."],["Q098",19,"Why do database initialization environment variables seem to stop working?","Many official database images use initialization settings only when creating an empty data directory, not to alter an existing database on every start.","# First initialization: POSTGRES_PASSWORD_FILE is consumed.\n# Later start with the same volume: existing database remains.\n# Change real roles/credentials using the database's own procedure.","Retained volume data changes the startup path. Recreating the container with a new password value does not imply the existing PostgreSQL role password has changed. Inspect the image contract and the actual database state.","Deleting the volume to make settings take effect is destructive. Treat credential rotation and database migrations as explicit operations.","How would you diagnose a password mismatch without deleting any data?","Check whether a data directory was initialized earlier, inspect effective env/secret inputs and logs, then use supported SQL/password rotation without deleting the volume."],["Q099",19,"Why does Kafka connect initially and then fail from a container?","The bootstrap endpoint may be reachable while broker metadata advertises addresses that the client cannot resolve or reach.","Bootstrap from API container: kafka:9092\nAdvertised internal listener: kafka:9092\nHost client listener: a separately reachable host endpoint\n# Image-specific environment names must follow that image's contract.","Kafka clients discover broker endpoints after bootstrapping. Each client network needs usable advertised addresses. A successful TCP connection to the initial bootstrap address therefore proves only the first step.","listener configuration, TLS identity and advertised endpoint design must agree. Docker port mapping does not rewrite arbitrary broker metadata for every client network.","How would you support both host tools and same-network Spring clients?","Configure Kafka advertised listeners separately for host clients and Docker-network clients; each client must receive broker endpoints reachable from its own network."],["Q100",19,"Can docker compose scale turn one database into a database cluster?","No. Starting replicas of a container does not configure application replication, membership, leader election or data ownership.","docker compose up -d --scale api=3\n# Appropriate only if the API's state and jobs permit it.\n# Database replication requires its own explicit cluster design.","Each database process must have the correct identity and storage. Pointing unrelated replicas at the same data directory can corrupt data or violate the database's supported usage. Managed stateful services may simplify the responsibility.","Likewise, several Kafka or Redis containers do not automatically form a correctly configured fault-tolerant cluster. Test failure and recovery semantics.","Which workload would you keep outside a first single-host Compose deployment?","Keep a critical production database, distributed Kafka cluster, or other stateful service needing multi-host failover outside an initial single-host setup."],["Q101",20,"How do Engine, Compose, Swarm and Kubernetes differ?","Engine runs container objects; Compose manages an application definition; Swarm and Kubernetes add cluster-level service or workload orchestration.","Single engine: container lifecycle on its selected host\nCompose:      related services, config, networks and volumes\nCluster:      scheduling, desired replicas and platform recovery","A cluster controller can replace failed workloads on eligible nodes, subject to capacity and storage constraints. Compose can be useful for development and suitable single-host services without becoming a cluster scheduler.","Product selection should follow requirements and team operations capacity. A cluster is not automatically simpler or highly available in every component.","What requirement would make you move beyond a single host?","Multi-node recovery, rolling rescheduling after host failure, stronger deployment controls, or independent autoscaling can justify adopting an orchestrator."],["Q102",20,"Does Kubernetes require Docker Engine or dockershim?","Current Kubernetes uses CRI-compatible runtimes; Docker Engine needs an adapter if selected as the runtime, while Docker-built compatible images remain usable.","Docker build -> compatible image in registry\nKubernetes -> CRI runtime such as containerd -> workload\n# The old in-tree dockershim was removed in Kubernetes 1.24.","Image format and node runtime integration are separate contracts. Removing dockershim did not make Dockerfiles unusable. Docker Engine itself does not implement the Kubernetes CRI contract directly.","Do not treat Docker CLI commands as the workload-control interface for a Kubernetes- managed service. Use the orchestrator's ownership model.","Why might editing a managed container directly be undone by its controller?","A Deployment controller continuously reconciles desired state. A manual change to one Pod/ container can disappear when it is replaced from the declared template."],["Q103",20,"Why should a scalable API avoid local durable state?","Replacement or rescheduling can lose container-local data, and independent replicas cannot safely assume the same local files or memory.","Durable orders -> database\nShared uploads -> appropriate object/file storage\nSession policy -> external state or suitable signed tokens\nLocal /tmp -> disposable scratch data","Keeping durable state behind explicit services allows replicas to come and go. Local caches may still be useful when invalidation and loss are acceptable. Background jobs need coordination and idempotency rather than one in-memory singleton per replica.","Stateless HTTP handlers can still create stateful external effects. The architecture must define retry and concurrency behavior.","How would you prevent three replicas from charging the same order twice?","Use a shared durable idempotency store with a unique order/payment key and an atomic business transaction; each replica follows the same contract."],["Q104",20,"Do resource limits guarantee a workload gets scheduled or has reserved capacity?","No. Runtime ceilings, scheduling requests or reservations, available capacity and failure headroom solve different resource questions.","Runtime ceiling: prevent unrestricted per-workload consumption\nPlacement budget: determine whether the node can accept work\nFailure headroom: permit recovery after a node is lost","A memory limit can protect against growth while insufficient cluster capacity prevents replacement elsewhere. An orchestrator's requests or reservations guide placement according to its own policy. Load testing determines whether the admitted workload meets latency goals.","A nominal replica count does not prove survivability during node loss. Storage location and network dependencies can constrain failover too.","What capacity would remain if your largest node failed?","Plan N-1 capacity: after the largest node fails, remaining nodes must still fit critical requests plus headroom or degrade according to an explicit policy."],["Q105",20,"What are the limits of container-level high availability?","A restarted or replaced process restores only part of service availability; traffic, durable data, dependency health and recovery time still matter.","API replica loss: admit traffic to another ready instance\nHost loss:        schedule elsewhere with accessible inputs\nData loss:        restore or fail over under a database policy\nDependency loss:  timeouts, degraded behavior and recovery","Choose acceptable outage and data-loss objectives first, then prove them with failure exercises. A replica may start correctly but be unable to reach data or receive user traffic. Observe both infrastructure and user-visible behavior.","Three containers on one host share a host failure domain. Replication without independent failure domains can provide less resilience than expected.","How would you demonstrate the service's recovery time instead of merely describing it?","Perform a timed failure rehearsal: kill a node/container, measure alert-to-recovery and request success, then compare observed RTO/RPO to targets."],["Q106",21,"A Spring API cannot reach PostgreSQL in Compose. What do you check first?","Check caller-relative addressing, shared network membership, actual database readiness, credentials and schema compatibility before changing unrelated flags.","Expected app URL: jdbc:postgresql://db:5432/orders\ndocker compose ps\ndocker compose logs --tail=100 api db\ndocker compose config","localhost in the API points to that API, not db. If db resolves but rejects authentication, DNS is already working. If SQL fails because a table is missing, the network may be fine and migration state is the problem.","config and logs can include sensitive values. Preserve the current data volume; rebuilding or deleting it is not an initial network diagnosis.","Which error message would move your investigation from network to database state?","Errors such as `relation does not exist`, missing table/column or failed migration shift focus from DNS to schema state; authentication failures shift to credentials."],["Q107",21,"The API works locally but dies under a 512 MiB production limit. What is your approach?","Compare exact image and configuration, verify termination cause, inspect total memory and workload concurrency, then tune from measured evidence.","docker inspect API_CONTAINER \\\n--format 'oom={{.State.OOMKilled}} memory={{.HostConfig.Memory}}'\ndocker stats --no-stream API_CONTAINER\n# Compare effective JVM settings and peak-load telemetry.","A laptop without limits can hide native or thread-related memory growth. Increasing the limit may be a valid immediate mitigation, but it does not identify the growth source. Separate heap retention from native buffers, thread stacks and cache behavior.","Exit 137 alone is not enough evidence. Do not set Xmx equal to the full container budget as a blanket fix.","What evidence would justify a larger limit rather than a code or pool-sizing change?","Show a stable measured peak including heap, native/thread memory and headroom, with legitimate throughput exceeding the old budget; rule out leaks and oversized pools."],["Q108",21,"Production runs different code from the image tested in CI. How do you investigate?","Trace source, built artifact, published digest, platform selection and deployed runtime identity; then inspect mounts and configuration that can override packaged behavior.","CI record: source commit + tests + published digest\nRuntime:   selected image identity and mounted paths\nRegistry:  tag history or immutable release record","A mutable tag, rebuild or bind mount over /app can change what executes. A stale replica may still use a previous artifact. Resolve each identity step before concluding that the container runtime is inconsistent.","Digest agreement does not prove identical environment configuration or external dependencies. Check both artifact and runtime inputs.","How would you prevent this mismatch in the release process?","Allow only tested immutable digests into deployment manifests, promote a signed release record, and reject build/rebuild operations during promotion."],["Q109",21,"A security policy blocks a previously working Java image. How do you repair it?","Identify the precise denied operation and required path, then adapt the application or grant the narrowest justified allowance.","Policy: non-root + read-only root + dropped capabilities\nCheck: temp writes, log paths, native extraction, mount ownership\nRepair example: bounded writable /tmp plus stdout logging","The application may only need a writable scratch directory rather than root privileges. Verify the repaired image with the intended security profile and representative startup and runtime features. Preserve denial evidence for the policy owner.","Disabling all controls trades a diagnosis problem for a larger authority boundary. Do not use --privileged as a standard production repair.","How would you prove no unexpected persistent write paths remain?","Run the app with a read-only root filesystem, trace filesystem write attempts during startup and representative traffic, and whitelist only required writable mounts."],["Q110",21,"How would you design container delivery for a Spring order service?","Define the artifact, configuration, resource, data, traffic and recovery contracts, then test their interactions rather than stopping at a Dockerfile.","Image: tested JAR + maintained Java runtime + non-root UID\nRuntime: secrets, bounded memory/CPU, explicit mounts\nService: readiness, graceful drain, metrics and logs\nRelease: digest promotion + compatible migration + rollback evidence","Start from traffic and durability requirements. Keep database credentials outside the image, persistent data outside the writable layer, and asynchronous effects retryable and idempotent. Choose single-host or cluster operations from the required failure tolerance.","Docker does not create business correctness or exactly-once external behavior. The service contract must cover duplicates, partial failures and data recovery.","What would you demonstrate in a deployment and failure rehearsal for this design?","Deploy a tested immutable image, demonstrate canary metrics and graceful shutdown, kill a replica mid-order, retry the request and verify one order/payment and durable event; restore data from backup."]],"labs":[["L01 Create, start, inspect and remove","Observe that an exited process and its container object have separate lifetimes.","set -eu\ndocker info >/dev/null\nDK_NAME=\"dk-l01-$$\"\n! docker container inspect \"$DK_NAME\" >/dev/null 2>&1\ntrap 'docker rm -f \"$DK_NAME\" >/dev/null 2>&1 || true' EXIT\ndocker create --name \"$DK_NAME\" alpine:3.22 echo hello\ndocker start -a \"$DK_NAME\"\ntest \"$(docker inspect -f '{{.State.Status}}' \"$DK_NAME\")\" = exited\ntest \"$(docker inspect -f '{{.State.ExitCode}}' \"$DK_NAME\")\" = 0\ntest \"$(docker logs \"$DK_NAME\")\" = hello\ndocker start -a \"$DK_NAME\"\ndocker rm \"$DK_NAME\" >/dev/null\nprintf 'PASS: same container started twice, then removed\\n'"],["L02 Predict ENTRYPOINT and CMD arguments","Build a tiny argument-printing image and verify which default runtime arguments are replaced.","set -eu\ntest -z \"$(ls -A)\"\nDK_IMAGE=\"dk-l02:$$\"\ntrap 'docker image rm \"$DK_IMAGE\" >/dev/null 2>&1 || true' EXIT\ncat > Dockerfile <<'EOF'\nFROM alpine:3.22\nENTRYPOINT [\"printf\", \"%s\\n\"]\nCMD [\"default\"]\nEOF\ndocker build -t \"$DK_IMAGE\" .\ntest \"$(docker run --rm \"$DK_IMAGE\")\" = default\ntest \"$(docker run --rm \"$DK_IMAGE\" custom)\" = custom\ntest \"$(docker run --rm --entrypoint echo \"$DK_IMAGE\" replaced)\" = replaced\nprintf 'PASS: CMD replaced; ENTRYPOINT kept unless overridden\\n'"],["L03 Named volume persistence","Write data with one container, read it with another, and remove only the disposable lab volume.","set -eu\nDK_VOLUME=\"dk-l03-$$\"\n! docker volume inspect \"$DK_VOLUME\" >/dev/null 2>&1\ndocker volume create \"$DK_VOLUME\" >/dev/null\ntrap 'docker volume rm \"$DK_VOLUME\" >/dev/null 2>&1 || true' EXIT\ndocker run --rm \\\n--mount \"type=volume,src=$DK_VOLUME,dst=/data\" \\\nalpine:3.22 sh -c 'printf \"retained\\n\" > /data/note'\nDK_TEXT=$(docker run --rm \\\n--mount \"type=volume,src=$DK_VOLUME,dst=/data,readonly\" \\\nalpine:3.22 cat /data/note)\ntest \"$DK_TEXT\" = retained\ndocker volume rm \"$DK_VOLUME\" >/dev/null\nprintf 'PASS: data survived writer removal and was read again\\n'"],["L04 Read-only bind mount","Confirm a container can read a host file but cannot write through a read-only bind.","set -eu\ntest -z \"$(ls -A)\"\nmkdir fixture\nprintf 'host-value\\n' > fixture/note\nDK_DIR=\"$PWD/fixture\"\ntest \"$(docker run --rm \\\n--mount \"type=bind,src=$DK_DIR,dst=/config,readonly\" \\\nalpine:3.22 cat /config/note)\" = host-value\nif docker run --rm \\\n--mount \"type=bind,src=$DK_DIR,dst=/config,readonly\" \\\nalpine:3.22 sh -c 'echo changed > /config/note'; then\nprintf 'FAIL: write unexpectedly succeeded\\n' >&2\nexit 1\nfi\ntest \"$(cat fixture/note)\" = host-value\nprintf 'PASS: read worked, write failed, host value unchanged\\n'"],["L05 Service discovery on a user-defined network","Resolve a container name and fetch HTTP without publishing a host port.","set -eu\nDK_NET=\"dk-l05-net-$$\"\nDK_WEB=\"dk-l05-web-$$\"\n! docker network inspect \"$DK_NET\" >/dev/null 2>&1\n! docker container inspect \"$DK_WEB\" >/dev/null 2>&1\ndocker network create \"$DK_NET\" >/dev/null\ntrap 'docker rm -f \"$DK_WEB\" >/dev/null 2>&1 || true;\ndocker network rm \"$DK_NET\" >/dev/null 2>&1 || true' EXIT\ndocker run -d --name \"$DK_WEB\" --network \"$DK_NET\" nginx:stable\ndocker run --rm --network \"$DK_NET\" alpine:3.22 sh -ec '\nfor n in 1 2 3 4 5 6 7 8 9 10; do\nif wget -qO /tmp/page \"http://$1\"; then\ngrep -q \"Welcome to nginx\" /tmp/page\nexit 0\nfi\nsleep 1\ndone\nexit 1\n' sh \"$DK_WEB\"\nprintf 'PASS: peer HTTP worked through container-name DNS\\n'"],["L06 Publish HTTP only on host loopback","Use a random local host port and distinguish its value from the container listener port.","set -eu\nDK_NAME=\"dk-l06-$$\"\n! docker container inspect \"$DK_NAME\" >/dev/null 2>&1\ntrap 'docker rm -f \"$DK_NAME\" >/dev/null 2>&1 || true' EXIT\ndocker run -d --name \"$DK_NAME\" \\\n-p 127.0.0.1::80 nginx:stable\nDK_ENDPOINT=$(docker port \"$DK_NAME\" 80/tcp)\ncase \"$DK_ENDPOINT\" in 127.0.0.1:*) ;; *) exit 1 ;; esac\nDK_READY=0\nfor DK_N in 1 2 3 4 5 6 7 8 9 10; do\nif curl -fsS \"http://$DK_ENDPOINT\" -o /dev/null; then\nDK_READY=1\nbreak\nfi\nsleep 1\ndone\ntest \"$DK_READY\" = 1\nprintf 'PASS: host loopback HTTP reached container port 80\\n'"],["L07 Multi-stage non-root Java service","Use the complete Demo.java, Health.java, Dockerfile and .dockerignore from the worked example to","set -eu\ntest -f Demo.java && test -f Health.java && test -f Dockerfile\nDK_IMAGE=\"dk-l07:$$\"\nDK_NAME=\"dk-l07-$$\"\n! docker container inspect \"$DK_NAME\" >/dev/null 2>&1\ntrap 'docker rm -f \"$DK_NAME\" >/dev/null 2>&1 || true;\ndocker image rm \"$DK_IMAGE\" >/dev/null 2>&1 || true' EXIT\ndocker build -t \"$DK_IMAGE\" .\ntest \"$(docker image inspect -f '{{.Config.User}}' \"$DK_IMAGE\")\" = 10001:10001\ndocker run -d --name \"$DK_NAME\" --memory=256m \"$DK_IMAGE\"\nDK_READY=0\nfor DK_N in $(seq 1 30); do\nif docker exec \"$DK_NAME\" java -cp /app Health; then\nDK_READY=1\nbreak\nfi\nsleep 1\ndone\ntest \"$DK_READY\" = 1\ndocker stop --time 10 \"$DK_NAME\" >/dev/null\ntest \"$(docker inspect -f '{{.State.OOMKilled}}' \"$DK_NAME\")\" = false\nprintf 'PASS: non-root Java service answered its health probe\\n'"],["L08 Observe selective cache invalidation","Build twice unchanged, then change a source input and verify the resulting artifact changes. Inspect","set -eu\ntest -z \"$(ls -A)\"\nDK_IMAGE=\"dk-l08:$$\"\ntrap 'docker image rm \"$DK_IMAGE\" >/dev/null 2>&1 || true' EXIT\nprintf 'dependency-v1\\n' > dependencies.txt\nprintf 'source-v1\\n' > source.txt\ncat > Dockerfile <<'EOF'\nFROM alpine:3.22\nWORKDIR /app\nCOPY dependencies.txt .\nRUN cp dependencies.txt installed.txt\nCOPY source.txt .\nCMD [\"cat\", \"/app/source.txt\"]\nEOF\ndocker build --progress=plain -t \"$DK_IMAGE\" . > first.log 2>&1\ndocker build --progress=plain -t \"$DK_IMAGE\" . > second.log 2>&1\ntest \"$(docker run --rm \"$DK_IMAGE\")\" = source-v1\nprintf 'source-v2\\n' > source.txt\ndocker build --progress=plain -t \"$DK_IMAGE\" . > third.log 2>&1\ntest \"$(docker run --rm \"$DK_IMAGE\")\" = source-v2\nprintf 'PASS: changed source was packaged; review cache logs\\n'"],["L09 Build secret mount without packaging the file","Use a fake, non-sensitive build credential to show temporary secret access and check the final","set -eu\ntest -z \"$(ls -A)\"\nDK_IMAGE=\"dk-l09:$$\"\ntrap 'docker image rm \"$DK_IMAGE\" >/dev/null 2>&1 || true' EXIT\nprintf 'demonstration-only\\n' > build-token.txt\nprintf 'build-token.txt\\n' > .dockerignore\ncat > Dockerfile <<'EOF'\n# syntax=docker/dockerfile:1\nFROM alpine:3.22\nRUN --mount=type=secret,id=token,required=true \\\ntest -s /run/secrets/token && printf 'built\\n' > /result\nCMD [\"cat\", \"/result\"]\nEOF\ndocker build --secret id=token,src=build-token.txt \\\n-t \"$DK_IMAGE\" .\ntest \"$(docker run --rm \"$DK_IMAGE\")\" = built\ndocker run --rm \"$DK_IMAGE\" sh -ec \\\n'test ! -e /run/secrets/token; test ! -e /build-token.txt'\nprintf 'PASS: build used mount; secret file absent at runtime\\n'"],["L10 Unhealthy does not automatically mean restarted","Observe a live process becoming unhealthy while a standalone restart policy has no exit to act on.","set -eu\nDK_NAME=\"dk-l10-$$\"\n! docker container inspect \"$DK_NAME\" >/dev/null 2>&1\ntrap 'docker rm -f \"$DK_NAME\" >/dev/null 2>&1 || true' EXIT\ndocker run -d --name \"$DK_NAME\" --restart=on-failure \\\n--health-cmd=false --health-interval=1s \\\n--health-timeout=1s --health-retries=1 \\\nalpine:3.22 sleep 120\nDK_BAD=0\nfor DK_N in $(seq 1 30); do\nDK_STATE=$(docker inspect -f '{{.State.Health.Status}}' \"$DK_NAME\")\nif test \"$DK_STATE\" = unhealthy; then DK_BAD=1; break; fi\nsleep 1\ndone\ntest \"$DK_BAD\" = 1\ntest \"$(docker inspect -f '{{.State.Running}}' \"$DK_NAME\")\" = true\ntest \"$(docker inspect -f '{{.RestartCount}}' \"$DK_NAME\")\" = 0\nprintf 'PASS: unhealthy process remained running without restart\\n'"],["L11 Inspect JVM sizing under resource limits","Check that the runtime object has the requested memory ceiling, then inspect JVM-detected resource","set -eu\nDK_NAME=\"dk-l11-$$\"\n! docker container inspect \"$DK_NAME\" >/dev/null 2>&1\ntrap 'docker rm -f \"$DK_NAME\" >/dev/null 2>&1 || true' EXIT\ndocker create --name \"$DK_NAME\" --memory=512m --cpus=1 \\\neclipse-temurin:21-jre \\\njava -XX:MaxRAMPercentage=60 \\\n-XshowSettings:system -XshowSettings:vm -version\ndocker start -a \"$DK_NAME\"\ntest \"$(docker inspect -f '{{.HostConfig.Memory}}' \"$DK_NAME\")\" = 536870912\ntest \"$(docker inspect -f '{{.State.ExitCode}}' \"$DK_NAME\")\" = 0\nprintf 'PASS: 512 MiB configured; inspect JVM sizing output\\n'"],["L12 Compose database readiness and persistence","Start a disposable PostgreSQL 17 service with a file secret, write data, recreate the service, and","set -eu\ntest -z \"$(ls -A)\"\nmkdir secrets\nprintf 'disposable-lab-password\\n' > secrets/db_password.txt\nchmod 600 secrets/db_password.txt\ncat > compose.yaml <<'EOF'\nservices:\ndb:\nimage: postgres:17\nenvironment:\nPOSTGRES_USER: app\nPOSTGRES_DB: orders\nPOSTGRES_PASSWORD_FILE: /run/secrets/db_password\nsecrets: [db_password]\nvolumes: [data:/var/lib/postgresql/data]\nhealthcheck:\ntest: [\"CMD-SHELL\", \"pg_isready -U app -d orders\"]\ninterval: 2s\ntimeout: 3s\nretries: 30\nvolumes:\ndata:\nsecrets:\ndb_password:\nfile: ./secrets/db_password.txt\nEOF\nDK_PROJECT=\"dk-l12-$$\"\ntrap 'docker compose -p \"$DK_PROJECT\" down -v >/dev/null 2>&1 || true' EXIT\ndocker compose -p \"$DK_PROJECT\" up -d --wait --wait-timeout 120\ndocker compose -p \"$DK_PROJECT\" exec -T db psql -v ON_ERROR_STOP=1 \\\n-U app -d orders -c \"CREATE TABLE note(v text); INSERT INTO note VALUES ('kept');\"\ndocker compose -p \"$DK_PROJECT\" down\ndocker compose -p \"$DK_PROJECT\" up -d --wait --wait-timeout 120\nDK_TEXT=$(docker compose -p \"$DK_PROJECT\" exec -T db \\\npsql -U app -d orders -Atc 'SELECT v FROM note')\ntest \"$DK_TEXT\" = kept\nprintf 'PASS: healthy PostgreSQL retained data across recreation\\n'"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>
