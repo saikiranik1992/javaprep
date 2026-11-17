@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Threads &amp; Concurrency — Zero to Hero Interactive Study Notes (80 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #ea580c;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Java Threads &amp; Concurrency</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              16 Chapters · 80 Q&amp;As · 10 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Senior Java Handwritten Interview Notes · Threads · Executors · Locks · Virtual Threads
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (16)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (80)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (10)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 80</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Concurrency &amp; Memory</span>
+              <span>•</span>
+              <span>114 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Java Threads &amp; Concurrency — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Senior Java Handwritten Interview Notes (Threads · Executors · Locks · Virtual Threads). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 80 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">80</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (16)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 16 Chapters (80 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Java Threads &amp; Concurrency</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 80</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Java Threads &amp; Concurrency — Hands-On Labs &amp; Reference Guides (10)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Java Threads &amp; Concurrency.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Java Threads &amp; Concurrency — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"java-threads","title":"Java Threads & Concurrency","subtitle":"Senior Java Handwritten Interview Notes","category":"Concurrency & Memory","badge":"Threads · Executors · Locks · Virtual Threads","color":"#ea580c","pages":114,"chapters":["Thread foundations & task design","Lifecycle, start, run & join","Scheduling, sleep & metadata","Interruption & cancellation","Synchronization & shared invariants","Waiting, notification & locks","Deadlocks, starvation & diagnosis","Executors, Futures & lifecycle","Thread pools, queues & overload","Producer-consumer & coordination","CompletableFuture composition","Scheduling, fork/join & streams","ThreadLocal & request context","Virtual threads & modern concurrency","Coding challenges & reproducible tests","Senior production scenarios"],"questions":[["Q001",0,"What is a thread, and how is it different from a process?","A thread is one path of work inside a running program. Threads in the same Java process share objects, but each has its own call stack. Separate processes have their own memory space.","One JVM process\nRequest thread A -> shared service object\nRequest thread B -> the same service object","Why it matters: Two requests can reach the same mutable state concurrently.","A separate stack does not make every object referenced from it private.","Which data would you keep immutable in a shared service?","Keep request DTOs, configuration snapshots and shared lookup values immutable where possible. Build a new value when changes are needed."],["Q002",0,"What is concurrency versus parallelism?","Concurrency means tasks make progress during overlapping time periods. Parallelism means tasks actually run at the same moment on different CPU capacity. One CPU core can switch between concurrent tasks. capacity.","Concurrent: A waits while B makes progress\nParallel: A and B compute on different cores\nMore tasks != more available CPU","Why it matters: Concurrency can improve utilization when work waits, without increasing CPU","Thread count is not a measure of useful parallel throughput.","Why can adding threads slow a CPU-bound workload?","Extra runnable workers fight for the same CPU, creating context switches and cache pressure. If all cores are busy, throughput may fall."],["Q003",0,"Should you extend Thread or implement Runnable?","Put the task in a Runnable or Callable, then decide separately where it runs. This keeps business work reusable and avoids tying it to a particular Thread object.","Runnable work = () -> processOrder();\nThread thread = new Thread(work, \"order-worker\");\nthread.start();","Why it matters: The same task abstraction can later be submitted to an executor.","Reusing a task object is safe only if its mutable state supports that reuse.","How does Callable change the task contract?","Callable<V> returns a typed result and can throw checked exceptions. An executor normally exposes this through Future<V>."],["Q004",0,"How do Runnable and Callable differ?","Runnable performs work without returning a value. Callable returns a value and may declare checked exceptions. An executor runs either task and can give you a Future for its result.","Callable<Integer> work = () -> 42;\nFuture<Integer> result = pool.submit(work);\nint value = result.get();","Why it matters: The Future represents the submitted execution and its result or failure.","A Runnable can still fail with an unchecked exception.","What does submit(Runnable) return on successful completion?","submit(Runnable) returns Future<?>. After successful completion, its get() returns null; failures appear through ExecutionException."],["Q005",0,"When is a thread-per-request design appropriate?","One thread per request is easy to understand when load and downstream resources are limited. Platform threads are relatively costly; virtual threads can make blocking waits cheaper, but database connections still need limits.","Request -> execution resource -> database connection\nThread choice and connection budget are separate decisions.\nBound admission when the dependency cannot keep up.","Why it matters: The bottleneck may be the dependency rather than the number of runnable tasks.","Cheap threads do not make queues, connections or payload memory unlimited.","When would asynchronous I/O fit better than blocking calls?","Use async I/O when there are many long waits, a small controlled thread budget and good asynchronous client support. Measure its complexity."],["Q006",1,"What is the difference between start and run?","Calling start() launches a new thread that runs the task. Calling run() directly on a conventional platform Thread executes an ordinary method call on the current thread.","Thread t = new Thread(() -> use(Thread.currentThread()));\nt.run();   // conventional platform task: caller executes\nt.start(); // new thread executes its task","Why it matters: The direct call and the started execution are two task invocations in this example.","Java 25 Thread.run documentation has special behavior for virtual threads; start them","Which thread would an exception from the direct call reach?","It reaches the caller of run(), because no new thread boundary was created by that direct call."],["Q007",1,"Can a Thread be started twice or restarted after termination?","A Thread object can start only once. After it ends, create another Thread or submit another task to an executor. You may reuse task code only when its state is safe.","Thread t = new Thread(work);\nt.start(); t.join();\nt.start(); // IllegalThreadStateException","Why it matters: Completion does not reset the Thread object's start eligibility.","A reusable Runnable and a reusable Thread are different things.","What state makes a Runnable unsafe to submit twice concurrently?","Shared mutable fields such as counters or iteration indexes can race between submissions. Use stateless tasks or coordinate changes."],["Q008",1,"What are the six Java thread states?","Java reports NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING and TERMINATED. These are snapshots of the JVM's view, not a promise about which thread will execute next.","NEW -> start -> RUNNABLE\nMonitor contention -> BLOCKED\nCompletion of run -> TERMINATED","Why it matters: A state snapshot is evidence about a moment, not a whole causal history.","RUNNING is not a separate Thread.State enum constant.","Why might RUNNABLE not mean that a thread is consuming CPU?","RUNNABLE also covers eligible threads waiting for CPU time or some OS operations. It is not an observed CPU-usage metric."],["Q009",1,"How do BLOCKED, WAITING and TIMED_WAITING differ?","BLOCKED usually means waiting to enter a synchronized monitor. WAITING means an untimed wait or park; TIMED_WAITING has a timeout. Read the stack trace to find the real cause. monitor.","Monitor entry: BLOCKED\nUntimed Object.wait: WAITING while waiting\nThread.sleep: TIMED_WAITING","Why it matters: After notification, an Object.wait waiter may become BLOCKED while reacquiring its","Every lock wait is not represented by BLOCKED.","What stack evidence would distinguish a pool queue wait from monitor contention?","Queue wait often shows LockSupport.park in ThreadPoolExecutor.getTask; a monitor wait shows BLOCKED and an owned monitor in the dump."],["Q010",1,"What does join guarantee, and does it order two workers?","join() lets one thread wait until another finishes, and then safely observe that worker's completed actions. Calling join on A before join on B does not force A and B to run in that order.","a.start(); b.start();\na.join(); b.join();\n// Both finished; no promise that a ran before b.","Why it matters: The observer can process completed results without asserting worker print order.","Joining A before B is not equivalent to starting B after A finishes.","How would you require B to start only after A completes?","Start B only after A.join() succeeds, or have A signal a latch/future that starts the dependent B task."],["Q011",2,"Does sleep release a lock?","sleep() pauses execution but keeps every lock the thread owns. Object.wait() releases its associated monitor while waiting and takes it again before returning.","synchronized (lock) {\nThread.sleep(100); // still owns lock\n}","Why it matters: Other threads needing this monitor must wait through the sleep.","sleep and wait are not interchangeable delay methods.","Why might a timed Condition await be a better design here?","Condition.await releases its associated ReentrantLock while waiting and can return on timeout. It avoids holding a lock during idle time."],["Q012",2,"Does yield or a higher priority guarantee execution order?","yield() and thread priority are hints to the scheduler. They do not promise timing or order. If one task must happen before another, use an explicit handoff.","A: Thread.yield();\nB: ready to run\n// No guarantee B runs next.","Why it matters: Correctness must survive any scheduling allowed by the contract.","Priority is not a substitute for a dependency graph or service deadline.","How would you test a starvation hypothesis?","Track the oldest waiting time, per-thread progress and repeated stack snapshots under load. Check which worker never gains useful CPU/resource access."],["Q013",2,"What are daemon threads?","A daemon thread does not keep the JVM alive by itself. The JVM may shut down while daemon work remains, so important writes must have a controlled shutdown path. finish.","Thread worker = new Thread(backgroundTask);\nworker.setDaemon(true);\nworker.start();","Why it matters: The application must explicitly coordinate completion when background work must","Daemon status does not guarantee finally blocks run before process termination.","How would you drain a background writer during shutdown?","Stop taking new messages, signal the writer to finish its queue, wait with a deadline and confirm the final flush; report anything not written."],["Q014",2,"Why should worker threads be named?","Name long-lived worker threads after their job, such as billing-worker-3. Good names help you match thread dumps with logs; request IDs belong in separate tracing context.","ThreadFactory factory = task ->\nnew Thread(task, \"billing-worker-\" + sequence.incrementAndGet());\n// sequence is an AtomicInteger.","Why it matters: A dump can associate waiting workers with the billing workload.","Reused pool-thread names are not unique request identifiers.","Which request context belongs in an explicit tracing scope instead?","Store request ID, trace/span IDs and tenant context in a bounded tracing scope, not in a long-lived thread name."],["Q015",2,"What does an UncaughtExceptionHandler handle?","An UncaughtExceptionHandler can report an exception that escapes a thread. When work is submitted with submit(), the exception may instead be stored in its Future, so that result must be observed.","t.setUncaughtExceptionHandler((thread, error) -> report(error));\nFuture<?> f = pool.submit(() -> { throw new RuntimeException(); });\n// f.get() exposes this submitted failure through ExecutionException.","Why it matters: Failure routing depends on how the task was executed.","A handler logs a failure; it does not generally recover the failed work or transaction.","How do execute and submit differ in exception observation?","execute can let an exception escape the worker and reach its handler. submit typically captures failure in the returned Future; call get or report it."],["Q016",3,"What does interrupt actually do?","interrupt() asks a worker to stop cooperatively. A blocked method may throw InterruptedException, or running code may need to check its interrupt flag. It is not a kill switch.","while (!Thread.currentThread().isInterrupted()) {\ndoBoundedWork();\n}","Why it matters: The worker must reach a check or an interruptible operation.","A CPU loop that never checks can ignore the request.","How would you cancel a dependency call that does not react to interruption?","Give the dependency its own timeout, use supported client cancellation and close its resources. If it cannot be interrupted, isolate and bound it."],["Q017",3,"How do interrupted and isInterrupted differ?","isInterrupted() checks a thread's interrupt flag without clearing it. The static Thread.interrupted() checks and clears the flag on the current thread.","boolean seen = Thread.currentThread().isInterrupted();\nboolean consumed = Thread.interrupted();\n// Second call clears current status if it was set.","Why it matters: Clearing status changes what later cancellation checks observe.","interrupted is not a status query on an arbitrary target thread.","When is consuming the status intentional?","When code intentionally acknowledges a cancellation and handles it completely. Otherwise clearing the flag may hide the request from callers."],["Q018",3,"What should you do with InterruptedException?","When InterruptedException occurs, either pass it to the caller or restore the interrupt flag if your method cannot pass it along. Then follow your task's cancellation policy.","catch (InterruptedException e) {\nThread.currentThread().interrupt();\nreturn CANCELLED;\n}","Why it matters: Restoration allows outer layers to observe the cancellation request.","Restoring status then blindly retrying an interruptible operation can create a rapid failure","When may a top-level task consume interruption and exit without restoration?","A top-level task that owns cancellation may consume the status when it is about to exit and will not hand control to another cancellation-aware layer."],["Q019",3,"Does Future.cancel(true) prove the task stopped?","Future.cancel(true) marks the Future cancelled and may interrupt the task. It does not prove the running code, network call or database write has stopped.","boolean cancelled = future.cancel(true);\n// Future cancellation != proof that remote or local work ended.\n// Observe the task's supported termination boundary.","Why it matters: The caller must not confuse a cancelled handle with released external resources.","Cancellation cannot undo a side effect that already committed.","How would you stop a queued task versus an executing task?","Remove a queued task with its Future's cancellation path. For executing work, interrupt/cooperate and verify the actual cleanup or completion boundary."],["Q020",3,"Why should stop, suspend and resume be avoided?","Do not use the old forceful stop, suspend or resume methods. Request cancellation, wake a blocked worker, let it finish safe cleanup, and observe actual completion.","Request cancellation\nWake supported blocking operation\nCleanup in finally -> report completion","Why it matters: The protocol can preserve application invariants at defined boundaries.","Deprecated methods are not a fallback for unresponsive dependencies.","Which stop state and wakeup mechanism would your worker need?","Use a volatile stop flag (or interruption) plus a wakeup such as interrupt or condition.signalAll; then join/await completion."],["Q021",4,"What guarantees does synchronized provide?","synchronized lets one thread at a time use the same monitor and establishes ordering between matching unlock and lock. Guard every read and write that belongs to the shared rule.","synchronized (lock) { balance -= amount; ledger.add(entry); }\n// Read balance and ledger together under this same lock.","Why it matters: One critical section represents the related state transition.","Two unrelated locks do not connect the accesses.","How would you prevent future getters from bypassing the policy?","Encapsulate fields, keep them private, expose snapshot methods and state in documentation that the same lock guards every access."],["Q022",4,"What locks do instance and static synchronized methods use?","A synchronized instance method locks that particular object (this). A static synchronized method locks its Class object. They are different locks.","synchronized void instanceWork() {} // this\nstatic synchronized void classWork() {} // Example.class\n// Different monitor identities.","Why it matters: Identify the exact object before claiming two calls cannot overlap.","Synchronizing all methods by name does not prove shared static state is protected.","What if two class loaders define the same class name?","Each defining class loader creates its own Class identity and monitor. Same binary class name does not imply the same static lock."],["Q023",4,"What does reentrant locking mean?","Reentrant means a thread may take a lock it already owns. Each lock acquisition must have a matching release. Reentrancy does not prevent deadlocks between different locks.","synchronized void outer() { inner(); }\nsynchronized void inner() { update(); }\n// Same receiver monitor, same thread.","Why it matters: The nested call can proceed while preserving the monitor's ownership.","Reentrancy is not a general deadlock-prevention feature.","How would recursion affect ReentrantLock hold counts?","Each successful lock adds to the hold count. Every recursive path must unlock once, normally in finally, until the count reaches zero."],["Q024",4,"Why is volatile not enough for count++ or check- then-act?","volatile makes individual reads and writes ordered, but count++ is still read, add, then write. Use AtomicInteger or lock the full check-and-update operation.","volatile int count;\ncount++; // read -> add -> write\n// AtomicInteger.incrementAndGet is one specified atomic update.","Why it matters: Visibility and business-operation atomicity are separate requirements.","An atomic counter plus unrelated state updates may still violate a larger invariant.","How would you atomically reserve capacity and record ownership?","Represent reservation and owner in one immutable state updated through CAS, or guard both updates with one lock, including rollback on failure."],["Q025",4,"How should you safely share initialized objects?","Finish building an object, then share it through volatile, a lock, safe class initialization or a concurrent queue. Safe sharing of its initial state does not make later mutations safe.","Config next = validateAndBuild();\ncurrent = next; // current is volatile\nReader: Config local = current;","Why it matters: The reader obtains initialized snapshot state through the handoff.","Safely publishing an ArrayList does not make its later concurrent mutation safe.","Which final-field guarantees differ from a general publication edge?","Properly constructed final fields have special initialization visibility even with otherwise unsafe publication; this does not publish arbitrary later mutations."],["Q026",5,"Why must wait be called while owning the monitor?","Call wait() only while holding that object's monitor in a synchronized block. wait() releases that monitor, then reacquires it before returning.","synchronized (lock) {\nwhile (!ready) lock.wait();\nconsume();\n}","Why it matters: The waiter checks state while coordinated with the publisher.","wait releases this monitor, not every other lock held by the thread.","Why can holding another lock across wait create a deadlock?","wait releases only its own monitor. If the waiter still holds lock B needed by the notifier, both can remain stuck."],["Q027",5,"Why must waiting use while rather than if?","Use while around wait or await. A thread can wake even when the needed condition is false, so it must recheck the condition under the lock.","while (queue.isEmpty()) notEmpty.await();\nItem item = queue.remove();\n// The same lock guards the check and removal.","Why it matters: The state predicate authorizes progress.","A single notification is not a durable permission to consume.","How would you handle remaining timeout after repeated wakeups?","Compute an absolute deadline with System.nanoTime(), recalculate remaining time after every wakeup, and check the predicate before returning success."],["Q028",5,"How do notify and notifyAll differ?","notify() wakes one waiter; notifyAll() wakes all waiters for that monitor. They must wait to reacquire the lock, and each must recheck its condition.","synchronized (lock) {\nready = true;\nlock.notifyAll();\n} // release lets an eligible waiter reacquire","Why it matters: Each awakened thread rechecks its own guarded condition.","notifyAll does not make every waiter execute simultaneously inside the critical section.","When would separate Condition objects improve clarity?","Use separate notEmpty and notFull Condition queues for bounded buffers. Signal the matching condition after changing the state."],["Q029",5,"When would you choose ReentrantLock and Condition?","ReentrantLock adds features such as timed or interruptible lock attempts and separate Condition queues. Always unlock in finally after acquiring it. return path.","lock.lockInterruptibly();\ntry { while (!ready) condition.await(); consume(); }\nfinally { lock.unlock(); }","Why it matters: Waiting temporarily releases the associated lock and reacquires it on the specified","Do not call unlock after an acquisition that failed.","What does a fair ReentrantLock fail to guarantee about scheduling?","Fair locking affects acquisition policy for waiting threads, not CPU scheduling, thread deadlines or starvation outside that lock."],["Q030",5,"How does LockSupport differ from wait/notify?","LockSupport.park() blocks a thread using a one-permit model; unpark() makes a permit available. The program still needs a safe shared condition and a loop to check it.","while (!orderedReady()) LockSupport.park();\nPublisher: update ordered state; unpark(worker);\n// Prefer a higher-level utility when it fits.","Why it matters: The permit supports wakeup, while the state protocol determines valid progress.","Returning from park does not imply the condition became true.","Why might a hand-written parking protocol be difficult to maintain?","It must handle lost-looking signals, spurious returns, interrupt status, state visibility and ownership rules. Higher-level queues/conditions already handle this."],["Q031",6,"What is deadlock, and how does lock ordering prevent one class of it?","Deadlock occurs when participants wait in a dependency cycle. Taking shared locks in one consistent order avoids the common A-holds-1 / B-holds-2 cycle.","Bad: A holds L1 -> needs L2\nBad: B holds L2 -> needs L1\nPolicy: both acquire L1 before L2","Why it matters: A consistent order removes the illustrated monitor cycle.","Lock ordering alone does not fix executor or database dependency cycles.","How would equal account identifiers affect a transfer lock order?","If the same account appears twice, lock it once. For different accounts sort by a unique stable identity and define a tie-breaker."],["Q032",6,"How do deadlock, livelock and starvation differ?","Deadlock means no participant can move because of a cycle. Livelock means everyone keeps reacting but never finishes. Starvation means one participant keeps missing its turn.","Deadlock: both hold a resource needed by the other\nLivelock: both repeatedly retreat and retry\nStarvation: one caller keeps losing access","Why it matters: The appropriate repair depends on the type of progress failure.","High CPU does not rule out livelock; low CPU does not establish deadlock.","How could randomized backoff help one case but not another?","Jittered retries can break two actors repeatedly colliding in a livelock. It cannot release locks in a true deadlock by itself."],["Q033",6,"How can you detect a Java lock deadlock?","Capture thread dumps and inspect which threads own locks and which are waiting. ThreadMXBean can detect certain Java lock cycles; not all resource-dependency deadlocks are covered.","ThreadMXBean bean = ManagementFactory.getThreadMXBean();\nlong[] ids = bean.findDeadlockedThreads();\n// null means none detected within this API's coverage.","Why it matters: A detected cycle is stronger evidence than a single waiting stack.","A null result does not prove every queue, dependency or virtual-thread workflow is live.","What would you collect for an executor starvation incident?","Collect pool active count, queue size and oldest age, thread dumps, blocked dependency timings and which tasks wait for child Futures."],["Q034",6,"How should you read a thread dump for a slow service?","Read thread dumps with queue depth, CPU use and dependency timings. Repeated BLOCKED, parked, or busy stack traces can reveal the bottleneck; a single snapshot is not enough.","Evidence: repeated stacks + lock owners + CPU trend\nContext: queue depth, oldest age, dependency timing\nQuestion: which resource blocks useful completion?","Why it matters: Correlation makes the stack evidence actionable.","A sleeping maintenance thread is not automatically the request bottleneck.","How would you distinguish an idle pool from a saturated one?","An idle pool has waiting workers and low queue age; a saturated pool has all workers busy, growing queued work and rising completion latency."],["Q035",6,"Why can more threads make latency worse?","Adding threads can make work slower when CPU, a lock or a database is already full. More requests then wait longer and create extra scheduling and memory cost.","100 workers -> 20 database connections\nMore workers may wait rather than complete more SQL.\nAlso inspect CPU quota and queue age.","Why it matters: Capacity must be understood at each resource boundary.","High thread count alone is not a root-cause diagnosis.","Which metrics would justify reducing rather than increasing concurrency?","If completed work stays flat or drops while queue age, lock waits, DB waits and p99 rise, reduce admission/concurrency and retest."],["Q036",7,"Why use ExecutorService instead of creating raw threads everywhere?","ExecutorService separates task code from the policy that runs it. It manages workers and lets callers observe task results, failures and cancellation; the application must still own the pool lifecycle.","Future<Order> f = orderPool.submit(() -> loadOrder(id));\nOrder order = f.get();\n// The owner manages the pool's lifecycle.","Why it matters: The application can select execution policy independently of task code.","Creating a new pool for every request can multiply resources and leak lifecycle ownership.","Who should shut down a shared application executor?","The service/container lifecycle owner should shut it down exactly once at application stop, not each request or task."],["Q037",7,"How do execute and submit differ?","execute() runs a Runnable without returning a Future. submit() returns a Future, which can hold the task's result or failure; forgetting to inspect it can hide errors.","pool.execute(() -> doWork());\nFuture<?> f = pool.submit(() -> doWork());\nf.get(); // submitted exception is wrapped in ExecutionException","Why it matters: Unobserved Futures can make failing work look silent.","Merely submitting is not evidence that the task completed successfully.","How would you report fire-and-forget work without losing failures?","Wrap tasks with logging/metrics and a clear failure callback, or retain Futures and observe every result; avoid silently discarding exceptions."],["Q038",7,"How do get, isDone and timeout differ on a Future?","Future.get() waits for a result or reports failure or cancellation. isDone() means completion state, not success. A timed get can return timeout while work continues.","if (future.isDone()) { /* may have failed or been cancelled */ }\nResult r = future.get(200, MILLISECONDS);\n// Handle completion, failure, cancellation and timeout separately.","Why it matters: Completion-state queries and successful task outcomes answer different questions.","Timeout does not automatically cancel the running task.","What policy should follow timeout for a non-idempotent remote operation?","Use an idempotency key, query durable operation status, and retry only under a contract that rules out duplicate charges/writes."],["Q039",7,"How do shutdown, shutdownNow and awaitTermination differ?","shutdown() stops new submissions and drains accepted work. shutdownNow() attempts interruption and returns not-started tasks. awaitTermination() waits to see whether the pool really ends.","pool.shutdown();\nif (!pool.awaitTermination(5, SECONDS)) pool.shutdownNow();\n// Verify or report remaining work under a deadline policy.","Why it matters: Orderly shutdown, interruption attempt and observed termination are separate steps.","The returned queued tasks may still need cancellation or explicit business recovery.","How would you preserve the caller's interrupt status during shutdown?","Catch InterruptedException, call shutdownNow if policy allows, restore Thread.currentThread().interrupt(), and return or propagate without swallowing it."],["Q040",7,"What does ExecutorCompletionService solve?","ExecutorCompletionService gives completed tasks back in completion order. It helps when tasks have different durations, but you still choose which result counts and cancel unneeded work.","submit fast and slow independent tasks\nFuture<Result> finished = completion.take();\nResult r = finished.get();","Why it matters: The caller can consume available completions promptly.","Completion order is not request ordering or guaranteed first-success behavior.","How would you cancel remaining tasks after choosing an acceptable result?","Keep every submitted Future, cancel unfinished ones, and wait a bounded time for cleanup; handle any side effects that cannot be undone."],["Q041",8,"How does ThreadPoolExecutor decide between workers and queueing?","ThreadPoolExecutor normally adds core workers first, queues next, grows toward max when queueing fails, then rejects. A large queue changes when extra workers are created.","core=2, max=4, bounded queue capacity=10\nFirst core workers -> queue -> additional workers -> rejection\nExact behavior also depends on concurrent completion.","Why it matters: Queue choice changes when maximum size becomes relevant.","An unbounded queue generally prevents growth beyond core size through this path.","Why might increasing maxPoolSize appear to have no effect?","With an unbounded queue, work is usually queued after core workers are occupied, so no queue rejection occurs to trigger growth toward maxPoolSize."],["Q042",8,"What risks do common executor factory methods hide?","Convenient executor factories hide resource choices. A fixed pool can still queue unlimited work; a cached pool can create many threads. Set explicit worker, queue and overload limits.","newFixedThreadPool(8): worker limit, not backlog limit\nnewCachedThreadPool(): flexible workers, not a strict cap\nInspect queue, workers and rejection together.","Why it matters: Convenient factories encode significant capacity policy.","A fixed number of workers does not make total accepted work bounded.","How would you bound both active and queued tasks?","Build ThreadPoolExecutor with a fixed maximum worker count, a bounded queue and explicit rejection. Also bound upstream admission where required."],["Q043",8,"How do AbortPolicy and CallerRunsPolicy change overload behavior?","AbortPolicy throws when a task is rejected. CallerRunsPolicy may run the task on the submitting thread, slowing it down; this can be dangerous on request or event- loop threads.","Abort: caller observes rejection\nCallerRuns: caller may execute the entire task\nShutdown: CallerRunsPolicy discards rather than runs","Why it matters: Rejection behavior affects latency, execution context and lifecycle.","Caller-runs is not universally safe backpressure and is not a durability guarantee.","What if submission occurs while holding a lock the task needs?","CallerRunsPolicy may execute the task immediately while the submitter holds the lock, causing long stalls or self-deadlock if the task needs it."],["Q044",8,"How should you size a pool?","Choose pool size using CPU limits, task wait time, downstream capacity, queue age and target latency. Measure under realistic load; no thread-count formula works for every service.","Measure: useful throughput, p95/p99, CPU, queue age\nCheck: DB/HTTP capacity, memory, CPU quota\nChange one policy and compare equivalent load.","Why it matters: A sizing argument should name the actual bottleneck and limits.","Host core count may not reflect a container's available CPU budget.","When would a larger pool increase errors rather than throughput?","When more threads exceed DB/HTTP connection budgets or rate limits: dependency timeouts and rejected calls increase while successful throughput stagnates."],["Q045",8,"What is thread-pool starvation deadlock?","Starvation deadlock happens when all pool workers wait for child tasks that are queued to that same full pool. Avoid blocking within the pool on work that needs that pool.","Pool has one worker.\nParent runs -> submits child to same pool -> child.get()\nChild waits in queue; parent occupies only worker.","Why it matters: No monitor cycle is needed to produce this progress failure.","Lock deadlock detection may not report a Future/queue dependency cycle.","How would you restructure the parent and child calculation?","Express child work through nonblocking stages (thenCompose/thenCombine), execute it directly if safe, or use separate appropriately sized execution resources."],["Q046",9,"How would you implement bounded producer- consumer handoff?","Use a bounded BlockingQueue to hand finished items from producers to consumers. Decide what happens when it fills, and how to signal workers to stop without losing accepted tasks. work.","BlockingQueue<Job> queue = new ArrayBlockingQueue<>(100);\nboolean accepted = queue.offer(job, 100, MILLISECONDS);\nConsumer: Job next = queue.take();","Why it matters: Queue capacity bounds queued entries but not all external producers or active","A full-queue timeout needs explicit caller behavior; it is not silent success.","How would you stop several consumers safely?","After intake closes, enqueue one terminal marker per consumer or use cancellation/interrupt with a shared stop state. Drain accepted work before exits."],["Q047",9,"How do CountDownLatch and CyclicBarrier differ?","CountDownLatch is a one-time countdown before work continues. CyclicBarrier brings a fixed set of workers together at repeated phase boundaries.","Latch: N workers complete -> one observer proceeds\nBarrier: N parties meet -> next shared phase\nChoose by lifecycle, not by similar await method names.","Why it matters: A one-shot completion gate and repeated rendezvous solve different problems.","A broken barrier is not ordinary successful phase completion.","Why should worker failure still signal a latch in finally?","Put countDown in finally so an exception does not leave the observer blocked forever; report task failure separately from completion."],["Q048",9,"How does Semaphore control concurrency?","Semaphore holds a limited number of permits. Acquire before using a limited resource, and release exactly once after the resource's work finishes.","permits.acquire();\ntry { callDependency(); }\nfinally { permits.release(); }","Why it matters: The protected lifetime defines what the concurrency limit actually measures.","Releasing a permit after failed acquisition inflates the budget.","How would cancellation before queued execution affect permit ownership?","If admission owns permits before task execution, cancellation of a queued task must release its permit exactly once through a coordinated completion/cancel path."],["Q049",9,"When is Phaser useful?","Phaser helps when the set of workers can join or leave across repeated phases. Participants must register and always arrive or deregister when done.","phaser.register();\ntry { doPhaseWork(); }\nfinally { phaser.arriveAndDeregister(); }","Why it matters: Participant lifecycle is explicit rather than fixed at construction.","Registration without a terminal arrival can block phase progress.","What should happen if a participant fails before doing work?","Arrive and deregister in finally if registered; record failure and cancel/terminate the phase if the workflow cannot safely continue."],["Q050",9,"Are concurrent collections enough to make a workflow atomic?","Concurrent collections protect their documented individual operations. A transfer involving two entries still needs a coordinated transaction, lock or single atomic state.","if (map.get(key) == null) map.put(key, value);\n// Compare with putIfAbsent for this per-key decision.\n// Mutable values still need their own policy.","Why it matters: Operation safety and workflow safety are different levels.","A ConcurrentHashMap of ArrayLists does not make the lists safe to mutate concurrently.","How would you preserve a two-key transfer invariant?","Lock both keys in a stable order or use one transactional authority. Validate debit and credit together so partial changes are impossible."],["Q051",10,"How do Future and CompletableFuture differ?","Future mainly lets you wait for one outcome. CompletableFuture also lets you chain, combine and recover from stages. Code inside a stage may still block or fail. channels.","CompletableFuture.supplyAsync(this::load, ioPool)\n.thenApply(this::validate)\n.thenAccept(this::publish);","Why it matters: The chain expresses dependencies through results rather than shared side","The word async does not describe the behavior of the work inside a callback.","Which stages should use an explicit executor?","Use explicit executors for blocking network calls, heavy CPU work requiring isolation, or any stage whose capacity must be owned and limited."],["Q052",10,"How do thenApply and thenCompose differ?","thenApply changes one result into another result. thenCompose joins a stage that returns a further CompletionStage, avoiding nested futures.","thenApply(id -> loadAsync(id)) // nested future result\nthenCompose(id -> loadAsync(id)) // result future\n// loadAsync returns CompletableFuture<Order>.","Why it matters: Composition follows the dependent stage's completion.","Returning a Future from apply does not cause it to be awaited as a flattened result.","How would you combine independent loads instead?","Use thenCombine for two independent stages and apply the combination when both succeed; define the joint failure policy."],["Q053",10,"Where do async and non-async callbacks execute?","Non-async callbacks may run in the thread completing the previous stage. Async variants use an executor, often the common pool unless one is supplied. Specify an executor for expensive or blocking work.",".thenApply(this::cheapTransform)\n.thenApplyAsync(this::blockingLookup, dedicatedIoPool)\n// Neither choice changes shared-state correctness requirements.","Why it matters: A callback can borrow a thread whose workload you did not expect.","Non-async does not mean main thread, and async does not promise a new dedicated thread.","Why can blocking a shared common pool harm unrelated work?","The common pool is shared. Blocking its workers can delay unrelated async work and create starvation under load."],["Q054",10,"How do exceptionally, handle and whenComplete differ?","exceptionally recovers from a failure, handle processes success or failure and supplies a result, and whenComplete observes an outcome without normally changing it. A callback can also fail.","future.exceptionally(error -> fallback());\nfuture.handle((value, error) -> resolve(value, error));\nfuture.whenComplete((value, error) -> record(value, error));","Why it matters: Recovery, transformation and observation are different intentions.","A fallback must be semantically valid; replacing every failure with empty success can corrupt","What if the monitoring callback itself throws?","Its own exception can turn a previously successful stage into a failed dependent stage; log defensively and test error-monitoring paths."],["Q055",10,"Do allOf, anyOf or orTimeout stop unnecessary work?","allOf waits for all, anyOf finishes with the first completion (even failure), and orTimeout reports timeout. None automatically stops other tasks; that is your cleanup job. cancellation.","CompletableFuture.allOf(a, b).join();\n// Collect individual results and handle failures explicitly.\n// Timeout/cancellation needs a dependency-specific stop policy.","Why it matters: Aggregation and timeout are outcome coordination, not universal resource","CompletableFuture.cancel does not use interruption to control its computation as FutureTask","How would you implement first acceptable result with cleanup of losers?","Keep references to each competitor, select the first acceptable successful result, cancel losers and verify their resource cleanup under a deadline."],["Q056",11,"How do fixed-rate and fixed-delay scheduling differ?","Fixed-rate scheduling targets a regular timetable; fixed-delay waits for one run to finish and then delays. Choose based on how missed or slow work should behave.","Fixed rate: intended starts at 0, 10, 20...\nFixed delay: complete -> wait 10 -> next start\nLong run duration changes effective timing.","Why it matters: Neither option guarantees real-time execution or an application SLA.","A slow fixed-rate task is not automatically executed concurrently with itself to catch up.","Which policy suits maintenance that should rest between runs?","Fixed-delay is often better: it waits for the previous maintenance run to finish, then rests before the next attempt."],["Q057",11,"What happens if a periodic task throws an exception?","An exception escaping a scheduled periodic task normally stops its future repetitions. Capture and report failures, then define whether the next run should still happen.","scheduler.scheduleWithFixedDelay(() -> refresh(), 0, 10, SECONDS);\n// A thrown unchecked exception stops this periodic sequence.\nObserve the returned ScheduledFuture and health signals.","Why it matters: A started scheduler can be alive while one intended periodic job has stopped.","Monitoring worker existence alone cannot prove job execution continues.","How would you test and alert on missed successful refreshes?","Track last successful refresh, freshness age and failed-run count; make the test throw once and verify no later run occurs without a recovery policy."],["Q058",11,"What does fork/join work stealing provide?","Fork/join splits suitable CPU tasks and lets idle workers steal available work. A task blocked on slow I/O can waste scarce compute workers.","Split range -> compute left and right -> combine\nUse a threshold to avoid one task per tiny operation.\nMeasure parallel overhead versus useful computation.","Why it matters: The algorithm's work size and dependency structure matter.","Blocking external I/O in a computation pool can reduce useful CPU parallelism.","What is ManagedBlocker intended to help with?","ManagedBlocker helps ForkJoinPool compensate for supported blocking sections by managing parallelism, but it does not make arbitrary I/O free."],["Q059",11,"When are parallel streams appropriate?","Parallel streams help with large independent CPU operations that are safe to split. They may hurt small, blocking or order-sensitive work.","long sum = values.parallelStream()\n.mapToLong(this::costlyPureFunction).sum();\n// Compare with sequential under the same workload.","Why it matters: A reduction is easier to reason about than concurrent mutation of an external list.","Parallel is not always faster and does not make a non-thread-safe accumulator safe.","Why does encounter order matter for some stream operations?","Stateful or ordered operations such as findFirst and ordered collection may reduce parallel benefit; dropping order is safe only if the result contract allows it."],["Q060",11,"Why must parallel reductions use suitable functions?","Parallel reduction only works correctly when its functions follow the needed associativity and non-interference rules. Shared mutable accumulators can corrupt results.","Bad reduction: subtraction as a generic associative combine\nSafer example: long integer sum within the intended range\nFloating-point totals: define reproducibility/tolerance requirements.","Why it matters: The result contract matters before measuring speed.","A parallel run that happens to match one sequential result is not an algebraic proof.","How would you handle deterministic monetary aggregation?","Use exact decimal arithmetic such as BigDecimal, associative combination under a defined rounding policy and no shared mutable collector."],["Q061",12,"What does ThreadLocal provide?","ThreadLocal stores a separate value per thread for one ThreadLocal key. It does not make the value immutable or automatically move it to another task. state.","context.set(requestContext);\ntry { process(); }\nfinally { context.remove(); }","Why it matters: Cleanup prevents a later request on the same worker from seeing stale binding","Thread-local reference and thread-confined object graph are different properties.","What if requestContext contains a shared mutable list?","The per-thread binding may still point to the same shared ArrayList. Use immutable values or separate state ownership; ThreadLocal does not copy objects."],["Q062",12,"Why can ThreadLocal retain memory in a pool?","A pool reuses threads, so ThreadLocal values can survive one request and leak into another. Remove them in finally when their scope ends.","Pool worker lives for hours\nRequest stores a large context value\nMissing remove -> value may outlive request","Why it matters: The worker's lifetime amplifies a forgotten request scope.","Completing the request does not automatically terminate or clean every worker binding.","How would you test cleanup on an exceptional request path?","Run a task that sets context and throws; then run another task on the same single pool worker and assert its context is absent."],["Q063",12,"Does InheritableThreadLocal propagate every submitted request?","InheritableThreadLocal copies context at child-thread creation; pooled threads were created earlier. It cannot reliably carry a new request's values through existing workers.","Parent context at worker creation: A\nLater submit request with context B\nExisting worker does not automatically inherit B.","Why it matters: Creation inheritance and per-task propagation have different lifecycles.","Sharing inherited mutable values can still create data races.","How would a context wrapper restore a worker's previous binding?","Before running, save the worker's old value, install the captured immutable request context, and restore/remove the previous value in finally."],["Q064",12,"How should request context cross an asynchronous boundary?","Carry request context as explicit immutable data or through a well-defined context wrapper. Save previous worker state and restore it afterward.","Context captured = currentContext();\npool.submit(() -> runWithContext(captured, task));\n// Wrapper restores previous context after task, including failure.","Why it matters: The wrapper's contract defines what moves and when it ends.","Removing rather than restoring can break nested scopes that already had context.","Which context is deliberately unsafe to propagate to concurrent work?","Do not propagate open transactions, mutable request-scoped entity managers or thread-affine database connections to parallel tasks."],["Q065",12,"What are Scoped Values, and are they a ThreadLocal replacement for everything?","Scoped Values provide a bounded, read-oriented context-sharing model on supporting newer Java runtimes. They are not a general replacement for mutable ThreadLocal state.","Java 25 conceptual flow:\nbind context -> run bounded scope -> binding ends\nReview the scoped API and task relationship before propagation.","Why it matters: A scope-oriented lifetime reduces some context-cleanup complexity.","Java 17/21 source cannot use the finalized Java 25 API unchanged.","Which mutable per-thread use case might still require another mechanism?","Mutable per-thread scratch buffers that require updates throughout a task may still need explicit local state or ThreadLocal with cleanup."],["Q066",13,"How do virtual threads differ from platform threads?","Virtual threads are lightweight Java-managed threads built for many waiting tasks. They reduce thread-per-task overhead, but CPU, RAM, databases and remote APIs still have finite capacity.","Many blocking tasks -> virtual threads -> carrier execution\nDatabase access -> separate finite connection budget\nFinal feature: Java 21","Why it matters: A familiar blocking style can support more concurrent waiting work.","They are not a speed multiplier for a long CPU-bound computation.","How would you control offered load when waiting becomes cheaper?","Use admission limits, rate control, semaphores and bounded connection pools at the expensive dependency, not a pool of virtual threads."],["Q067",13,"Should you pool virtual threads?","Normally create virtual threads per task instead of pooling them. Bound requests or database calls with semaphores, queues and other admission controls.","Java 21+: Executors.newVirtualThreadPerTaskExecutor()\nLimit dependency calls with an explicit semaphore/admission policy.\nOwn task completion and executor lifecycle.","Why it matters: Thread creation policy and resource concurrency become separate decisions.","A per-task executor alone does not bound retained in-flight requests.","Where should overload be rejected before too much work accumulates?","Reject or queue at the API/intake boundary before creating enormous numbers of tasks and payloads; keep a measured in-flight cap."],["Q068",13,"What is virtual-thread pinning, and what changed after Java 21?","Pinning is when a virtual thread cannot unmount from its carrier during some blocking work. Its causes and behavior have changed across Java releases, so profile the deployed version.","Java 21: review blocking inside synchronized sections\nJava 24+: monitor-related pinning change\nAll versions: locks can still serialize application work","Why it matters: Reduced pinning does not remove contention or resource bottlenecks.","'Replace every synchronized with ReentrantLock' is not a universal modern-JDK rule.","Which evidence would justify a lock redesign on your deployed version?","Gather Java-version-specific JFR pinning events, thread dumps and throughput during blocking sections. Redesign locks only if the deployed runtime shows cost."],["Q069",13,"What is structured concurrency, and what is its Java 25 status?","Structured concurrency groups related tasks under one lifecycle so failure, cancellation and joining can be managed together. Check the exact Java 25 preview API before using it.","Request scope -> fork related tasks -> join policy -> scope closes\nChildren should not silently outlive their intended parent unit.\nJava 25: fifth preview; not executed in this guide.","Why it matters: The model makes task relationships and failure cleanup easier to express.","Do not copy a Java 21 preview signature and assume it matches Java 25.","What failure policy should cancel a sibling dependency lookup?","If one lookup fails and the response cannot be built, cancel its sibling, await cleanup, and propagate the original failure with a bounded deadline."],["Q070",13,"Does virtual-thread adoption eliminate deadlocks or ThreadLocal costs?","Virtual threads do not remove data races, deadlocks or bad context ownership. Large numbers of them can still consume memory and saturate dependencies. small pools.","Many virtual tasks x large per-thread cache -> substantial memory\nSame shared lock order -> same potential dependency cycle\nMeasure real workload and diagnostic coverage.","Why it matters: Changing execution economics can expose limits that were previously hidden by","Cheap waiting is not cheap unlimited application state.","Which pool-oriented optimization would you remove before migration?","Remove the assumption that one pooled thread represents one request for its whole lifetime. Review stale ThreadLocals and connection pools separately."],["Q071",14,"How do you print odd and even numbers in order safely?","Use one synchronized next-number variable and a while-loop condition for odd and even workers. Notify after updating, and allow both workers to stop if one fails.","while (next <= limit && next % 2 != myParity) lock.wait();\nif (next > limit) { lock.notifyAll(); return; }\noutput(next++); lock.notifyAll(); // under the same monitor","Why it matters: The full source in the labs tests exact ordering without actor logging.","Sleeping one worker longer does not establish alternating order.","What should happen if one participant fails halfway through?","Set shared cancelled state, notifyAll/interrupt the other worker, then join both and report partial output or failure without hanging."],["Q072",14,"How would you demonstrate a lost update reliably?","Make two threads read the same count before either writes. Then both write the same incremented result, showing that a volatile increment can lose an update.","A reads count=0; B reads count=0\nBarrier lets both continue\nA writes 1; B writes 1 -> final 1","Why it matters: Two logical increments can produce one stored increment.","Coordination changes scheduling; report exactly what it controls rather than claiming an","Which atomic operation removes this read/write gap?","AtomicInteger.incrementAndGet() performs the whole increment as one atomic update, avoiding the separate read/write window."],["Q073",14,"How would you test cancellation without depending on sleeps?","Use latches, controlled tasks and a completion deadline to test cancellation. Assert that interruption was received, cleanup completed and the task truly ended.","Worker signals entered -> waits interruptibly\nCaller waits entered -> interrupts -> waits cleaned up\nCaller verifies actual termination and cleanup","Why it matters: The test controls relevant milestones and checks the promised lifecycle.","A cancelled Future alone is not proof that finally completed.","What additional assertion would detect a leaked resource?","Assert that the resource's close/release hook ran exactly once and the worker terminated, not merely that its Future shows cancelled."],["Q074",14,"How do you test bounded pool rejection deterministically?","Occupy the pool workers, fill the bounded queue with held tasks, then submit one extra task. That extra task should exercise the selected rejection policy deterministically.","Pool: 1 worker, queue capacity 1, AbortPolicy\nTask 1 occupies worker; task 2 fills queue\nTask 3 -> RejectedExecutionException","Why it matters: Acceptance capacity is exercised under controlled occupancy.","Without a gate, fast tasks may complete before the third submission and hide the intended","How would CallerRunsPolicy change this test?","CallerRunsPolicy executes the rejected task on the submitter while the pool is active. The test must assert that execution context and avoid deadlocking itself."],["Q075",14,"Why is a passing stress test not proof of thread safety?","Passing a finite stress test shows only the interleavings observed. Correctness must be argued using shared state, atomicity and happens-before, with tests supporting the proof.","Reasoning: allowed outcomes and missing edges\nTesting: observed outcomes and failures\nPerformance: useful throughput, latency and resource cost","Why it matters: Use evidence to complement the contract, not to redefine it.","Logging, sleep or a test latch can accidentally add ordering absent from the production code.","Which coordination edges belong only to the test observer?","The test's latches and joins create observer ordering that might not exist in production. Review the actors' own synchronization separately."],["Q076",15,"A Spring service's counter loses increments. What would you review?","A Spring singleton is shared by many request threads. If it modifies a plain or volatile count with ++, updates can disappear; use a suitable atomic counter or lock.","@Service class Tracker { int count; void record() { count++; } }\nLocal exact counter: AtomicInteger/AtomicLong\nCluster-wide count: independent distributed design","Why it matters: Scope controls instance sharing, not business-operation synchronization.","Fixing one JVM counter does not create a global exact total across replicas.","When would a metric accumulator be sufficient?","LongAdder can be enough for high-throughput approximate live metrics when exact concurrent snapshots aren't needed. Use atomic/lock rules for strict limits."],["Q077",15,"An API gets slower after the executor size increases. Why?","More pool threads can pile up calls behind a fixed database pool, increasing wait time and timeouts. Compare queue age, DB active connections, CPU and successful throughput.","More workers -> more JDBC waiters -> longer request residence\nCheck acquisition time separately from SQL execution time.\nCount replicas x per-process pool budgets.","Why it matters: The executor change can shift pressure downstream rather than add capacity.","Improving task-start latency while worsening end-to-end p99 is not a service improvement.","What would disprove the database-capacity hypothesis?","If DB pool has spare connections, DB wait stays low, and successful throughput grows with threads while p99 remains controlled, DB capacity is less likely the cause."],["Q078",15,"A timeout response returns, but downstream writes continue. What happened?","Returning an HTTP timeout does not undo work already submitted or a remote write. Design cancellation, downstream deadlines and request idempotency independently. completion.","Client stops waiting at deadline\nTask/remote server can still complete side effect\nRepresent unknown outcome; retry only under a correct policy","Why it matters: Outcome semantics must survive the gap between caller timeout and remote","Blind retries can duplicate an operation even if local interruption was requested.","What key and persistence rule would support idempotent retry?","Use a stable request identifier with a unique durable record. Return the stored result on replay, including after a timeout with uncertain commit outcome."],["Q079",15,"How would you shut down a background processing service?","Stop accepting new jobs, drain accepted work under a deadline, request cancellation if necessary, clean up resources and report what actually completed. threads.","Stop accepts -> drain/cancel accepted tasks -> cleanup\nDeadline expires -> report/recover unfinished jobs\nDurability belongs to the chosen queue/store policy","Why it matters: Shutdown correctness includes business recovery, not only terminating worker","shutdownNow is a best-effort interruption request, not guaranteed drain or durable recovery.","What if a worker blocks in a dependency during shutdown?","Set an I/O timeout, attempt supported interruption/connection close, wait a limited grace period and quarantine/report unfinished operations before shutdown."],["Q080",15,"How do you review a threads-related design as a technical lead?","As a lead, list tasks, owners, shared state and bottlenecks. Require explicit rules for synchronization, timeouts, overload, cancellation, shutdown, observability and tests.","Task -> owner -> executor -> resource budget\nShared state -> invariant -> synchronization policy\nFailure -> cancellation -> cleanup -> observed completion","Why it matters: The review connects Java semantics with customer-visible behavior and operations.","A sophisticated executor configuration cannot compensate for a missing state or cancellation","What documentation stops future code from bypassing the ownership policy?","Document ownership per executor and state field, invariants, lock order, cancellation/deadline policy, queue capacity and how to test these contracts."]],"labs":[["L01. Direct run, start and restart","L01. Direct run, start and restart Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava LifecycleDemo\nEXPECTED CHECK\nrun=caller; start=worker; restart rejected"],["L02. Alternating output with a guarded","L02. Alternating output with a guarded predicate Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process.","Use the matching, complete Java file in the source-code appendix. Run this lab in its\nown JVM process.\nTERMINAL\njavac --release 17 *.java\njava OddEven\nEXPECTED CHECK"],["L03. Interruption, cleanup and actual","L03. Interruption, cleanup and actual termination Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process.","Use the matching, complete Java file in the source-code appendix. Run this lab in its\nown JVM process.\nTERMINAL\njavac --release 17 *.java\njava CancelDemo\nEXPECTED CHECK"],["L04. A deterministic overload boundary","L04. A deterministic overload boundary Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava PoolRejection\nEXPECTED CHECK\nthird task rejected; accepted tasks completed"],["L05. Bounded handoff and termination marker","L05. Bounded handoff and termination marker Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava QueuePipeline\nEXPECTED CHECK\n100 items consumed; sum=5050"],["L06. Context removal after an exception","L06. Context removal after an exception Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava ContextCleanup\nEXPECTED CHECK\nexceptional scope cleaned; next request has no context"],["L07. Independent combine and dependent","L07. Independent combine and dependent compose Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process.","Use the matching, complete Java file in the source-code appendix. Run this lab in its\nown JVM process.\nTERMINAL\njavac --release 17 *.java\njava CompletionChain\nEXPECTED CHECK"],["L08. An uncaught periodic failure stops","L08. An uncaught periodic failure stops recurrence Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process.","Use the matching, complete Java file in the source-code appendix. Run this lab in its\nown JVM process.\nTERMINAL\njavac --release 17 *.java\njava PeriodicFailure\nEXPECTED CHECK"],["L09. Exact updates and observed completion","L09. Exact updates and observed completion Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava AtomicTotals\nEXPECTED CHECK\natomic total=40000"],["L10. Controlled volatile lost update","L10. Controlled volatile lost update Use the matching, complete Java file in the source-code appendix. Run this lab in its own JVM process. TERMINAL","own JVM process.\nTERMINAL\njavac --release 17 *.java\njava LostUpdate\nEXPECTED CHECK\ntwo increments, count=1"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

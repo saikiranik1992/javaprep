@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Git Zero to Hero (Java Team Workflows) — Zero to Hero Interactive Study Notes (110 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #ea580c;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Git Zero to Hero (Java Team Workflows)</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              22 Chapters · 110 Q&amp;As · 14 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Premium Field Notes &amp; Recovery Playbook · Commits · Rebase · Reflog · Bisect · 14 Tested Labs
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (22)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (110)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (14)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 110</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 DevOps &amp; Version Control</span>
+              <span>•</span>
+              <span>131 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Git Zero to Hero (Java Team Workflows) — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Premium Field Notes &amp; Recovery Playbook (Commits · Rebase · Reflog · Bisect · 14 Tested Labs). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 110 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">110</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (22)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 22 Chapters (110 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Git Zero to Hero (Java Team Workflows)</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 110</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Git Zero to Hero (Java Team Workflows) — Hands-On Labs &amp; Reference Guides (14)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Git Zero to Hero (Java Team Workflows).
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Git Zero to Hero (Java Team Workflows) — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"git","title":"Git Zero to Hero (Java Team Workflows)","subtitle":"Premium Field Notes & Recovery Playbook","category":"DevOps & Version Control","badge":"Commits · Rebase · Reflog · Bisect · 14 Tested Labs","color":"#ea580c","pages":131,"chapters":["Git fundamentals and the right mental model","Working tree, index and staging","Setup, configuration and cloning","Commits, inspection and useful history queries","Branches, switching and detached HEAD","Merging and resolving conflicts","Rebase and rewriting a private branch","Cherry-pick, amend and interactive cleanup","Restore, reset and revert without confusion","Reflog, recovery and clean-up","Remotes, fetch and pull","Push, rejected updates and leases","Tags, releases and reproducible builds","Stash and multiple worktrees","Ignore rules, attributes and cross-platform files","Git objects, references and the index","Debugging with bisect, blame and history search","Large repositories, sparse checkout, submodules and LFS","Team workflows, review and Java CI","Hooks, credentials and secure history","Advanced revisions, patches and repeated resolutions","Senior interview scenarios and judgment"],"questions":[["Q001",0,"What is Git and why is it called distributed?","Git is a version-control system. Each normal full clone has local history and can create commits without contacting a central server; sharing happens through explicit network operations.","git log --oneline\ngit add src/OrderService.java\ngit commit -m \"Validate positive order quantity\"","The commit is local. A later push publishes reachable objects and updates a remote reference if permitted. Shallow and partial clones intentionally omit some history or objects, so do not assume every clone contains everything.","Committing does not automatically publish your work to teammates.","Which Git operations can you perform without internet access?","You can edit files, stage, commit, branch, switch, inspect history, diff, merge and rebase using objects already available locally. Fetch and push normally need a reachable remote."],["Q002",0,"What is the difference between Git and GitHub?","Git is the version-control tool and data model. GitHub is one hosting and collaboration platform that can store Git repositories and provide reviews, permissions and automation.","Git: commit, branch, merge, fetch.\nHosting platform: pull request, review, protected branch.\nRemote name: origin; it may point to any supported server.","A repository can be hosted locally or by another provider. A pull request is a collaboration request defined by the platform, not a Git object type. Server policy can reject a push even when the local history is valid.","Git pull and a pull request are different concepts.","Can a Git repository exist without any hosting account?","Yes. `git init` creates a local repository. GitHub, GitLab or another server is optional for hosting and collaboration."],["Q003",0,"Does Git store changes or snapshots?","The logical model is a snapshot for each commit, with unchanged content reused by identity. Storage may use compression and deltas internally, but those are implementation details.","Commit A: Order.java version 1; Customer.java version 1.\nCommit B: Order.java version 2; Customer.java version 1.\nThe unchanged Customer content can be shared.","A commit points to a root tree describing tracked paths. Diff computes a comparison between snapshots. This explains why Git can inspect an old state without replaying a sequence of edits from the beginning.","A commit is not simply a text patch file stored by Git.","What object connects a commit to its file hierarchy?","A tree object. Each commit names a root tree, which links directory entries to blobs and nested trees."],["Q004",0,"What is a commit and what does its identifier mean?","A commit is an immutable object containing a tree, parent references and metadata. Its object ID is derived from its encoded contents, so changing those contents changes the ID.","git show --no-patch --format=fuller HEAD\ngit rev-parse HEAD\ngit cat-file -p HEAD","The parent relationship is part of the object. Rebase or amend can create a new ID even when a file snapshot stays the same. ID length depends on repository object format, and abbreviated IDs must be unambiguous within the repository.","A short hash is an abbreviation, not a sequential commit number.","Why does changing only a commit message create a new commit ID?","The message is part of the commit object's contents. Changing it changes the object's hash, even when the file tree is identical."],["Q005",0,"What are HEAD, a branch and a tag?","HEAD identifies the checked-out position, usually through a branch reference. A branch names a movable tip. A tag names a chosen object, commonly a release commit.","git symbolic-ref --short HEAD\ngit branch --show-current\ngit tag v1.0.0","On a branch, committing creates a child of the current tip and moves that branch to the new commit. In detached HEAD, HEAD points directly to a commit instead. Tags do not advance with normal commits.","A branch is a reference, not a copied directory of files.","What reference moves when you commit on feature/orders?","`refs/heads/feature/orders` moves to the new commit. `main` stays where it was."],["Q006",1,"What are the working tree, index and repository?","The working tree contains checked-out files. The index records the proposed next commit snapshot. The repository stores objects and references representing history.","Edit file -> working tree changes.\ngit add file -> copy its current content into the index.\ngit commit -> create a commit from the index.","Staging does not freeze the working file. If you edit it again, the staged version and working version differ. This lets one file have both staged and unstaged changes at the same time.","A normal commit includes staged content, not every current file edit.","Which version is committed if you edit again after git add?","The version captured by the last `git add` is committed. The edit made afterward remains unstaged in your working file."],["Q007",1,"How do you read git status --short?","The first status column compares the index with HEAD; the second compares the working tree with the index. Untracked paths appear with question marks.","git status --short\nM  src/Order.java   # staged modification\nM src/Customer.java  # unstaged modification\nMM src/Price.java   # staged, then edited again","Unmerged statuses describe conflict stages and need separate attention. The long status view gives operation guidance. Read status before applying an undo command because the correct action depends on which area contains the work.","Treating both M columns as identical can cause you to discard the wrong version.","How would you inspect the two changes represented by MM?","Run `git diff --staged -- FILE` for HEAD-to-index changes and `git diff -- FILE` for index- to-working-file changes."],["Q008",1,"How do git diff, git diff --staged and git diff HEAD differ?","Plain diff compares working files to the index; staged diff compares the index to HEAD; diff HEAD compares tracked working content to HEAD.","git diff -- src/Order.java\ngit diff --staged -- src/Order.java\ngit diff HEAD -- src/Order.java","The third comparison can include both staged and unstaged effects, but ordinary diff does not display an untracked file as a normal tracked change. Use the comparison that answers your actual question: what remains unstaged, or what the next commit would contain.","Plain git diff can be empty even when staged changes exist.","Which command reviews the proposed commit before committing?","`git diff --staged` shows the exact tracked changes currently proposed for the next commit."],["Q009",1,"How can you stage only part of a file?","Use interactive patch staging to select relevant hunks, then review the staged diff. Split hunks or edit the patch when the changes need finer separation.","git add -p -- src/OrderService.java\ngit diff --staged\ngit diff","The index may now contain a different version from both HEAD and the working file. Test the intended staged snapshot or separate changes carefully so the commit is coherent. New files may need intent-to-add before patch selection.","Staging one hunk does not guarantee the resulting commit compiles independently.","How do you keep a formatting change out of a bug-fix commit?","Stage only the bug-fix hunks with `git add -p`, review with `git diff --staged`, and commit formatting separately."],["Q010",1,"How do you unstage a file without deleting the edit?","Restore the index entry from HEAD while leaving the working tree alone. This changes what the next commit contains, not the edited file itself.","git restore --staged -- src/Order.java\ngit diff --staged\ngit diff -- src/Order.java","This assumes the repository already has a HEAD commit. Older workflows use path-form reset for the same index operation. Verify the remaining working diff afterward.","Adding --worktree as well changes the files and can discard edits.","How does unstaging differ from restoring the working file?","Unstaging changes the index but keeps the edited file. `git restore -- FILE` replaces the unstaged tracked file content and can lose edits."],["Q011",2,"How do git init and git clone differ?","Init creates a repository in a chosen directory. Clone creates a repository from another one, normally configuring a remote and checking out an initial branch.","git init -b main interview-demo\ngit clone REPOSITORY_URL order-service\ngit -C order-service remote -v","An existing folder can be initialized, but its files are not committed automatically. A normal clone creates local and remote-tracking references according to the remote configuration. A bare clone is different because it has no ordinary checked-out working tree.","A folder containing source files is not versioned until those files are tracked and committed.","Which remote is normally configured by clone?","Normally `origin`. Confirm with `git remote -v`; it is only a conventional name."],["Q012",2,"What is the difference between local, global and system Git configuration?","Local configuration applies to one repository, global to a user, and system to a machine installation. Higher-precedence sources can override earlier settings; inspect the origin when behavior is surprising.","git config --local user.name \"Interview Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --show-origin --get-all user.email","Command-line settings and environment variables can also affect behavior. Repository-local identity is useful when work and personal projects differ. Avoid assuming that the global value is the effective value in every repository.","Changing a global setting can alter unrelated repositories for that user.","How would you find where pull.rebase was configured?","Use `git config --show-origin --show-scope --get-all pull.rebase` to see the effective values and their configuration sources."],["Q013",2,"Does user.name or user.email authenticate a push?","No. They normally populate commit identity metadata. Network authentication uses the transport and credential mechanism, such as an SSH key or an HTTPS credential helper.","git config user.email \"developer@example.test\"\ngit remote get-url origin\ngit config --get credential.helper","An author email can be configured locally without proving control of that address. Hosting platforms may associate verified emails or signatures with accounts, but authorization to update a repository is separate. Commit signing also differs from transport authentication.","A successful local commit does not show that you can push to the server.","Why can committing work while pushing returns permission denied?","Local commits need no remote permission. Pushing requires network access and valid authentication plus permission to update the target reference."],["Q014",2,"Why should you explicitly select the initial branch name in examples?","The initial name can depend on Git configuration or hosting conventions. Explicit selection makes a training repository repeatable without changing a user's global defaults.","git init -b main interview-demo\ngit config --get init.defaultBranch\ngit branch --show-current","Main and master are names, not different Git branch types. Renaming a default branch in a team also affects server settings, CI, documentation and clones. In this guide, main is a deliberate local-lab convention.","Renaming locally does not automatically update the server's default branch setting.","What systems must be updated when a team renames its default branch?","Update the hosting default branch and branch protection, CI triggers, open PR targets, deployment scripts, docs and developer clones/upstreams."],["Q015",2,"What is a bare repository used for?","A bare repository stores Git data without an ordinary working tree. It is commonly used as a remote endpoint because branches can be updated without overwriting a checked-out application folder.","git init --bare demo-remote.git\ngit clone demo-remote.git developer-a\ngit -C developer-a remote -v","The labs use local bare repositories to demonstrate sharing without contacting a hosting service. A bare repository is not automatically secured, backed up or configured with review policy; those concerns belong to its deployment.","A bare remote does not provide a pull-request interface by itself.","Why is pushing to a checked-out non-bare branch restricted by default?","The push could change the branch's files without updating the remote working tree/index. Bare repositories avoid that mismatch."],["Q016",3,"What makes a good commit?","A good commit captures one understandable purpose, includes necessary tests or configuration and has a message explaining the behavior change. Keep unrelated formatting and fixes separate when practical.","git diff --staged\ngit commit -m \"Reject negative checkout quantity\"\ngit show --stat HEAD","The commit should be reviewable and useful for later debugging or revert. A small commit is not necessarily coherent if it relies on an uncommitted dependency. Explain why the change is needed in the message body when the diff alone is insufficient.","git commit -a includes tracked changes, but does not automatically add untracked files.","Can this commit be reverted without removing an unrelated feature?","Usually yes if the commit contains only one coherent change. `git revert OID` then test; unrelated later commits remain in history."],["Q017",3,"How do you inspect one commit and its changed files?","Use show to inspect the commit patch and metadata, or request summary forms when only paths and sizes matter.","git show HEAD\ngit show --name-status HEAD\ngit show --stat HEAD\ngit show HEAD:src/Order.java","The last command reads a path from the selected commit without switching branches. Merge commits have multiple-parent comparison semantics, so choose the desired parent comparison when investigating a merge.","A file path must exist in the selected snapshot, not just in today's working tree.","How can you inspect yesterday's version without changing your files?","Use `git show COMMIT:path/to/File.java` or `git show HEAD@{yesterday}:path` if that reflog date exists. These commands do not change your files."],["Q018",3,"How do you view branches and merges in history?","Use a graph-oriented log with reference decoration and a bounded scope. Read parent relationships rather than treating screen order as a universal chronological sequence.","git log --graph --oneline --decorate --all\ngit log --first-parent --oneline main","The first view shows reachable history across selected references. First-parent follows the main line through merges and can help understand integration history. Author timestamps and topology can disagree, so a log is not a simple numbered timeline.","A commit missing from a limited log view may still exist elsewhere in the repository.","Why might a side-branch commit appear below a newer main commit?","Git graphs follow parent relationships, not just timestamps; branch topology and display ordering can place commits in surprising rows."],["Q019",3,"What do A..B and A...B mean in git log?","Two-dot selects commits reachable from B but not A. Three-dot selects commits reachable from either side but not both: the symmetric difference.","git log main..feature\ngit log --left-right main...feature\ngit rev-list --left-right --count main...feature","These are set operations over commit ancestry. The notation has different comparison meaning in git diff: three-dot diff compares the merge base to the second endpoint. Name the command when explaining the range.","Log three-dot and diff three-dot are not interchangeable definitions.","Which range shows feature commits not reachable from main?","`git log main..feature` lists commits reachable from `feature` but not from `main`."],["Q020",3,"How do you compare a feature's changes with main?","Use a merge-base comparison to inspect what the feature changed since its shared ancestor, and an endpoint comparison when you want final snapshot differences.","git diff main...feature\ngit diff main feature\ngit merge-base main feature","The first comparison is useful for many review workflows because it excludes independent main changes from the starting snapshot. The second answers how the two tips differ now. Neither view alone proves that the feature integrates cleanly with current main.","A clean-looking feature diff can still conflict during integration.","What changes if main advanced after the feature branch was created?","The two branch tips may now differ in more ways, and merging may conflict. `git diff main...feature` still starts from their merge base."],["Q021",4,"How do you create and switch to a branch?","Use switch -c to create a branch at the current commit and check it out. Use switch with an existing name to change the checked-out branch.","git switch -c feature/order-validation\ngit branch --show-current\ngit switch main","Creating the branch does not create a new commit. Both branch names can initially point to the same commit. Subsequent commits on the feature move only that branch. Switching may be refused if local edits would be overwritten.","A successful switch can carry compatible uncommitted edits into the new branch.","What happens to main when you commit on the new feature?","Nothing moves on `main`. Your newly created commit advances only the currently checked-out feature branch."],["Q022",4,"How do git switch and git checkout differ?","Switch focuses on selecting branches or detached commits. Checkout is an older multipurpose command that can also replace paths. Restore separates file- restoration operations from branch switching.","git switch main\ngit switch --detach v1.0.0\ngit restore --source=HEAD -- src/Order.java","Explicit commands reduce ambiguity between a branch name and a path. Switch and restore are available in modern Git; this guide's labs run on Git 2.51.1. Older installations may require the corresponding checkout forms.","Checkout of a path changes file content; it is not a branch switch.","Why is git checkout ambiguous when a path and branch share a name?","Git cannot always tell if that word names a file or a branch. Use `git switch branch` or `git restore -- file` to make intent clear."],["Q023",4,"What is detached HEAD and is it always a problem?","Detached HEAD points directly to a commit instead of a branch. It is useful for inspecting or testing an old version, but new work needs a reference if you want to keep it reachable.","git switch --detach v1.0.0\n# after creating an experimental commit:\ngit switch -c experiment/fix","Creating a branch at the detached tip preserves the new commits. If you already switched away, inspect the reflog and create a branch at the intended commit. CI often checks out a detached commit intentionally for reproducible builds.","Detached commits are not immediately deleted, but unreferenced history can eventually be collected.","How do you keep an experiment before returning to main?","Before leaving detached HEAD, run `git switch -c experiment/name` at the experiment tip. That branch keeps the commit reachable."],["Q024",4,"How do you rename or delete a branch?","Rename updates the local branch name. Delete removes a local branch reference, with a checked deletion policy or a forced form. Remote references require separate operations.","git branch -m feature/old-name feature/new-name\ngit branch -d feature/done\ngit push origin --delete feature/done","The remote delete line changes the server and needs the team's authorization. Local -d checks merge reachability using its documented rules, not whether a squash-merged patch looks equivalent. Renaming may require updating upstream and hosting settings.","Branch deletion removes a name, not necessarily all reachable commit objects.","Why might -d reject a feature that was squash-merged?","Squash creates a different commit on main, without preserving original feature commits as ancestors. `-d` checks reachability, not patch similarity."],["Q025",4,"Why can uncommitted changes follow you when switching branches?","Edits live in the working tree and index, not in an immutable branch snapshot. Git may carry them when the switch can preserve them without overwriting incompatible content.","git status --short\ngit switch feature/another-task\ngit status --short","Do not rely on accidental carry-over when changing tasks. Commit coherent work, stash it with the needed file categories, or use another worktree. If a switch is refused, inspect rather than forcing away useful edits.","Forcing a checkout or switch can discard local changes.","How would you move an unfinished edit to a separate task safely?","Commit it on a dedicated WIP branch, or `git stash push -u` then create/switch to the other branch and apply the stash deliberately."],["Q026",5,"What is a fast-forward merge?","When the current tip is an ancestor of the target tip, integration can move the current branch reference forward without creating a merge commit.","git switch main\ngit merge --ff-only feature/orders\ngit log --oneline --decorate -3","The existing feature commits become reachable from main. No new two-parent commit is required. The --ff-only policy refuses integration if histories have diverged, making the allowed outcome explicit.","Fast-forward does not mean changes were tested or reviewed.","What happens if main already contains an independent commit?","`--ff-only` fails because neither tip is the ancestor of the other. Use an agreed merge or rebase after inspecting the diverged history."],["Q027",5,"What is a three-way merge and a merge commit?","A three-way merge uses a common ancestor and both tips to combine changes. When divergent histories are integrated normally, a merge commit records both parents.","git switch main\ngit merge feature/orders\ngit show --no-patch --format=%P HEAD","Two parents preserve ancestry from both lines of work. The first parent is normally the branch that was checked out when merging. A merge can be conflict-free when both sides change different files, yet still require integration testing.","A merge commit can include a hand-written resolution beyond either parent.","Why does preserving both parents matter for future merges?","Git remembers both lines as ancestors, so future merges can identify common commits and avoid re-merging already integrated history."],["Q028",5,"How do you resolve a merge conflict correctly?","Inspect the conflicting intent, edit the final desired content, stage the resolution, verify it and continue the merge. Do not choose a side solely to remove markers.","git status\ngit diff --cc\n# edit file and remove conflict markers after deciding the result\ngit add -- src/Order.java\ngit merge --continue","Staging records the chosen resolved version. Run relevant tests because a syntactically valid combination may violate behavior. Deleted/modified or renamed paths need a decision about the path as well as the content.","Conflict markers left in Java files can become compile errors or accidental text.","Which test demonstrates that both branches' intended behavior survives?","Run unit and integration tests for the feature introduced by each branch, plus one test of the combined workflow after conflict resolution."],["Q029",5,"How do --no-ff, --ff-only and --squash differ?","No-ff creates a merge commit even when a fast-forward is possible. Ff-only allows only a fast-forward. Squash prepares combined changes for a later ordinary commit without recording merge ancestry.","git merge --no-ff feature\ngit merge --ff-only feature\ngit merge --squash feature\ngit commit -m \"Add order validation\"  # after squash","These are alternatives, not commands to run consecutively for the same integration. Squash is useful for one reviewable result but changes how later Git operations recognize ancestry. Choose the repository's integration policy rather than using a flag mechanically.","Squash merge does not mark all original feature commits as ancestors of main.","Why can later merging the same long-lived branch become surprising after squash?","The squash patch is present, but the old feature commits are not ancestors. A later merge may replay changes or produce unexpected conflicts."],["Q030",5,"How do you abort a merge, and what are the limits?","Merge --abort attempts to restore the pre-merge state. Start with a clean working tree or preserve existing edits because reconstructing them after a complex interrupted merge is not always guaranteed.","git status\ngit merge --abort\ngit status","Abort is for an in-progress merge, not for removing an already committed merge. After a committed shared merge, a revert may be appropriate. Verify that your original edits are present instead of assuming every cancellation has identical behavior.","Mixing unrelated local edits with conflict resolution makes recovery harder.","What should you do if the merge already became a public commit?","Do not reset the shared branch to erase history. Consider `git revert -m` for a public merge, confirm the right mainline parent, and review/test the result."],["Q031",6,"What does git rebase do?","Rebase takes selected commits from one line of development and replays their changes onto another base, normally producing new commit identities and moving the rebased branch tip.","git switch feature/orders\ngit branch backup/feature-before-rebase\ngit rebase main","Use the backup reference to preserve the original tip while learning or doing a risky rewrite. Main is not moved by rebasing the feature onto it. Replay can omit commits already represented upstream according to Git's rules.","Rebase is not simply moving unchanged commit objects to a different parent.","Which branch moves when you rebase feature onto main?","The checked-out `feature` branch tip moves to new replayed commits. The `main` branch tip does not move."],["Q032",6,"When should you merge and when should you rebase?","Merge preserves the existing ancestry and integrates it. Rebase can simplify a private branch before integration, but rewriting shared commits requires coordination with people depending on them.","Shared integration branch: preserve accepted history.\nPrivate feature: fetch, then rebase onto selected base if policy permits.\nRelease hotfix: choose explicit backport or merge strategy.","There is no universally superior history shape. Merge records integration events; a linear history can make some navigation easier. Focus on audit, review and collaboration requirements rather than visual neatness alone.","Rebasing a published branch can leave coworkers based on commits you replaced.","What team agreement would make a shared rebase acceptable?","Agree who may rewrite, when teammates must stop working, how backups/notifications work, and how to synchronize; protect the remote update with an explicit lease."],["Q033",6,"How do you resolve a rebase conflict?","Resolve the current replayed change, stage the desired files and continue. Abort returns to the original branch state; skip drops the current replayed commit's contribution and needs careful review.","git status\n# edit conflicting file\ngit add -- src/Order.java\ngit rebase --continue\n# alternative cancellation: git rebase --abort","Several commits can conflict in sequence, so resolving the first does not necessarily finish the operation. Rebase --skip is not a generic fix for a difficult conflict. Check the final diff and tests against the intended feature.","Skipping a commit can silently remove behavior if its change was not already present.","How do you determine whether a skipped change is actually redundant?","Compare the original patch with upstream using `git show`/`git range-diff`; skip only after confirming the intended behavior already exists, then run tests."],["Q034",6,"Why can ours and theirs feel reversed during rebase?","During a rebase merge-backend conflict, ours is the already-rebased side including the new base, while theirs is the commit being replayed from your old branch.","git ls-files -u\ngit show :2:src/Order.java  # stage 2: ours\ngit show :3:src/Order.java  # stage 3: theirs","These labels describe the current operation, not permanently your work versus a colleague's. In a normal merge they refer to the checked-out side and the other side. Inspect the content and intent before selecting a side.","Blindly using --ours to keep your feature during rebase can select the opposite content.","What does stage 1 represent in a conflicted index?","Stage 1 stores the common base version of a conflicted path; stages 2 and 3 store the two competing versions."],["Q035",6,"How do you review a branch after rebase?","Compare the rewritten patch series with the preserved old series, inspect the final base-relative diff and run relevant tests. New IDs alone are expected and do not indicate changed behavior.","git range-diff main..backup/feature-before-rebase main..feature/orders\ngit diff main...feature/orders\ngit log --graph --oneline --decorate -10","Choose the old and new base ranges accurately; the first line is a convenient sketch when main is a suitable boundary for both. Range-diff highlights patch-series changes but is not a correctness proof. Check conflict resolutions particularly closely.","A conflict resolution can unintentionally delete part of the old feature.","How would you distinguish expected ID changes from unexpected patch changes?","Use `git range-diff` between original and rebased series. New hashes are expected; unexpected added, removed or changed patches need review."],["Q036",7,"What does cherry-pick do?","Cherry-pick applies the change introduced by a selected commit to the current branch, usually creating a new commit there. It does not merge the entire source branch's ancestry.","git switch release/1.4\ngit cherry-pick -x FIX_COMMIT\ngit show --stat HEAD","The -x trailer records the source commit for a backport. The fix may depend on earlier source-branch changes, so inspect prerequisites and test the release version. Identical patches can have different IDs because parent and metadata differ.","Selecting one commit does not automatically select its semantic dependencies.","How would you backport a fix that depends on a renamed method?","Backport any necessary rename first, or adapt the patch to the old method name on the release branch; compile and test against that release API."],["Q037",7,"How do you handle a cherry-pick conflict?","Resolve and stage the current change, then continue the cherry-pick. Abort abandons the in-progress sequence; skip deliberately omits the current selected commit.","git status\ngit add -- src/Order.java\ngit cherry-pick --continue\n# to abandon: git cherry-pick --abort","Read the source patch and destination behavior rather than copying the source file wholesale. When picking multiple commits, several may need resolution. A conflict-free backport can still compile incorrectly against older dependencies.","Choosing the whole source version may bring unrelated newer behavior into the release.","Which release-specific tests should you run after the backport?","Run the release's own build/tests, regression tests for the defect, and compatibility tests for its Java version, dependencies and schema."],["Q038",7,"What does git commit --amend change?","Amend creates a replacement for the current tip using the selected staged content and message options. The old commit is not edited in place, and its ID usually changes.","git add -- src/OrderTest.java\ngit commit --amend --no-edit\ngit show --stat HEAD","No-edit keeps the message; it does not mean keeping the original content. For a message- only amendment, ensure no unintended staged changes are present. The default author handling differs from the updated committer metadata.","Amending a shared tip is a history rewrite, not an ordinary new follow-up commit.","How would you change only the message without adding staged edits?","First check `git diff --staged` and unstage anything unintended. Then `git commit --amend -m \"New message\"` on a private commit."],["Q039",7,"What can interactive rebase do?","It lets you reorder, reword, combine, edit or drop selected commits while replaying the series. The selected range must match what you intend to rewrite.","git branch backup/cleanup\ngit rebase -i HEAD~3\n# todo actions: pick, reword, edit, squash, fixup, drop","Squash combines changes and lets you compose a message; fixup normally discards the fixup message. Reordering can break dependencies and dropping removes a change from the result. Keep a reference to the original and inspect the final series.","Interactive cleanup can produce intermediate commits that do not compile.","How would you split one large commit into two coherent changes?","Run interactive rebase with `edit` on that commit, `git reset HEAD^`, stage the first logical part and commit, then stage and commit the remainder; continue rebase."],["Q040",7,"How do fixup commits and autosquash help a review workflow?","A fixup commit identifies the earlier commit it should correct, and autosquash arranges it in an interactive rebase. This preserves review activity until the intentional cleanup step.","git add -- src/OrderTest.java\ngit commit --fixup=TARGET_COMMIT\ngit rebase -i --autosquash BASE_COMMIT","Choose a base before the target commit so both target and fixup appear in the todo list. This still rewrites commits and must follow the team's policy. Verify that the fixup attached to the intended change, especially when messages are similar.","Autosquash is not automatically safe for a branch others are already using.","What happens if the target commit is outside the selected rebase range?","Autosquash cannot match a target absent from the todo list. Select an earlier base that includes the target and its fixup, then review the plan."],["Q041",8,"How do restore, reset and revert differ?","Restore replaces selected file/index content. Commit-form reset moves the current branch/HEAD and optionally changes index/files. Revert creates a new inverse commit without removing the original history.","Unstage: git restore --staged -- Order.java\nDiscard unstaged tracked edit: git restore -- Order.java\nUndo a shared change: git revert BAD_COMMIT","Restore of the working file can discard edits, so inspect them first. Revert is normally the suitable starting point for a published change because existing ancestry remains. Reset is often useful for private cleanup but has multiple modes.","The word undo does not identify which of these outcomes you need.","Must the original commit remain visible to collaborators?","If collaborators already rely on it, usually yes: use `git revert` to undo while keeping shared history, rather than rewriting it."],["Q042",8,"How do soft, mixed and hard reset affect state?","All three commit-form modes move the current branch/HEAD to the target. Soft leaves index/files; mixed resets the index but keeps files; hard resets both index and tracked files.","# Disposable repository only; inspect and preserve useful work first.\ngit reset --soft HEAD~1\ngit reset --mixed HEAD~1\ngit reset --hard HEAD~1","These are alternative demonstrations, not a sequence for one task. Hard reset discards tracked local changes and can remove untracked items that obstruct writing tracked paths. It is not a general removal of every untracked file.","Reflog may recover an old commit, but it does not restore arbitrary edits never recorded by Git.","Which mode keeps undone commit content staged?","`git reset --soft TARGET` moves the tip while leaving the old commit's changes in the index, ready to recommit."],["Q043",8,"How does path-form reset differ from commit-form reset?","A reset with paths changes selected index entries without moving the branch tip. A reset to a commit without paths can move the branch and apply a mode.","git reset HEAD -- src/Order.java\ngit rev-parse HEAD\ngit diff -- src/Order.java","The path form is an older way to unstage selected files. It leaves working content intact. A -- separator clearly distinguishes paths from revision arguments. Avoid applying the branch- moving mental model to every reset invocation.","You cannot use path-form reset to move only part of a branch history.","Why is HEAD unchanged after unstaging one path?","Path-form reset updates only chosen index entries. It does not move the current branch or HEAD commit."],["Q044",8,"How do you revert a bad commit on a shared branch?","Inspect the commit and later dependencies, create an inverse commit, resolve any conflicts, test and publish through the team's review policy.","git show BAD_COMMIT\ngit revert BAD_COMMIT\ngit show --stat HEAD","Later code may depend on the removed behavior, so a mechanical inverse can still break the application. Reverting records a new history event and does not erase the original. Deploying an old artifact and reverting source are related but separate release actions.","A successful revert command does not establish that the resulting application is correct.","How would you revert one bug fix while preserving later unrelated changes?","Use `git revert BAD_COMMIT`, resolve any conflicts, and test. Revert adds an inverse commit instead of deleting later commits."],["Q045",8,"Why does reverting a merge need a mainline parent?","A merge has multiple parents, so Git needs to know the parent relative to which the merge's change should be reversed. Inspect parent order before selecting it.","git show --no-patch --format=%P MERGE_COMMIT\ngit revert -m 1 MERGE_COMMIT","Parent 1 is commonly the previous checked-out branch tip, but verify it. The original merge remains an ancestor, so merging the same old branch again will not simply reapply all reverted changes. A later reintroduction needs an intentional strategy.","Choosing -m 1 without checking the graph can undo the wrong side.","Why might reverting the revert be needed before reintroducing the old feature?","Git still sees the old merge as integrated. Reverting the revert can restore its changes so future integration is deliberate; test for intervening changes."],["Q046",9,"What is the reflog and how is it different from the log?","The log traverses commit ancestry. A reflog records local reference updates, including previous checkout or branch positions that may no longer be reachable from current branches.","git log --oneline -5\ngit reflog show HEAD -10\ngit reflog show main -10","Reflogs are local and have expiration policies. They are not normally pushed to another clone. A reflog entry can help find the old tip after reset, rebase or a detached experiment, but it is not a permanent backup.","Your colleague's reflog is not automatically available in your clone.","Which view helps find a tip removed by a local reset?","`git reflog show HEAD` or the branch's reflog shows previous local tip positions even after a reset."],["Q047",9,"How do you recover a commit after an accidental reset?","Find and verify the intended old commit, then create a rescue reference before doing further history changes. Recovering the branch can be a later deliberate step.","git reflog\ngit show RECOVERED_OID\ngit branch rescue/lost-work RECOVERED_OID","A rescue branch makes the object reachable and lets you compare it safely with current work. The correct reflog selector depends on the operations performed; do not assume HEAD@{1} is always the lost commit. Preserve the current tip too if it contains useful changes.","Another reset before inspection can make a confused recovery even harder to reason about.","How do you confirm the rescued commit contains the expected files?","Inspect `git show --stat RECOVERED_OID`, `git ls-tree -r --name-only RECOVERED_OID` and the file's contents before moving branches."],["Q048",9,"Can Git recover an uncommitted deleted edit?","Only if that content was recorded somewhere Git can still find, such as a commit, stash or staged blob. Never-added working edits are generally outside Git's recovery history.","Check: commits, stash list, reflog, editor local history.\nIf staged content became unreachable, object inspection may help.\nUse backups for content Git never stored.","Staged objects can exist without a convenient commit reference, but locating them is less direct and retention is limited. Start with known references and preserve evidence rather than running aggressive cleanup. Editor recovery and filesystem backup are independent mechanisms.","Reflog does not record every keystroke or every working-tree version.","Was the missing content ever added, committed or stashed?","That decides the recovery path: commits/reflog, stash, or potentially a staged blob may help. Never-saved working edits need editor or filesystem backups."],["Q049",9,"How does git clean differ from reset --hard?","Clean removes selected untracked files; hard reset aligns index and tracked files with a commit. Clean has explicit options for directories and ignored paths and should be previewed.","git clean -nd          # preview untracked files/directories\ngit clean -fd -- tmp-demo/  # delete only this intended path\n# -x also includes ignored paths; do not add it casually.","Use a disposable lab or a clearly scoped path. Ignored files can contain local configuration, secrets or valuable generated output. Clean does not create a commit or a Git undo record for removed untracked content.","git clean -fdx can remove ignored local files that the repository never backed up.","What does the dry-run say will be deleted?","`git clean -nd` lists the untracked paths Git would remove if you ran the destructive form with matching flags. Inspect every listed path first."],["Q050",9,"What are ORIG_HEAD and repository integrity checks useful for?","ORIG_HEAD can retain a previous tip for certain operations; integrity tools inspect objects and references. They help diagnosis but are not universal recovery guarantees.","git show ORIG_HEAD\ngit fsck --full\ngit count-objects -vH","ORIG_HEAD may be replaced by a later operation, so verify rather than assuming it refers to a particular incident. Fsck can report unreachable objects without those necessarily being corruption. Garbage collection and retention determine how long unreachable content survives.","Do not run aggressive pruning while trying to rescue unreachable work.","Is the repository corrupt or merely holding unreachable old commits?","`git fsck` output must be interpreted: unreachable valid commits are common after resets/ rebases. Object corruption needs different evidence and repair steps."],["Q051",10,"What are origin, upstream and origin/main?","Origin is a conventional remote name created by clone. Upstream can be another remote name or the tracking branch relationship. Origin/main is normally a local remote-tracking reference.","git remote -v\ngit branch -vv\ngit rev-parse refs/remotes/origin/main","Remote names are configurable. The remote-tracking reference is not a live query to the server, and your local main can differ from it. Clarify whether upstream means a named remote in a fork workflow or the branch used for comparison and default operations.","origin/main and local main are different references even when they currently have the same ID.","What updates your local view of the remote branch?","`git fetch` updates your repository's configured remote-tracking references, such as `origin/ main`, without merging them into your branch."],["Q052",10,"What does git fetch change?","Fetch downloads needed objects and updates references according to the refspec, normally remote-tracking branches. It does not ordinarily integrate those changes into your checked-out branch.","git fetch origin\ngit log --oneline main..origin/main\ngit diff main origin/main","This lets you inspect incoming work before choosing merge or rebase. FETCH_HEAD also records fetched tips. Fetch configuration can limit which references update, and fetching tags has separate rules. Your files can remain unchanged while origin/main advances.","A successful fetch is not the same as updating local main.","How would you review incoming commits without integrating them?","Run `git fetch origin`, then `git log --oneline HEAD..origin/main` and `git diff HEAD..origin/ main` before merging or rebasing."],["Q053",10,"How does git pull differ from fetch?","Pull fetches and then integrates the selected upstream into the current branch using a merge, rebase or fast-forward-only policy. Make the policy explicit when learning or diagnosing divergence.","git pull --ff-only\ngit pull --rebase\ngit pull --no-rebase","These are alternative policies. Ff-only refuses divergence; rebase replays local commits; no- rebase uses merge integration. Defaults depend on version and configuration, so inspect them rather than assuming pull always creates a merge.","Pull can modify local history or working content after the fetch stage.","Which pull policy should reject accidental divergent local main commits?","`git pull --ff-only` refuses divergent histories; choose it when main must update only by fast-forward."],["Q054",10,"How do you set and inspect a branch's upstream?","An upstream links a local branch to a tracking target used by several default operations and comparisons. Set it deliberately and inspect branch configuration.","git branch --set-upstream-to=origin/main main\ngit branch -vv\ngit rev-parse --abbrev-ref '@{upstream}'","The target remote-tracking reference must exist. Upstream does not automatically push, grant permissions or make branch content identical. Push behavior also depends on push configuration and an explicitly provided refspec.","Tracking configuration is not a background synchronization service.","Why can a branch be ahead even when it tracks origin/main?","Ahead is based on your local upstream-tracking reference, not a live server call. Your local commits can be ahead until you push or realign history."],["Q055",10,"What do fetch --prune and remote branch deletion mean?","Prune removes stale local tracking references covered by the fetch/prune mapping when their remote counterparts are gone. Deleting a remote branch is a separate server mutation.","git fetch --prune origin\ngit branch -r\ngit push origin --delete feature/finished","The deletion line requires the team's authorization and can be rejected by server policy. Prune does not normally delete your unrelated local feature branch. Tag pruning is sensitive to the configured refspec and explicit tag-prune options.","Do not assume pruning always affects only branches under every possible configuration.","Why can a local feature still exist after its remote branch is deleted?","Removing a remote branch deletes a server name. Your independent local `refs/heads/ feature` remains until you delete it."],["Q056",11,"What does git push actually do?","Push transfers required objects and asks the remote to update specified references. The requested update must satisfy Git's checks and the server's policy.","git push -u origin feature/orders\ngit ls-remote --heads origin","The -u option records an upstream for a successful or up-to-date branch push. It does not create review approval. Explicit remote and branch names reduce surprises from defaults, especially when fetch and push destinations differ.","A push can transfer objects yet still fail to update the requested reference.","What does the server check before advancing a branch?","For a normal push, the server checks permissions, hooks/policy and whether the new tip fast-forwards the existing branch; exceptions require authorization."],["Q057",11,"Why is a non-fast-forward push rejected?","For a normal branch update, the old remote tip should be an ancestor of the new tip. If it is not, updating would discard remote reachability from that branch and is normally rejected.","git fetch origin\ngit log --left-right --oneline HEAD...origin/feature/orders\n# integrate or coordinate after inspecting both histories","Another person may have pushed, or you may have rewritten local history. Fetching first reveals the actual divergence. Merge or rebase according to policy, test, and push the integrated result. A rejection is useful evidence, not a reason to force blindly.","Retrying the same ordinary push does not resolve divergent ancestry.","Are the remote-only commits someone else's work or your old rewritten series?","Fetch and graph the tips; compare `git log --left-right --cherry-pick` or `git range-diff` to learn whether remote commits are new work or rewritten equivalents."],["Q058",11,"How does --force-with-lease differ from --force?","Force bypasses the usual ancestry protection. Force-with-lease also requires the remote reference to match an expected value, which can prevent overwriting a concurrent update.","# Authorized rewrite only; EXPECTED_OID is the reviewed old remote tip.\ngit push --force-with-lease=refs/heads/feature:EXPECTED_OID origin HEAD:feature","An explicit expected object ID makes the reviewed expectation clear. The shorthand form commonly relies on local remote-tracking state; background fetches can update that state and weaken your intended protection. A lease does not make rewriting shared history socially or semantically safe.","Force-with-lease can still replace work if your expected tip includes work you did not preserve.","What happens if a coworker pushes after you record EXPECTED_OID?","The explicit lease no longer matches, so the remote rejects the force update. Fetch, inspect the coworker's commit and coordinate a safe next step."],["Q059",11,"How do push refspecs select the destination?","A push refspec maps a source object/reference to a destination reference. Explicit full destinations are useful for scripts where ambiguity is unacceptable.","git push origin HEAD:refs/heads/review/order-fix\ngit push origin refs/tags/v1.0.0:refs/tags/v1.0.0","The first command publishes the current commit under a chosen server branch name, which can differ from the local branch. A leading plus requests a forced update and needs the same caution as force. Deletion has a dedicated command form.","Choosing the wrong destination can publish to an unintended branch even with correct content.","Can you push a detached HEAD to a named review branch?","Yes. Use an explicit refspec such as `git push origin HEAD:refs/heads/review/my-fix` if you are allowed to create that branch."],["Q060",11,"How do you diagnose authentication, authorization and policy push failures?","Read the failure category, inspect the remote URL and intended ref, and check credentials versus server policy separately. Preserve local commits while diagnosing the network operation.","git remote get-url --push origin\ngit branch --show-current\ngit status","Authentication proves an identity; authorization permits access; protected-branch or hook policy can reject an otherwise authenticated update. Do not expose tokens in diagnostic output. A local commit remains local even if its push fails.","Changing user.email usually does not repair a transport permission error.","Does the failure occur before repository access or after reference-update validation?","Check the exact error: DNS/SSH/HTTPS failures happen before access, while 'non-fast- forward', hooks and protected-branch errors happen during update checks."],["Q061",12,"How do lightweight and annotated tags differ?","A lightweight tag is a reference to an object. An annotated tag has a tag object containing metadata and a message, and can also carry a signature.","git tag demo-light\ngit tag -a v1.0.0 -m \"Release 1.0.0\"\ngit cat-file -t v1.0.0","Both can identify a release commit, but annotated tags provide a separate tagger identity and message. A tag can point to objects other than commits, though release workflows commonly use commits. Normal commits do not move existing tags.","A tag name is a reference, so it can be changed unless policy prevents it.","What extra object exists for an annotated tag?","An annotated tag has its own `tag` object holding tagger, message and target. A lightweight tag is only a ref pointing directly to an object."],["Q062",12,"Are tags pushed automatically with branches?","Do not assume they are. Push the selected release tag explicitly, or use a deliberate tag-publishing policy such as follow-tags for eligible annotated tags.","git push origin v1.0.0\ngit push --follow-tags origin main\ngit ls-remote --tags origin","Follow-tags is not identical to pushing every local tag. An explicit tag push is easiest to review for one release. Server policy may restrict tag creation or updates. Check the remote reference rather than assuming a successful branch push published the release name.","git push --tags can publish unintended local tags as well.","Which exact tag should a release pipeline create and publish?","Use a reviewed, immutable release commit and a uniquely named annotated tag such as `v2.4.0`; publish via the approved release process."],["Q063",12,"Why should release tags usually be immutable?","Moving an existing release name makes the same name refer to different source across clones and time. New release or correction names preserve reproducibility and audit meaning.","Deployed artifact metadata:\nrelease = v1.0.0\ncommit = full object ID\nartifact digest = verified build output identity","Git itself can permit some tag operations depending on flags and server policy, so immutability is a team rule to enforce. A source ID does not fully specify a build without dependency, toolchain and configuration information.","Retagging v1.0.0 does not automatically fix artifacts already built from the old target.","How can you prove which commit produced a running service?","Embed the source commit OID and artifact digest/build ID in release metadata; compare them to the deployed artifact and CI provenance."],["Q064",12,"What does git describe do?","Describe produces a human-readable name based on reachable tags and commit distance, subject to its options and available history. It can help diagnostics but is not a replacement for the full commit ID.","git describe --tags --always\ngit rev-parse HEAD\ngit status --porcelain","A shallow clone or missing tags can produce a different description. The dirty option can signal working-tree modifications, but build reproducibility requires more than a label. Save exact source and artifact identities in build metadata.","A description may change when additional reachable tags are fetched.","Why can local and CI descriptions differ for the same checked-out commit?","`git describe` depends on which tags are present/fetched and the history graph. CI clones may be shallow or may not fetch all tags."],["Q065",12,"How should a Java release branch receive a hotfix?","Backport the smallest coherent fix, test it against the release's dependencies and JDK, and publish a new version under the release policy. Record the relationship to the original fix.","git switch release/1.4\ngit cherry-pick -x FIX_COMMIT\n./mvnw verify\ngit tag -a v1.4.1 -m \"Fix quantity validation\"","Also ensure the required fix exists on future development lines so it is not lost in the next release. Database migrations and feature flags can make rollback more complex than selecting an old Git tag. A new source tag should correspond to a tested artifact.","A hotfix that compiles on main may fail on an older release toolchain.","Does the fix depend on a schema change unavailable in production?","Check the current production schema and code dependencies; adapt or stage the migration safely before backporting a fix that relies on them."],["Q066",13,"What does git stash save by default?","A normal stash records tracked working-tree and index changes, then cleans those changes from the checkout. Untracked and ignored files require additional options.","git stash push -m \"unfinished order validation\"\ngit stash list\ngit stash show -p 'stash@{0}'","Use -u to include untracked files and -a when deliberately including ignored files too. Ignored paths may contain large output or local secrets, so choose consciously. A stash is stored locally and is not sent by an ordinary branch push.","A new untracked Java file is not saved by the default stash.","Which option includes the new file without including ignored build output?","Use `git stash push -u` to include untracked files; ignored outputs remain excluded unless you deliberately use `-a`."],["Q067",13,"How do stash apply and stash pop differ?","Apply restores a stash without dropping it. Pop restores and removes it on success; if conflicts prevent a clean application, the stash normally remains for resolution.","git stash apply 'stash@{0}'\ngit status\n# after verifying, deliberately drop the intended entry:\ngit stash drop 'stash@{0}'","Apply followed by verification is useful when preserving the saved state matters. Use --index when attempting to restore the staged state as well, understanding that conflicts can prevent it. Stash numbers can change after list operations.","Pop does not guarantee a conflict-free restoration on a changed base.","What should you check before dropping a stash after resolving conflicts?","Confirm your intended edits exist and work, `git status` has no unresolved conflicts, and nothing still needed remains only inside that stash."],["Q068",13,"When is stash branch useful?","It creates a branch from the stash's original base and applies the saved work there, which can reduce conflicts caused by the current branch having moved far away.","git stash branch recover/order-work 'stash@{0}'\ngit status\ngit log --oneline -3","When successfully using a stash reference, the applied stash entry is dropped according to the command's semantics. Review the recovered work and commit it deliberately. This is not the same as applying the stash on today's main.","Do not assume the resulting branch includes all later main commits.","Why can the original base be easier to restore onto?","`git stash branch` checks out the original base where the stash was created, which may avoid conflicts caused by applying on a newer branch."],["Q069",13,"What is git worktree useful for?","Worktree lets one repository have multiple working directories with separate checked-out positions and indexes while sharing objects and most references. It supports parallel tasks without constant stashing.","git worktree add -b hotfix/order ../order-hotfix main\ngit worktree list\ngit -C ../order-hotfix status","You can fix a release while keeping an unfinished feature checkout intact. Build output and environment files belong to each working directory, but common refs still affect the shared repository. Git normally prevents checking out the same branch in two worktrees.","A worktree is not an independent clone with its own separate object database.","What state is private to a worktree and what is shared?","Working files, index and HEAD checkout are per worktree; repository objects and most refs/branches are shared. Git restricts one branch being checked out twice."],["Q070",13,"How do you remove or repair worktree metadata?","Use worktree-aware commands so Git can check state and update administrative records. Inspect status before removing a directory with useful work.","git -C ../order-hotfix status\ngit worktree remove ../order-hotfix\ngit worktree prune --dry-run","Remove normally refuses problematic working state unless explicitly forced. Prune cleans stale administrative entries for missing worktrees; it is not the same as deleting a branch. Moving directories manually may require repair. Keep external or removable worktrees locked when appropriate.","Deleting a worktree directory manually can leave stale records and lose uncommitted files.","Why might a branch still appear checked out after its directory was removed?","A worktree can have stale administrative records after manual deletion. Inspect `git worktree list --porcelain` and prune only confirmed stale entries."],["Q071",14,"Does .gitignore stop tracking an already committed file?","No. Ignore rules apply to untracked discovery; an already tracked file remains tracked. To stop future tracking while keeping the local file, deliberately remove it from the index.","# after deciding this file should no longer be tracked:\ngit rm --cached -- local.properties\n# add the ignore rule, then commit the tracking change","The removal becomes part of the next commit, while the file stays locally when the command succeeds. Other collaborators may lose their checked-out copy when adopting that removal, so communicate. Existing history still contains previous committed content.","Adding a secret file to .gitignore does not remove the secret from history.","What additional action is needed if the file contained an active credential?","Rotate or revoke the credential immediately. Removing the file from a commit does not disable a secret already exposed in history."],["Q072",14,"How do ignore patterns and negation work?","Patterns match paths within their scope; a leading exclamation can re-include a match. You cannot re-include a file inside an excluded directory without also making the relevant directory traversable.","target/\n*.log\nconfig/*\n!config/example.yml","This keeps an example under a traversable config directory while excluding its siblings. Root anchoring, directory slashes and nested ignore files change matching. Use check-ignore to identify the rule rather than guessing.","config/ followed only by !config/example.yml will not behave like config/* in this example.","Which rule explains why a new file is ignored?","Use `git check-ignore -v PATH` to reveal the matching ignore rule and its source file."],["Q073",14,"Which files should a Java project commonly ignore?","Ignore generated build outputs and machine-specific local state, while tracking source, tests, intended build configuration and the wrapper files required by the project's build policy.","Typical ignored output: target/, build/, *.class.\nTrack by policy: pom.xml, build.gradle, wrapper scripts/config.\nKeep real credentials outside committed local configuration.","Do not blindly ignore every .jar: some build-wrapper layouts or deliberately vendored dependencies need tracked binary files. Check the specific wrapper version and repository policy. Share sanitized example configuration rather than committing a developer's actual secrets.","A broad ignore rule can hide a required new build file and break CI.","Can a clean clone build without files from your laptop?","A clean clone must have all required tracked sources, build scripts and dependency access. Run CI from a fresh clone to catch machine-only files."],["Q074",14,"What does .gitattributes control?","Attributes define path-based behavior such as text normalization, diff/merge drivers, binary treatment and filters. They can make repository behavior more consistent across platforms.","* text=auto\n*.java text eol=lf\n*.sh text eol=lf\n*.png binary","Line-ending normalization affects index content and checkout behavior under the configured rules. Introduce renormalization as a separate reviewed change where needed, then test rather than mixing it with a functional patch. Filters need consistent installation and trust decisions.","Changing attributes can create many apparent diffs without changing application logic.","How would you separate normalization from a production bug fix?","Make a separate commit for line-ending/format changes and another for the bug fix; confirm `.gitattributes` and compare with whitespace-insensitive tools."],["Q075",14,"How do you diagnose unexpected ignored files or line-ending diffs?","Inspect the matching ignore rule, effective attributes and relevant configuration. Distinguish an intentional content change from normalization or executable- mode differences.","git check-ignore -v -- config/local.yml\ngit check-attr text eol -- src/Order.java\ngit diff --check\ngit config --show-origin --get core.autocrlf","Check-ignore normally focuses on untracked paths; tracked-path investigation may need its no-index option. Diff --check flags certain whitespace errors but does not prove semantic equality. Investigate the exact patch before applying a global setting.","Turning off all whitespace checks can hide real formatting problems without fixing normalization.","Why does a file appear wholly changed after a Windows checkout?","CRLF/LF conversion can change nearly every line. Inspect `git diff --ignore-space-at-eol` and repository `.gitattributes` before assuming logic changed."],["Q076",15,"What are blob, tree, commit and tag objects?","A blob stores file content; a tree maps names and modes to objects; a commit points to a tree and parents with metadata; an annotated tag adds named-object metadata.","git cat-file -t HEAD\ngit cat-file -p HEAD\ngit ls-tree HEAD","File names belong to tree entries, not the blob itself, so identical content can be reused at different paths. Trees also represent subtrees and special entry modes. The branch name is a reference outside the commit object.","A blob does not inherently know which Java filename contained its content.","Why can two files with identical bytes share a blob ID?","Blob IDs hash file content, not names or paths. Identical bytes therefore reference the same blob object when using the same object format."],["Q077",15,"Why do references matter for object reachability?","References name starting points from which commit/tree/object relationships make content reachable. Removing a branch name does not immediately delete every object formerly reachable through it.","git show-ref --heads --tags\ngit for-each-ref --format='%(refname) %(objectname)'\ngit rev-list --all","Another branch, tag or reflog may still protect the commits. Eventually unreachable objects may be pruned according to retention and maintenance rules. Preserve a rescue reference before relying on uncertain retention.","Deleting a branch is not a secure content-erasure operation.","Which other references could still retain a deleted feature's commits?","Tags, remote-tracking refs, other branches, stash and reflog entries may still make commits reachable after deleting one branch name."],["Q078",15,"What is the index during a conflict?","In ordinary state the index holds one proposed entry per tracked path. During an unresolved merge it can hold base, ours and theirs entries in separate stages.","git ls-files -u\ngit show :1:src/Order.java\ngit show :2:src/Order.java\ngit show :3:src/Order.java","Stage 1 is the base, 2 ours, and 3 theirs when those entries exist. A stage can be missing in add/delete conflicts. Staging a resolved file replaces the unmerged entries with the chosen normal entry. Operation-specific ours/theirs meaning still matters.","Not every conflict has all three file versions available.","What changes in the index after git add marks a path resolved?","Git replaces the path's conflict-stage entries (1/2/3) with a normal stage-0 index entry containing your resolved content."],["Q079",15,"Does Git track renames directly?","Git stores snapshots and can infer renames when comparing them using similarity detection. A move command records the path/content changes; there is no universal permanent rename object.","git mv src/OldOrder.java src/Order.java\ngit diff --staged --find-renames\ngit log --follow -- src/Order.java","Rename detection depends on comparison context, thresholds and limits. Large content edits can make a move harder to recognize. Follow is useful for a single path's history but should not be treated as an infallible record of identity.","A rename-only commit and a rename-plus-rewrite can be displayed differently.","Why might Git show a delete and add instead of a rename?","Rename detection is a similarity-based presentation of delete/add changes. Major edits or thresholds may prevent Git from recognizing a rename."],["Q080",15,"What do packfiles and garbage collection do?","Packfiles compress and organize objects, potentially using delta representations. Maintenance can consolidate storage and eventually remove unreachable objects under retention rules.","git count-objects -vH\ngit gc  # normal maintenance; not a recovery step","The logical snapshot model remains the same even when objects are packed. Loose-object count alone is not total repository size. During recovery, avoid aggressive pruning that removes objects you are trying to rescue. Large historical binaries can keep storage large even after deletion from today's tree.","Garbage collection is not a substitute for intentional history cleanup or backup.","Why can deleting a large file leave the repository large?","The old large blob remains reachable through historical commits. Deleting the current path does not rewrite prior snapshots or automatically shrink history."],["Q081",16,"How does git bisect find a regression?","Bisect narrows a known good/bad history interval by checking intermediate commits and classifying their behavior. It is efficient when the test and good/bad boundary are reliable.","git bisect start\ngit bisect bad BAD_TIP\ngit bisect good GOOD_TIP\n# test each selected revision, then mark good, bad or skip\ngit bisect reset","The selected checkout may be detached while testing. Preserve local edits first and reset bisect when done. Flaky tests, environmental changes or a regression that disappears and returns can invalidate a simple monotonic interpretation.","The newest failing commit is not necessarily the commit that introduced the problem.","What evidence establishes the last known good revision?","Use a known passing CI build, release tag or tested deployment commit, then confirm it still passes the same deterministic reproduction check."],["Q082",16,"How does automated bisect use exit codes?","Bisect run executes a supplied test command. Zero means good; ordinary failure codes indicate bad, while 125 means the selected revision cannot be tested and should be skipped.","git bisect run ./regression-check.sh\n# test script contract:\n# 0 = regression absent; 1 = regression present; 125 = untestable","Certain special exit codes stop the run, so use the documented contract. A Java test wrapper must distinguish the target regression from missing dependencies, incompatible JDKs or unrelated compilation failures. Otherwise it may blame an infrastructure break.","Mapping every build failure to bad can identify the wrong change.","How will the script classify an old commit requiring a different toolchain?","Return 'skip' (exit 125) for commits that cannot be tested fairly, such as those lacking required tools. Bad test setup must not count as product failure."],["Q083",16,"What does git blame tell you and what are its limits?","Blame attributes current lines to commits that last changed them under its traversal rules. It provides context for investigation, not proof of who introduced a behavioral bug.","git blame -L 20,50 -- src/OrderService.java\ngit blame -w -- src/OrderService.java\ngit show COMMIT_FROM_BLAME","Formatting, moves and earlier dependencies can make the last line edit unrelated to the root cause. Inspect the patch, parent version and tests. Options can ignore whitespace or selected mechanical revisions when configured deliberately.","The author of the last formatting commit may not own the behavior being investigated.","Could the bug come from a caller that did not modify these lines?","Yes. `blame` identifies the last change to a line, not the full cause. Investigate callers, config, data and earlier design decisions."],["Q084",16,"How do -S and -G history searches differ?","Pickaxe -S searches for changes in the occurrence count of a string; -G searches for added or removed patch lines matching a regular expression. They answer different questions.","git log -S 'validateQuantity' --oneline -- src/\ngit log -G 'quantity.*<.*0' -p -- src/","A moved string with the same count may not match -S even though relevant patch lines changed. Combine the search with path scope and inspect candidate commits. Search deleted history through suitable revisions instead of looking only at current files.","Neither command is equivalent to a simple search of today's source tree.","Which query helps find when a validation expression changed?","Use `git log -S'validationText' -- path` for a changed string count, or `git log -G'regex' -- path` for matching patch lines."],["Q085",16,"How does git grep help during an investigation?","It searches tracked content in the selected working/index or tree context, making it useful for finding related code at a particular revision without switching checkouts.","git grep -n 'validateQuantity'\ngit grep -n 'validateQuantity' v1.0.0 -- src/\ngit log --oneline -- src/OrderService.java","The tagged search can reveal an older caller or implementation while leaving working files untouched. Choose options deliberately if untracked or ignored files also matter. Pair search results with history rather than concluding from one occurrence.","Today's grep result does not prove the same code existed in the release under investigation.","How would you locate all uses in an older release snapshot?","Use `git grep 'symbol' RELEASE_TAG -- '*.java'` or `git grep 'symbol' COMMIT` to search the old snapshot without switching the working tree."],["Q086",17,"What is a shallow clone and what can it affect?","A shallow clone truncates commit ancestry at a chosen depth or boundary. It can speed acquisition but limits history-based commands until more history is fetched.","git clone --depth 20 REPOSITORY_URL demo\ngit rev-parse --is-shallow-repository\ngit fetch --unshallow","The final command requires a suitable remote with the missing history. Merge-base discovery, bisect, describe and release tooling may need deeper ancestry or tags. CI's actual checkout settings determine which data is present.","A shallow clone is not merely a smaller working directory.","Why might a pull-request diff fail to find the expected merge base?","A shallow or partial history may omit the common ancestor. Fetch/deepen the relevant history and verify refs before comparing."],["Q087",17,"How does a partial clone differ from a shallow clone?","A partial clone can omit selected objects, such as blobs, while keeping relevant commit structure and fetching promised objects when needed. Shallow clone limits ancestry.","git clone --filter=blob:none --no-checkout REPOSITORY_URL demo\ngit -C demo sparse-checkout set service-a common\ngit -C demo checkout","Server support and Git configuration matter. Reading missing content can trigger a network fetch, so offline behavior differs from a full clone. Combine partial clone with sparse checkout only when both serve the workload. These are illustrative commands, not a tested remote- server lab here.","Partial clone does not guarantee that later checkout avoids all network transfers.","What happens when an offline command needs a missing blob?","In a partial clone, Git may attempt lazy fetching; offline access to an absent blob fails. Prefetch required objects before disconnecting."],["Q088",17,"What does sparse checkout change?","Sparse checkout limits which tracked paths are populated in a working tree. It does not, by itself, erase the remaining paths from history or turn the repository into separate projects.","git sparse-checkout init --cone\ngit sparse-checkout set service-a common\ngit sparse-checkout list\ngit sparse-checkout disable","Cone mode expresses directory-oriented selections with its own inclusion rules. Build files and shared modules may still be needed. Sparse index support and tool compatibility depend on version and configuration. Choose paths from the actual build dependency graph.","Hiding another module from the checkout does not remove its Git history.","Which shared directories must a Java service build still include?","Include every build input: project modules, shared libraries, parent POMs, wrappers, scripts and resources. Sparse patterns must not hide required paths."],["Q089",17,"What is a submodule and how do you initialize it?","A submodule records a specific commit of another repository, with location metadata normally in .gitmodules. Updating the submodule checkout and updating the parent pointer are separate changes.","git clone --recurse-submodules REPOSITORY_URL demo\ngit submodule update --init --recursive\ngit submodule status","The parent stores a gitlink entry for the selected submodule commit, not a copy of its ordinary history. To adopt a new submodule revision, commit the pointer change in the parent. Ensure the referenced commit is available to collaborators before publishing that pointer.","Cloning the parent without initialization may not provide the submodule's source files.","What happens if the parent points to a submodule commit never pushed?","The submodule checkout fails to obtain that commit from its remote, and CI cannot reproduce the build. Publish the submodule commit before the parent reference."],["Q090",17,"What problem does Git LFS solve, and what are its limits?","Git LFS stores pointer files in Git while keeping selected large content in a separate LFS store. It helps binary workflows but adds tooling, transfer and retention dependencies.","# Requires Git LFS installation and a compatible remote:\ngit lfs install\ngit lfs track '*.psd'\ngit add .gitattributes","Tracking a new pattern does not automatically migrate every old binary in history. Clones and CI need access to the LFS objects, not just Git pointers. Storage policy and cleanup require coordination; deletion of a current path may leave historical content retained.","An LFS pointer is not the actual binary artifact.","Can CI build if it has the Git commit but cannot download the LFS object?","No, not if the build needs its bytes. The Git pointer alone is insufficient; CI must authenticate and fetch the matching LFS object."],["Q091",18,"How do trunk-based development and Gitflow-style workflows differ?","Trunk-based work emphasizes frequent integration and short-lived branches. Gitflow-style work uses additional long-lived development and release/support lines. Choose based on release needs and operational cost.","Frequent deployment: short feature branch -> reviewed main.\nSupported product versions: main plus deliberate release lines.\nIncomplete feature: controlled feature flag when appropriate.","Long-lived lines increase divergence and backport work; very short-lived lines require reliable tests and change isolation. Workflow names do not guarantee quality. Define who owns a release, how fixes propagate and which history can be rewritten.","Keeping a branch open for months increases integration risk even if each commit is small.","Does the product need several independently supported release versions?","If multiple versions need fixes independently, release branches and controlled backports may be worthwhile; one maintained version can use a simpler trunk flow."],["Q092",18,"What is the difference between a pull request and a merge?","A pull request is a hosting-platform review and integration workflow. Merge is a Git operation joining histories. A platform may integrate an approved request using merge, squash or rebase policies.","Review: inspect requirements, diff, tests and compatibility.\nIntegration policy: merge commit, squash or rebase.\nAfter integration: delete short-lived branch by team policy.","Review can detect semantic mistakes Git cannot see. Approval, required checks and protected branches belong to hosting configuration. The reviewed diff must match the final integration result, especially after late conflict resolution or base changes.","A green branch build does not always test the eventual merge result with current main.","Which exact commit or combined result did CI validate?","Record the exact integration commit/tree (merge queue or final merge result), not only the feature tip. Test what will actually ship."],["Q093",18,"How should CI select and record source for a Java build?","Build an explicit commit or defined integration result, record its identity and run the intended toolchain and checks from a clean environment. Detached HEAD in CI can be intentional.","git rev-parse HEAD\ngit status --porcelain\n./mvnw verify\n# attach source ID, JDK/build-tool versions and artifact digest","If tooling needs tags, history or submodules, configure checkout accordingly. A clean source tree does not fix unpinned dependencies or environment-specific behavior. Deployment should use the tested artifact rather than rebuilding differently later.","A mutable branch name can advance after the pipeline starts.","How do you link the deployed artifact to the exact tested source?","Publish the commit SHA, dependency/build metadata and immutable artifact digest with the deployment; verify the artifact against CI records."],["Q094",18,"How should Java teams handle generated files and schema migrations in Git?","Give generated artifacts an explicit tracking policy, keep semantic source review clear and treat deployed migrations as versioned operational history. Avoid mixing mechanical regeneration with unrelated logic changes.","Review separately: generated client regeneration and business change.\nIgnore ordinary target/build output.\nNew DB correction: add a new migration under the migration policy.","Some generated sources are deliberately committed for distribution, while others are reproducibly generated during build. Database rollback depends on the migration system and data, not just Git revert. Changing an already applied migration can invalidate checksums or history.","Reverting Java source does not automatically undo a production database change.","Can a clean clone generate exactly the committed client code?","Run code generation in clean CI, verify reproducible output and compare generated files or expected checksums; no developer-only tool should be required."],["Q095",18,"How do you make conflict resolution part of code review?","Treat the resolved result as a new decision to inspect and test. Compare it with both sides and confirm that important requirements still hold before accepting the integration.","git show --cc MERGE_COMMIT\ngit diff MERGE_COMMIT^1 MERGE_COMMIT -- src/\ngit diff MERGE_COMMIT^2 MERGE_COMMIT -- src/","Parent comparisons expose what the merge added relative to each line. Combined display has its own filtering semantics, so it should not be your only inspection. Ask the responsible reviewers to verify nontrivial resolutions and rerun integration tests.","A conflict-free final index does not prove that both branches' behavior was preserved.","Which requirement could be lost by the chosen resolution?","Conflict choices can drop validation, authorization, error handling or transaction checks; add tests for both branches' intended requirements."],["Q096",19,"What are Git hooks and are local hooks enough to enforce policy?","Hooks run at defined Git events. Local hooks help developers catch problems, but can be absent or bypassed. Critical shared policy needs suitable server or CI enforcement.","pre-commit: fast style or secret checks.\ncommit-msg: message policy.\npre-receive/update: server reference-update policy.","Hook files are not automatically installed just because another person cloned the source repository. A configured hooks path can share reviewed scripts, but adoption and trust still matter. Avoid putting long unreliable checks in every local edit cycle.","--no-verify can bypass certain local hooks; it does not bypass server policy.","Where is the required security check enforced if a local hook is missing?","Server-side branch protection, required CI checks and review rules enforce policy independently of optional developer-side hooks."],["Q097",19,"How do HTTPS and SSH authentication compare?","Both can authenticate transport when configured correctly. HTTPS commonly uses a credential helper or token; SSH uses keys and host verification. Repository authorization remains a separate server decision.","git remote get-url origin\ngit config --get credential.helper\n# use the organization's approved credential/key setup","Choose the mechanism that fits the environment rather than claiming one is always more secure. Use least-privilege credentials, protect private keys and verify server identity. Avoid embedding tokens in URLs, shell history or committed configuration.","Disabling host verification to fix a connection error removes an important trust check.","Is the failing identity authorized for this specific repository and operation?","Verify the remote URL, selected SSH key/token identity, its scope and repository/branch rights; a credential can be valid but not authorized here."],["Q098",19,"What do signed commits and sign-off mean?","A cryptographic signature can support verification of commit provenance under a trusted key policy. A sign-off is a text trailer expressing a project's attestation convention; it is not the same as a signature.","git commit -S -m \"Fix order validation\"  # signing configured first\ngit verify-commit SIGNED_COMMIT\ngit commit -s -m \"Fix order validation\"  # adds sign-off trailer","Key trust, revocation and allowed signing identities determine what verification means. A signature does not prove the code is correct or approved. Rewriting a signed commit creates a different object that requires a new signature if the policy demands one.","A Signed-off-by line is not cryptographic proof of identity.","What should CI verify beyond the existence of a signature field?","Verify the cryptographic signature, trusted key identity, allowed signer policy and that protected build/ref policy used the verified commit."],["Q099",19,"What should you do if a secret was committed?","Revoke or rotate the exposed credential, assess its use, and coordinate removal from active files and history where required. Removing the latest file does not invalidate a copied credential.","Immediate action: revoke/rotate through the credential owner.\nRepository action: remove active secret; add safe example/config policy.\nHistory cleanup: coordinated rewrite with clones/forks and server handling.","History rewrite is a separate operation with affected references, backups and collaborators. Use reviewed tooling and documented hosting guidance rather than assuming a force push erases every copy. The urgent guarantee is that the old credential stops working.",".gitignore and git revert do not erase the credential from existing historical objects.","How will you verify the exposed credential is no longer accepted?","Revoke/rotate it at the provider and prove the old credential fails a safe authentication test. Rewrite history only when warranted, with coordination."],["Q100",19,"Why does a repository need trust boundaries for automation?","A repository can contain build scripts, hooks configuration and workflow changes. Reviewing source or a pull request should not automatically grant untrusted code privileged execution with secrets.","External contribution: test in an appropriately limited environment.\nTrusted release: scoped credentials and protected approval path.\nBuild output: verify provenance and source identity.","CI behavior depends on the platform's trigger and permission model. Keep secret-bearing jobs separated from untrusted execution as required by that model. Git ownership checks and server controls solve different trust problems.","A change to a workflow file can be as sensitive as a change to production Java code.","Which identity and secrets are available to the proposed pipeline run?","Review whether untrusted PR code receives any tokens, cloud roles, secrets or write permissions; use minimal scoped, short-lived permissions."],["Q101",20,"How do HEAD~2 and HEAD^2 differ?","Tilde follows the first-parent chain a given number of steps. Caret selects a particular parent of one commit. HEAD^2 therefore requires a second parent, such as a merge commit.","git show HEAD~2\ngit show HEAD^1\ngit show HEAD^2  # only if HEAD has a second parent","For ordinary one-parent history, HEAD~1 and HEAD^1 agree. At a merge, HEAD~2 follows parent 1 twice, while HEAD^2 selects the other parent immediately. Quoting revision expressions can be necessary in some shells.","^2 does not mean two commits back.","How would you inspect the feature tip recorded by a merge's second parent?","`git show MERGE_COMMIT^2` inspects the second parent's commit; `git log MERGE_COMMIT^2` follows its history."],["Q102",20,"How do git apply and git am differ?","Apply applies a patch to files and optionally the index without creating the corresponding commit. Am imports suitable mail-format patches as commits with their metadata.","git apply --check fix.patch\ngit apply fix.patch\n# separate workflow for format-patch output:\ngit am 0001-fix-order-validation.patch","Inspect patch origin and scope before applying. Apply --check checks applicability, not whether the code is safe or correct. Am has its own continue/abort flow when applying a series fails. Different patch formats preserve different metadata.","Applying a patch is not automatically committing it.","Which workflow preserves the author and message from a format-patch series?","`git am` imports the mailbox patch series and typically preserves the supplied author and commit messages; check conflicts and results."],["Q103",20,"What is format-patch used for?","It exports commits as mail-style patch files containing change content and commit information. It supports review or transfer workflows that do not depend on a hosting pull-request interface.","git format-patch -1 FIX_COMMIT\ngit format-patch BASE_COMMIT..feature/orders","The receiver can inspect and apply the series with an appropriate am workflow. The resulting commit IDs may differ because destination ancestry and metadata differ. Patch transfer does not include every referenced object or large external artifact.","A patch series is not a complete backup of all repository references.","What dependencies must be present for the series to apply and compile?","Ensure earlier patches, prerequisite types/APIs, and target dependencies are present. Apply in dependency order, then build and run tests."],["Q104",20,"What is rerere and why should you still review its result?","Rerere records a conflict resolution and can reuse it when a matching conflict reappears. It saves repetitive work, but does not establish that an old resolution remains semantically correct.","git config --local rerere.enabled true\ngit rerere status\ngit diff","Automatic staging is controlled separately. After reuse, inspect the resolved content and test it under the new surrounding code. The feature is useful for repeated integrations or rebases with similar conflicts. Remove an unsuitable recorded resolution deliberately rather than repeatedly accepting it.","A syntactically matching conflict can have different business context later.","Should a reused resolution be staged automatically in this repository?","Usually inspect and stage the resolution deliberately. `rerere.autoupdate` can stage reused resolutions automatically, but team policy and tests should control it."],["Q105",20,"How can merge-base and ancestry tests support automation?","Merge-base finds common ancestry, while an ancestor check answers whether one commit is reachable from another. They let scripts reason about topology instead of counting visible log lines.","git merge-base main feature/orders\ngit merge-base --is-ancestor BASE_COMMIT HEAD\n# exit 0: ancestor; exit 1: not ancestor; errors are separate","Handle missing objects, shallow history and multiple merge bases under the script's requirements. A successful ancestry check says nothing about review, security or semantic equivalence. Squash-integrated patches can be present without original ancestry.","Equivalent content does not necessarily imply that the source commit is an ancestor.","Why can a squash-merged feature fail an ancestry check?","A squash merge copies combined changes into a new commit but not the original commits' parent links. An ancestry check therefore still reports them absent."],["Q106",21,"You committed on the wrong branch: how do you move the work?","Preserve the commit under the intended branch, then decide how to repair the wrong branch according to whether it was shared. Avoid losing the only reference before creating the new one.","# if the accidental tip is private and should become a new feature:\ngit switch -c feature/intended-work\n# inspect the old branch and deliberately restore its intended tip","If the target branch already exists, cherry-pick the needed commits there instead. A private wrong branch may be reset after preserving work; a shared wrong branch normally needs an inverse or corrective commit. Verify uncommitted files as a separate concern.","Deleting or resetting the original reference first can make recovery harder.","Was the accidental commit already published and used by teammates?","If published, protect teammates' history and normally add a correction/revert. If private, an amend/reset may be acceptable after saving work."],["Q107",21,"A teammate force-pushed and your branch diverged: what do you do?","Preserve your current tip, inspect old and new upstream histories, identify your unique work, and replay or integrate only what is intended. Coordinate before changing the server again.","git branch backup/local-before-repair\ngit fetch origin\ngit log --left-right --oneline HEAD...origin/main","Blind pull can reintroduce commits the teammate deliberately replaced. The correct repair depends on the old base, equivalent patches and team agreement. Range-diff and explicit rebase --onto can help once boundaries are known. Test the reconstructed result.","Another force push can overwrite new valid work while trying to undo the first incident.","Which local commits represent your changes rather than the old upstream series?","Fetch the new upstream; inspect `git log --left-right --cherry-pick` and `git range-diff` against your backup to distinguish your patch series from upstream replacements."],["Q108",21,"A merge succeeds but Java tests fail: why can that happen?","Git merges textual/tree changes, not business semantics. Independent edits can combine into invalid behavior even without overlapping lines, and clean integration still needs tests and review.","Branch A changes validation rules.\nBranch B changes the caller's assumptions.\nMerge has no text conflict, but checkout behavior regresses.","Inspect each parent's changes and the resulting interaction. Use a targeted regression test and consider whether the fix belongs in one branch or the integration layer. Avoid assuming that lack of conflict establishes application correctness.","Compiling alone can miss a behavioral or transaction-boundary regression.","Which integration test covers the interaction between these two changes?","Create a test exercising both changes together, including the boundary where they interact (for example stock reservation and payment retry), not just separate unit tests."],["Q109",21,"Your local branch says ahead but pushing updates nothing: how do you investigate?","Inspect the exact upstream, push destination and refspec rather than assuming all defaults refer to the same server branch. Ahead is a comparison against a local tracking reference.","git branch -vv\ngit remote -v\ngit config --get push.default\ngit remote get-url --push origin","The tracking view may be stale or the configured push target may differ. Confirm whether the intended remote reference has the expected object ID. Do not expose credentials while printing configuration or URLs. An explicit reviewed source/destination can remove ambiguity.","Ahead/behind is not a live measurement of every remote.","Which reference is the status comparison using?","The status compares against the branch's configured upstream tracking ref (shown by `git branch -vv`), which may differ from the push destination."],["Q110",21,"How should you answer an unfamiliar Git failure in an interview?","State what must be preserved, inspect status and topology, explain the probable category, and choose a reversible diagnostic before a destructive repair. Be precise about what you do not yet know.","Inspect: status, operation state, refs, diffs, recent reflog.\nPreserve: backup branch and valuable working files.\nDecide: integrate, undo, rescue or fix permissions/policy.","Explain expected effects on HEAD, index, working tree and remote references. Confirm the outcome with an appropriate diff, graph and tests. A command is correct only relative to the desired end state and the collaboration boundary.","A memorized reset --hard answer can destroy the very evidence needed to diagnose the problem.","What observable result would show that your repair succeeded?","Show the repaired state with a clean/reviewed graph, correct target ref and expected tests/CI. Confirm the intended remote OID if publication was part of the task."]],"labs":[["L01 Commit the staged version, not the later edit","git add recorded quantity 20 in the index. The later edit to 30 affected only the working tree. The normal commit used the index, then the staged diff became empty while the working diff remained.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'quantity=10\\n' > Order.txt\ngit add Order.txt\ngit commit -qm \"Initial quantity\"\nprintf 'quantity=20\\n' > Order.txt\ngit add Order.txt\nprintf 'quantity=30\\n' > Order.txt\ngit commit -qm \"Stage quantity 20\"\ntest \"$(git show HEAD:Order.txt)\" = 'quantity=20'\ntest \"$(cat Order.txt)\" = 'quantity=30'\ntest -z \"$(git diff --staged)\"\ntest -n \"$(git diff -- Order.txt)\"\nprintf 'committed=20; working=30; unstaged diff remains\\n'"],["L02 Fast-forward versus an explicit merge commit","A fast-forward moves main to the existing feature commit. The second feature is also fast- forwardable, but --no-ff deliberately creates a commit whose parent list has two entries.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > base.txt\ngit add base.txt\ngit commit -qm \"Base\"\ngit switch -qc feature\nprintf 'feature\\n' > feature.txt\ngit add feature.txt\ngit commit -qm \"Feature\"\nfeature_tip=$(git rev-parse HEAD)\ngit switch -q main\ngit merge --ff-only feature > /dev/null\ntest \"$(git rev-parse HEAD)\" = \"$feature_tip\"\ngit switch -qc next-feature\nprintf 'next\\n' > next.txt\ngit add next.txt\ngit commit -qm \"Next feature\"\ngit switch -q main\ngit merge --no-ff -m \"Integrate next feature\" next-feature > /dev/null\ntest \"$(git rev-list --parents -n 1 HEAD | wc -w)\" -eq 3\nprintf 'fast-forward reused tip; no-ff created a two-parent commit\\n'"],["L03 Abort and then resolve a real merge conflict","Both branches change the same base line. The first merge stops with unmerged index entries; abort restores the clean pre-merge main state. The second merge is resolved to an explicit combined policy and committed.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'price=100\\n' > price.txt\ngit add price.txt\ngit commit -qm \"Base price\"\ngit switch -qc feature\nprintf 'price=90\\n' > price.txt\ngit commit -qam \"Feature price\"\ngit switch -q main\nprintf 'price=110\\n' > price.txt\ngit commit -qam \"Main price\"\nif git merge feature > /dev/null 2>&1; then exit 1; fi\ntest -n \"$(git ls-files -u)\"\ngit merge --abort\ntest \"$(cat price.txt)\" = 'price=110'\ntest -z \"$(git status --porcelain)\"\nif git merge feature > /dev/null 2>&1; then exit 1; fi\nprintf 'price=95\\n' > price.txt\ngit add price.txt\ngit commit -qm \"Combine price policy\"\ntest -z \"$(git ls-files -u)\"\ntest \"$(git show HEAD:price.txt)\" = 'price=95'\ntest \"$(git rev-list --parents -n 1 HEAD | wc -w)\" -eq 3\nprintf 'abort restored 110; resolved merge records 95 and two parents\\n'"],["L04 Rebase conflict and operation-specific sides","The merge backend treats the new base side as ours and the replayed feature as theirs. After resolution, the replayed commit has the new main tip as its parent and a different identity. The backup reference still names the original.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > policy.txt\ngit add policy.txt\ngit commit -qm \"Base\"\ngit switch -qc feature\nprintf 'feature\\n' > policy.txt\ngit commit -qam \"Feature policy\"\nold_tip=$(git rev-parse HEAD)\ngit branch backup/feature\ngit switch -q main\nprintf 'main\\n' > policy.txt\ngit commit -qam \"Main policy\"\nmain_tip=$(git rev-parse HEAD)\ngit switch -q feature\nif git rebase main > /dev/null 2>&1; then exit 1; fi\ntest \"$(git show :2:policy.txt)\" = 'main'\ntest \"$(git show :3:policy.txt)\" = 'feature'\nprintf 'combined\\n' > policy.txt\ngit add policy.txt\nGIT_EDITOR=true git rebase --continue > /dev/null 2>&1\ntest \"$(git rev-parse HEAD^)\" = \"$main_tip\"\ntest \"$(git rev-parse HEAD)\" != \"$old_tip\"\ntest \"$(git rev-parse backup/feature)\" = \"$old_tip\"\ntest \"$(cat policy.txt)\" = 'combined'\nprintf 'ours=main; theirs=feature; new tip has main as parent\\n'"],["L05 Measure soft, mixed and hard reset","The target commit is A in every case. Soft keeps the B index and files; mixed restores the A index while retaining B files; hard restores A in both areas. keep-B deliberately preserves the original B commit throughout the exercise.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'A\\n' > value.txt\ngit add value.txt\ngit commit -qm \"A\"\na=$(git rev-parse HEAD)\nprintf 'B\\n' > value.txt\ngit commit -qam \"B\"\ngit branch keep-B\ngit reset --soft \"$a\"\ntest \"$(git show :value.txt)\" = B\ntest \"$(cat value.txt)\" = B\ntest -n \"$(git diff --staged)\"\ngit reset --hard keep-B > /dev/null\ngit reset --mixed \"$a\" > /dev/null\ntest \"$(git show :value.txt)\" = A\ntest \"$(cat value.txt)\" = B\ntest -z \"$(git diff --staged)\"\ntest -n \"$(git diff)\"\ngit reset --hard keep-B > /dev/null\ngit reset --hard \"$a\" > /dev/null\ntest \"$(cat value.txt)\" = A\ntest \"$(git rev-parse HEAD)\" = \"$a\"\ntest -z \"$(git status --porcelain)\"\nprintf 'soft: B staged; mixed: B unstaged; hard: files A\\n'"],["L06 Revert a change while preserving later history","The inverse changes policy back to safe. The later documentation remains and both earlier commits are still ancestors. History now contains four commits, including the new revert.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'safe\\n' > policy.txt\ngit add policy.txt\ngit commit -qm \"Base\"\nprintf 'bad\\n' > policy.txt\ngit commit -qam \"Bad policy\"\nbad=$(git rev-parse HEAD)\nprintf 'later documentation\\n' > README.txt\ngit add README.txt\ngit commit -qm \"Later docs\"\nlater=$(git rev-parse HEAD)\ngit revert --no-edit \"$bad\" > /dev/null\ntest \"$(cat policy.txt)\" = safe\ntest \"$(cat README.txt)\" = 'later documentation'\ngit merge-base --is-ancestor \"$bad\" HEAD\ngit merge-base --is-ancestor \"$later\" HEAD\ntest \"$(git rev-list --count HEAD)\" -eq 4\nprintf 'policy restored; later docs kept; bad commit remains in history\\n'"],["L07 Rescue a detached commit with the reflog","In this exact sequence, the most recent previous HEAD position is the detached experiment tip. Creating rescue/experiment makes it reachable under a deliberate name without changing main.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > note.txt\ngit add note.txt\ngit commit -qm \"Base\"\nmain_tip=$(git rev-parse HEAD)\ngit switch -q --detach HEAD\nprintf 'experiment\\n' > note.txt\ngit commit -qam \"Detached experiment\"\nexperiment=$(git rev-parse HEAD)\ngit switch -q main\ntest \"$(git rev-parse HEAD)\" = \"$main_tip\"\nlost=$(git rev-parse 'HEAD@{1}')\ntest \"$lost\" = \"$experiment\"\ngit branch rescue/experiment \"$lost\"\ntest \"$(git show rescue/experiment:note.txt)\" = experiment\ntest \"$(cat note.txt)\" = base\nprintf 'detached experiment rescued; main and its files stayed at base\\n'"],["L08 Backport with cherry-pick, then amend locally","The cherry-picked change is applied onto a different parent, so it has a different commit identity without merging feature ancestry. Amend creates another replacement tip while retaining the message and adding the staged test.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > README.txt\ngit add README.txt\ngit commit -qm \"Base\"\ngit switch -qc feature\nprintf 'validate positive quantity\\n' > Order.txt\ngit add Order.txt\ngit commit -qm \"Validate quantity\"\nfix=$(git rev-parse HEAD)\ngit switch -q main\nprintf 'release docs\\n' > README.txt\ngit commit -qam \"Release docs\"\ngit cherry-pick -x \"$fix\" > /dev/null\npicked=$(git rev-parse HEAD)\ntest \"$picked\" != \"$fix\"\ntest \"$(cat Order.txt)\" = 'validate positive quantity'\nif git merge-base --is-ancestor \"$fix\" HEAD; then exit 1; fi\nprintf 'quantity regression test\\n' > OrderTest.txt\ngit add OrderTest.txt\ngit commit --amend --no-edit -q\ntest \"$(git rev-parse HEAD)\" != \"$picked\"\ntest -f OrderTest.txt\ntest \"$(git log -1 --format=%s)\" = 'Validate quantity'\nprintf 'backport has new ID; source is not ancestor; amend includes test\\n'"],["L09 Fetch, fast-forward pull and a stale push lease","Fetch advances Bob's local origin/main, then ff-only pull moves his main. Bob records the reviewed remote tip before Alice publishes C. His later explicit lease no longer matches the remote, so the forced rewrite is rejected.","set -eu\n# New empty disposable directory; no network server is used.\ntest -z \"$(ls -A)\"\ngit init --bare -q --initial-branch=main remote.git\ngit clone -q remote.git alice\nfor who in alice; do\ngit -C \"$who\" config user.name \"Git Learner\"\ngit -C \"$who\" config user.email \"learner@example.test\"\ngit -C \"$who\" config commit.gpgsign false\ndone\nprintf 'base\\n' > alice/base.txt\ngit -C alice add base.txt\ngit -C alice commit -qm \"Base\"\ngit -C alice push -qu origin main\ngit clone -q remote.git bob\ngit -C bob config user.name \"Git Learner\"\ngit -C bob config user.email \"learner@example.test\"\ngit -C bob config commit.gpgsign false\nbase=$(git -C bob rev-parse HEAD)\nprintf 'A\\n' > alice/a.txt\ngit -C alice add a.txt\ngit -C alice commit -qm \"Alice A\"\ngit -C alice push -q origin main\ngit -C bob fetch -q origin\ntest \"$(git -C bob rev-parse HEAD)\" = \"$base\"\ntest \"$(git -C bob rev-parse origin/main)\" != \"$base\"\ngit -C bob pull -q --ff-only\nexpected=$(git -C bob rev-parse origin/main)\nprintf 'B\\n' > bob/b.txt\ngit -C bob add b.txt\ngit -C bob commit -qm \"Bob B\"\nprintf 'C\\n' > alice/c.txt\ngit -C alice add c.txt\ngit -C alice commit -qm \"Alice C\"\ngit -C alice push -q origin main\nif git -C bob push --force-with-lease=refs/heads/main:\"$expected\" \\\norigin HEAD:refs/heads/main > /dev/null 2>&1; then exit 1; fi\ntest \"$(git --git-dir=remote.git rev-parse main)\" = \\\n\"$(git -C alice rev-parse HEAD)\"\nprintf 'fetch left bob main unchanged; pull advanced it\\n'\nprintf 'stale explicit lease rejected; Alice C stayed on remote\\n'"],["L10 Stash index, untracked files and a conflicting","The first stash includes the untracked new file. Apply --index restores the staged work and leaves the stash entry. Later, a conflicting pop produces unmerged entries and keeps the saved stash rather than dropping it.","Run from a new empty directory. Requires Bash and Git; works in Git Bash on Windows.\nset -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > work.txt\ngit add work.txt\ngit commit -qm \"Base\"\nprintf 'staged\\n' > work.txt\ngit add work.txt\nprintf 'new\\n' > new.txt\ngit stash push -q -u -m \"Saved work\"\ntest ! -e new.txt\ntest \"$(cat work.txt)\" = base\ngit stash apply -q --index\ntest \"$(git show :work.txt)\" = staged\ntest -f new.txt\ntest \"$(git stash list | wc -l)\" -eq 1\ngit stash drop -q\ngit add new.txt\ngit commit -qm \"Save restored work\"\nprintf 'stash-side\\n' > work.txt\ngit stash push -q -m \"Will conflict\"\nprintf 'current-side\\n' > work.txt\ngit commit -qam \"New base\"\nif git stash pop -q > /dev/null 2>&1; then exit 1; fi\ntest -n \"$(git ls-files -u)\"\ntest \"$(git stash list | wc -l)\" -eq 1\nprintf 'index and untracked file restored; apply kept stash\\n'\nprintf 'conflicting pop retained stash for resolution\\n'"],["L11 Parallel worktrees and independent checkouts","Each checkout has its own working files and checked-out HEAD. Objects and branches are shared, so main can inspect hotfix by reference while its own files remain unchanged. Removing the clean worktree keeps the hotfix branch.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'base\\n' > base.txt\ngit add base.txt\ngit commit -qm \"Base\"\nmain_tip=$(git rev-parse HEAD)\ngit worktree add -q -b hotfix ../hotfix main\nprintf 'fix\\n' > ../hotfix/fix.txt\ngit -C ../hotfix add fix.txt\ngit -C ../hotfix commit -qm \"Hotfix\"\ntest \"$(git rev-parse HEAD)\" = \"$main_tip\"\ntest ! -e fix.txt\ntest \"$(git show hotfix:fix.txt)\" = fix\ntest \"$(git -C ../hotfix branch --show-current)\" = hotfix\ngit worktree remove ../hotfix\ntest ! -d ../hotfix\ngit show-ref --verify --quiet refs/heads/hotfix\nprintf 'main unchanged; hotfix committed separately; branch survives removal\\n'"],["L12 Automated bisect finds the first failing commit","The test succeeds at limits 3 and 5 and fails from 11 onward. The final refs/bisect/bad identifies the first failing revision; HEAD can remain at the last tested revision. Reset exits bisect and restores the original checkout.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf '3\\n' > limit.txt\ngit add limit.txt\ngit commit -qm \"Limit 3\"\ngood=$(git rev-parse HEAD)\nprintf '5\\n' > limit.txt\ngit commit -qam \"Limit 5\"\nprintf '11\\n' > limit.txt\ngit commit -qam \"Limit 11: regression\"\nfirst_bad=$(git rev-parse HEAD)\nprintf '12\\n' > limit.txt\ngit commit -qam \"Limit 12\"\nprintf '15\\n' > limit.txt\ngit commit -qam \"Limit 15\"\ntip=$(git rev-parse HEAD)\ngit bisect start \"$tip\" \"$good\" > /dev/null\ngit bisect run sh -c 'test \"$(cat limit.txt)\" -le 10' > /dev/null 2>&1\ntest \"$(git rev-parse refs/bisect/bad)\" = \"$first_bad\"\ngit bisect reset > /dev/null 2>&1\ntest \"$(git rev-parse HEAD)\" = \"$tip\"\ntest \"$(git branch --show-current)\" = main\nprintf 'bisect found Limit 11; reset returned to original main tip\\n'"],["L13 Ignore does not untrack existing content","The ignore entry does not remove a tracked path. Removing it from the index records a deletion while the local copy remains. The older committed content is still reachable in history.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'local setting\\n' > local.properties\ngit add local.properties\ngit commit -qm \"Tracked local file\"\nprintf 'local.properties\\ntarget/\\n' > .gitignore\ngit add .gitignore\ngit commit -qm \"Ignore local files\"\ngit ls-files --error-unmatch local.properties > /dev/null\nprintf 'changed setting\\n' > local.properties\ntest -n \"$(git diff -- local.properties)\"\ngit rm -q --cached local.properties\ngit commit -qm \"Stop tracking local setting\"\ntest -f local.properties\ntest -z \"$(git ls-files local.properties)\"\ngit check-ignore -q local.properties\ntest \"$(git show HEAD~2:local.properties)\" = 'local setting'\nprintf 'ignore alone kept tracking; cached removal kept local file\\n'\nprintf 'old content still exists in historical commit\\n'"],["L14 Annotated and lightweight tag objects","The lightweight name resolves directly to a commit. The annotated name first resolves to a tag object; the peel expression selects its commit. Moving the branch with another commit leaves both tag references unchanged.","set -eu\n# Run in a new, empty disposable directory.\ntest -z \"$(ls -A)\"\ngit init -q -b main\ngit config --local user.name \"Git Learner\"\ngit config --local user.email \"learner@example.test\"\ngit config --local commit.gpgsign false\ngit config --local core.autocrlf false\nprintf 'release\\n' > README.txt\ngit add README.txt\ngit commit -qm \"Release source\"\nrelease=$(git rev-parse HEAD)\ngit tag demo-light\ngit tag -a v1.0.0 -m \"Release 1.0.0\"\ntest \"$(git cat-file -t demo-light)\" = commit\ntest \"$(git cat-file -t v1.0.0)\" = tag\ntest \"$(git rev-parse 'v1.0.0^{commit}')\" = \"$release\"\nprintf 'next version\\n' > README.txt\ngit commit -qam \"Next source\"\ntest \"$(git rev-parse 'v1.0.0^{commit}')\" = \"$release\"\ntest \"$(git rev-parse HEAD)\" != \"$release\"\nprintf 'lightweight points to commit; annotated uses a tag object\\n'\nprintf 'new commit did not move release tag\\n'"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

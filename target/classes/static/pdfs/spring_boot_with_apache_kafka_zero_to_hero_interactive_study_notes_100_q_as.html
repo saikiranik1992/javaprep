@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Boot with Apache Kafka — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #7c3aed;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Spring Boot with Apache Kafka</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 10 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Clean Handwritten-Style Edition · Java 17+ · Spring Boot 3.5 · Spring Kafka 3.3
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (10)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Event-Driven &amp; Messaging</span>
+              <span>•</span>
+              <span>137 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Spring Boot with Apache Kafka — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Clean Handwritten-Style Edition (Java 17+ · Spring Boot 3.5 · Spring Kafka 3.3). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Spring Boot with Apache Kafka</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Spring Boot with Apache Kafka — Hands-On Labs &amp; Reference Guides (10)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Spring Boot with Apache Kafka.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Spring Boot with Apache Kafka — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"spring-kafka","title":"Spring Boot with Apache Kafka","subtitle":"Zero to Hero Clean Handwritten-Style Edition","category":"Event-Driven & Messaging","badge":"Java 17+ · Spring Boot 3.5 · Spring Kafka 3.3","color":"#7c3aed","pages":137,"chapters":["Event-Driven Foundations","Topics, Partitions And Record Identity","Replication And Broker Guarantees","Spring Boot Integration","Producer Reliability And Tuning","Consumer Groups And Scaling","Offsets And Acknowledgment","Poll Loop And Processing Pressure","Failures, Retries And Dead-Letter Topics","Kafka Transactions And Exactly-Once Boundaries","Idempotency, Outbox And Business Correctness","Serialization And Schema Evolution","Retention, Compaction And Replay","Testing Spring Boot Kafka Applications","Observability And Performance","Security And Deployment","Streams And Ecosystem Choices","Architecture And Sizing","Production Troubleshooting Scenarios","Senior Design And Interview Challenges"],"questions":[["Q001",0,"What is Kafka and why use it with Spring Boot?","Kafka is a distributed event log; Spring Boot supplies the application wiring for publishing and consuming records.","Order service -> orders topic -> billing and shipping groups","One published order event can feed independent services. Consumers keep their own progress and can replay retained records. Kafka adds asynchronous delivery, but the application still owns business correctness.","Kafka is not a substitute for a database transaction.","When would a direct REST call be simpler?","Choose REST when the caller must receive a small, immediate answer, and the target service is available within the request deadline. Example: checking an address before submitting a form."],["Q002",0,"How does an event differ from a command?","An event states something that happened; a command asks a specific capability to do something.","Event: OrderPlaced(orderId=42)\nCommand: ReserveInventory(orderId=42)","An order event should describe a committed fact. A reservation command can be rejected and needs an outcome. Naming and ownership prevent several consumers from accidentally treating the same request as their responsibility.","Publishing an event before the underlying fact commits can mislead consumers.","Who owns rejection of a command?","The service that owns the requested capability decides whether to accept or reject it. Inventory rejects ReserveInventory when stock is insufficient and publishes or returns a documented result."],["Q003",0,"When should Kafka replace synchronous REST?","Use Kafka when independent processing, buffering or replay matters more than an immediate response from the downstream service.","POST /orders -> 202 + orderId\nGET /orders/42 -> PENDING, CONFIRMED or REJECTED","The HTTP response confirms the documented acceptance boundary, not completion of every consumer. Expose an explicit status model and failure path. Use synchronous calls where the caller genuinely needs the downstream result now.","A fast HTTP response does not prove the event was durably accepted.","What does 202 mean in your API?","HTTP 202 means the request was accepted for later handling, not that all business steps finished. Return an operation ID and offer a status endpoint showing PENDING, COMPLETED or FAILED."],["Q004",0,"How is Kafka different from a traditional work queue?","Kafka retains a partitioned log and tracks progress per consumer group instead of deleting each record after one consumer receives it.","orders: offsets 0,1,2,3 remain within retention\nbilling group next=4; analytics group next=2","Within a group, partition ownership distributes work. Across groups, each application can read the same records independently. Retention is a storage policy, so a slow consumer can fall behind the available history.","Consumption does not reset the retention clock.","How would you detect data lost to retention?","Track each group's oldest available offset against its next committed offset. Alert when retention advances past unprocessed data; compare processing history and recover missing data from a trusted source."],["Q005",0,"What is eventual consistency in an event-driven system?","Related services can temporarily show different states while events travel and are processed.","Order: CONFIRMED at 10:00:00\nSearch projection: PENDING until 10:00:02","Define an acceptable lag, user-visible pending state and reconciliation process. A broken consumer is not automatically eventual consistency: without recovery the projection may never converge.","Do not promise immediate reads from an asynchronous projection.","What convergence metric would you monitor?","Measure time from authoritative event commit to successful projection update, especially the oldest pending event age. Alert on exceeded freshness SLOs and on projections that stop advancing."],["Q006",1,"What are a topic, partition and offset?","A topic groups records; partitions are ordered logs; offsets identify positions within one partition.","orders-0 offset 19 != orders-1 offset 19\nRecord identity: topic + partition + offset","Offsets are assigned by the broker and are not global sequence numbers. Compaction and transactions can leave gaps in visible records. Use a separate eventId for business deduplication across republishing.","An offset alone is not globally unique.","Why can a consumer see offset gaps?","Offsets can be absent from what a consumer sees because of compaction, aborted transactions under read_committed, retention, or filtering. Do not assume every numeric offset has a visible record."],["Q007",1,"Where does Kafka guarantee ordering?","Kafka preserves log order within a partition, not a global order across partitions.","customer A -> partition 0: Created, Updated\ncustomer B -> partition 1: Created, Updated","Choose a stable aggregate key when updates for that aggregate must share a partition. Consumer worker pools, retry topics and application logic can still reorder side effects after records are read.","Partition order does not guarantee ordered asynchronous completion.","How would you preserve account-level processing order?","Send all events for an account with the same stable account ID as key, process each partition in sequence, and avoid asynchronous handlers that finish out of order. Repartitioning requires a migration plan."],["Q008",1,"How does a record key affect partition selection?","The producer partitioner uses the key and partition metadata unless an explicit partition or custom partitioner changes that choice.","template.send(\"orders\", order.customerId(), json);","A stable key normally routes related events to the same partition for a fixed topic layout. Null keys follow the configured partitioner behavior. Do not rely on an undocumented hand-written modulo formula to match every client version.","A business key can create a hot partition.","Which key would you choose for a payment ledger?","Use the payment or account identity whose operations must stay ordered (for example accountId), not a random eventId. Consider hot accounts and make the partitioning policy explicit."],["Q009",1,"What happens when a topic gains partitions?","It increases possible parallelism, but key-to-partition mapping can change for future records.","Before: account-7 -> partition 1\nAfter expansion: account-7 may -> partition 4","Older records remain in their original partitions. If a key moves, strict ordering across old and new history needs an explicit migration strategy, drain or versioned topic. Partition reduction is not a normal in-place operation.","Adding partitions is not a harmless ordering change.","How would you migrate an ordered topic?","Create a versioned topic with the desired partition count, establish a controlled cutover point, drain old work, and route new writes to the new topic. Reconcile versions and consumer progress before retirement."],["Q010",1,"Are timestamp and offset the same?","A timestamp describes record time semantics; an offset describes position in a partition log.","partition 0: offset 20 timestamp 10:05\npartition 0: offset 21 timestamp 10:03","Producer create times can be out of order because clocks and sources differ. Broker append-time policy is a different choice. Event time used in business processing should be explicit in the event contract.","Sorting across topics by timestamp does not establish causality.","How would you handle late events?","Define event-time semantics and acceptable lateness. Buffer or update time-window results until a grace limit; after that use a correction event, reconciliation or a documented late-data policy."],["Q011",2,"What are leader, follower and ISR?","The leader handles partition writes; followers replicate; ISR is the set of replicas currently sufficiently caught up.","Replication factor=3; ISR={broker1, broker2}\nLeader=broker1; broker3 is lagging","ISR membership changes as replicas fail or catch up. Replication factor is the desired replica count, while ISR describes current replication health. Observe under-replicated partitions and shrinking ISR during incidents.","Replication factor three does not mean three healthy copies right now.","What metric would trigger your durability alert?","Alert on under-replicated partitions, offline replicas, ISR shrinkage and partitions below min.insync.replicas. Include broker and availability-zone health so an alert signals actual durability risk."],["Q012",2,"What do acks=0, acks=1 and acks=all mean?","They choose no broker acknowledgment, leader acknowledgment, or acknowledgment from the current in-sync replica set.","acks=0: no response confirmation\nacks=1: leader confirms\nacks=all: ISR acknowledgment requirement","acks=all is not acknowledgment from every configured replica, including lagging ones. It works with min.insync.replicas to enforce a minimum healthy replica count for accepted writes.","Acknowledgment does not mean a consumer processed the record.","What can still fail after acks=1 succeeds?","The leader can acknowledge before followers copy the record. If the leader then fails and a different replica wins, the acknowledged record can be lost under relevant recovery settings."],["Q013",2,"How do min.insync.replicas and acks=all work together?","The broker rejects all-ack writes when the ISR falls below the configured minimum.","replication.factor=3\nmin.insync.replicas=2\nacks=all","With one in-sync replica remaining, this policy sacrifices write availability rather than accepting under-replicated writes. The exact failure can appear during or after append, so the producer must handle uncertain outcomes and retries.","min.insync.replicas alone does not enforce this producer policy for acks=1.","Why might a timeout still mean the record was appended?","The broker might append the record, but its acknowledgment may be delayed or lost. Treat the response as unknown and retry using a compatible idempotent producer plus stable business identity."],["Q014",2,"Why can a successful send still have durability limits?","A send confirms the configured broker acknowledgment boundary, not protection against every correlated failure.","RF=3 on one physical host -> one host failure loses availability","Replica placement, fault domains, recovery policy and storage health matter. Kafka replication does not make application retries or external side effects automatically safe. Design for realistic rack or zone failures.","Three replicas in the same failure domain are weak protection.","What failure would your deployment survive?","With three replicas across independent zones and suitable ISR/minimum settings, one broker or zone failure may be tolerated. Correlated failure, quorum loss or misplacement remain outside that guarantee."],["Q015",2,"What is KRaft and how does it relate to ZooKeeper?","KRaft manages Kafka cluster metadata through a controller quorum; older Kafka deployments used ZooKeeper.","Controller quorum -> metadata decisions\nPartition replicas -> record storage","Kafka 4.x is KRaft-only. Controllers and partition leaders have different responsibilities. For an interview, separate the broker/client version from the Spring Boot library version and ask which deployment generation is in scope.","Do not prescribe ZooKeeper for a new Kafka 4.x cluster.","How does controller loss differ from a partition leader failure?","Controller loss affects metadata leadership and cluster coordination until controller quorum recovers. Partition-leader loss affects writes/reads for that partition until an eligible replica takes leadership."],["Q016",3,"Which dependency enables Spring Kafka integration?","Add spring-kafka and let the Spring Boot dependency management select compatible library versions.","<dependency>\n<groupId>org.springframework.kafka</groupId>\n<artifactId>spring-kafka</artifactId>\n</dependency>","The Boot parent or BOM manages versions. Broker binaries are a separate deployment concern. This guide targets Boot 3.5 and Spring Kafka 3.3 style APIs; check your resolved dependency tree before copying a version-specific configuration.","Mixing arbitrary client and framework versions can break compatibility.","How do you inspect the effective dependency versions?","Run `mvn dependency:tree` (or Gradle dependencyInsight) and inspect the resolved `spring-kafka`, `kafka-clients` and Boot versions. Use the chosen Boot BOM as the compatibility baseline."],["Q017",3,"What does Boot auto-configure for Kafka?","It can configure producer and consumer factories, KafkaTemplate, administration and a default listener container factory from properties and available beans.","spring.kafka.bootstrap-servers=localhost:9092\nspring.kafka.consumer.group-id=orders-worker","Properties supply client settings; listener annotations supply application behavior. Custom beans can cause parts of auto- configuration to back off. Inspect conditions when a template or factory is unexpectedly absent.","Boot does not provision a production broker cluster.","What would a custom ConsumerFactory override?","A custom ConsumerFactory replaces or customizes consumer construction, including deserializers, authentication, bootstrap addresses and group settings. Confirm the listener factory uses that bean."],["Q018",3,"What is Kafka T emplate?","KafkaTemplate is Spring's publishing abstraction over the Kafka producer.","CompletableFuture<SendResult<String,String>> future =\ntemplate.send(\"orders\", \"42\", \"placed\");","In modern Spring Kafka, send returns a CompletableFuture. Completion carries broker metadata or an error. A send can also fail synchronously before a future is returned, such as during serialization or unavailable metadata.","Starting a send is not the same as confirming its success.","Which two failure paths must publishing code handle?","Handle a synchronous exception from `send(...)` and asynchronous exceptional completion of its `CompletableFuture`. Neither successful invocation nor a pending future is proof of broker acceptance."],["Q019",3,"What does @KafkaListener do?","It declares a listener endpoint that a Spring-managed container invokes for consumed records.","@KafkaListener(topics=\"orders\", groupId=\"billing-v1\")\npublic void receive(String value) { service.apply(value); }","The container owns polling, dispatch and configured offset/error behavior. A bean method is needed for endpoint registration. The listener should finish the required durable work before the container treats the record as successfully handled.","A swallowed exception can make failed work appear successful.","When should the listener throw?","Throw when the required durable business effect failed and the configured error handler should retry or quarantine the record. Do not swallow a database exception and permit offset progress."],["Q020",3,"How do you create a topic from an application?","Declare a NewTopic bean for KafkaAdmin when application- managed topic creation is appropriate.","@Bean NewTopic orders() {\nreturn TopicBuilder.name(\"orders\")\n.partitions(6).replicas(3).build();\n}","The cluster must support the replica count and the principal must have administration permission. Production teams often provision topics separately through reviewed infrastructure configuration. Existing topics and changes need deliberate operational control.","A one-broker local cluster cannot satisfy replication factor three.","Who should own topic configuration in production?","The platform or streaming team usually owns approved topic declarations, ACLs, retention and replication through infrastructure-as-code; application teams define the contract and request reviewed changes."],["Q021",4,"What does producer idempotence prevent?","It prevents duplicate log appends from eligible retries within the producer's protocol session.","spring.kafka.producer.acks=all\nspring.kafka.producer.properties[enable.idempotence]=true","Idempotence uses producer identity and sequence numbers. It does not deduplicate two business sends with the same eventId, or prevent a consumer from charging twice. Compatible retry and max-in-flight settings are required.","Idempotent producer does not mean idempotent business workflow.","How do you deduplicate application resends?","Give the event a stable business ID, and deduplicate it at the consumer's durable write boundary (such as a unique inbox key in the same DB transaction). Producer idempotence alone cannot do this."],["Q022",4,"What is max.in.flight.requests.per.connection?","It limits producer requests awaiting responses on a broker connection.","Idempotent producer: supported max-in-flight <= 5","Without idempotence, multiple outstanding requests and retries can reorder batches. With compatible idempotence settings, ordering is preserved for supported values. Do not tune this value in isolation from latency, throughput and retry behavior.","Setting it arbitrarily high conflicts with idempotence requirements.","Why might setting it to one reduce throughput?","Only one batch can be in flight, which prevents pipeline overlap. On high-latency broker links it can substantially reduce throughput; benchmark compatible idempotent settings instead."],["Q023",4,"How do linger.ms and batch.size affect publishing?","They influence waiting and batching of records, trading latency for throughput and compression efficiency.","linger.ms=10\nbatch.size=32768","The producer batches per partition. A full batch can send before the linger interval expires. Defaults vary by Kafka client version, so measure the resolved client's behavior rather than memorizing one default forever.","batch.size is not the maximum event size.","How would you benchmark latency at low traffic?","Publish small messages at controlled low rates, measure p50/p95/p99 end-to-end latency with linger set to multiple values, and record producer batch size, network use and CPU."],["Q024",4,"How do delivery.timeout.ms and request.timeout.ms differ?","Request timeout bounds an individual response wait; delivery timeout bounds the overall delivery lifecycle including retry-related time.","delivery.timeout.ms=120000\nrequest.timeout.ms=30000","The delivery budget includes batching delay and retries under the producer's rules. max.block.ms separately bounds selected waits during send, such as metadata or buffer availability. Use budgets aligned with API expectations.","An HTTP timeout does not cancel a Kafka record already sent.","What response should an API return for an unknown send outcome?","Return an explicit PENDING/UNKNOWN state with a stable operation ID if the business contract allows it. Reconcile the send result from durable intent; do not claim failure or success from timeout alone."],["Q025",4,"Why use compression and bounded producer buffers?","Compression can reduce network/storage work, while bounded buffers expose overload instead of hiding it indefinitely.","compression.type=zstd\nbuffer.memory=33554432","Compression effectiveness depends on batches and payloads. Buffer exhaustion can block publishing up to the configured limit and then fail. Track enqueue rate, request latency and buffer wait metrics before changing memory.","Increasing buffers does not fix a permanently slow broker.","How would you shed load safely?","Reject or defer excess requests with a documented 429/503 or a durable queue if the contract supports it. Bound memory and requests, protect critical workloads and expose retry-after guidance."],["Q026",5,"What is a consumer group?","A group coordinates consumers that share progress and divide partition ownership for subscribed topics.","orders has 6 partitions\nbilling group: 3 consumers -> roughly 2 partitions each\nshipping group: independent progress","A partition is normally assigned to one consumer at a time within the group. Different groups receive independent copies of the logical stream. Assignment details depend on topics, strategy and protocol.","Consumers in different groups do not share the workload.","How do you add an audit subscriber?","Create a new consumer group ID for audit, subscribe it to the same topic, grant minimum ACLs and define its offset starting policy. Billing's group progress remains independent."],["Q027",5,"How many consumers can usefully process one topic in a group?","Parallel partition ownership is bounded by the topic's partition count.","6 partitions; 10 consumers in one group\nAt most 6 own partitions for this topic","Extra consumers can be idle. A consumer can own several partitions, and a group can subscribe to multiple topics. Scale using measured partition load and downstream capacity, not only replica count.","More pods cannot split one hot partition between group members.","How would you fix a single hot key?","First measure why the key is hot. If operations need one total order, increase per- partition processing capacity or redesign the aggregate; splitting the key sacrifices its single-partition order."],["Q028",5,"What does listener concurrency mean in Spring Kafka?","It configures multiple child listener containers, each with its own consumer.","@KafkaListener(topics=\"orders\", concurrency=\"3\")\npublic void receive(String value) { ... }","Two application instances with concurrency three create up to six consumers. Their useful assignments still depend on partitions and group strategy. Shared listener state and injected collaborators must be safe for concurrent invocation.","Concurrency is not a worker pool for one consumer instance.","What state should not be stored on the listener bean?","Do not keep mutable currentOrder, currentRecord, tenantId, counters or unsynchronized maps as listener fields. Store per-record state in local variables and use safe, durable repositories."],["Q029",5,"What triggers a rebalance?","Membership, subscriptions or partition metadata changes can require reassignment of group partitions.","Pod joins -> assignment changes\nConsumer misses progress requirements -> partition revoked","During ownership changes, unfinished work and commits need careful handling. Strategies and group protocols affect how much work pauses. Handle duplicates after reassignment rather than assuming an old owner finished everything.","A rebalance is not itself evidence of a broker failure.","Which logs explain why membership changed?","Check consumer coordinator logs for join/leave, heartbeat expiration, max.poll.interval expiration, assignment, partitions revoked, and deployment restarts. Correlate with Kubernetes pod events."],["Q030",5,"How do cooperative assignment and static membership help?","They can reduce assignment disruption or unnecessary membership churn when correctly configured for the selected protocol.","group.instance.id=orders-pod-unique-id","Static membership requires a stable unique identity per group member. Cooperative strategies incrementally transfer ownership rather than treating all partitions as immediately revoked. They reduce disruption but do not remove timeouts or scaling tradeoffs.","Duplicate static identities can fence a member.","How would you assign stable identities in Kubernetes?","Use StatefulSet ordinal or another stable per-pod identity combined with a stable group name. Ensure every live consumer has a unique `group.instance.id` and plan identities for scaling."],["Q031",6,"What does a committed offset represent?","It records the next position the group should resume from for a partition.","Processed offset 41 -> commit next offset 42","The consumer's current position can be ahead of its committed position after polling. Commit is a progress checkpoint, not deletion of the record. A restart resumes from committed progress if the offset remains valid.","Committing 41 after processing 41 can replay that record.","How would you inspect current and committed positions?","Use AdminClient or `kafka-consumer-groups --describe` for committed offsets; use KafkaConsumer.position for its current next fetch position. Compare with log-end offsets separately."],["Q032",6,"What does auto.offset.reset control?","It chooses behavior when the group has no valid committed offset, not on every restart.","spring.kafka.consumer.auto-offset-reset=earliest","With a valid commit, the consumer resumes there even if earliest is configured. A fresh group can read retained history. If retention removed an offset, the reset policy becomes important. Use controlled resets for intentional replay.","earliest does not force an existing group to reread all records.","How do you replay without affecting production progress?","Run a new isolated group (or shadow application) with an explicit starting offset and write to a separate projection. Leave production group IDs and committed positions unchanged."],["Q033",6,"Why disable Kafka auto-commit for container- managed processing?","It lets Spring's acknowledgment mode coordinate progress with listener outcomes instead of periodic client commits.","spring.kafka.consumer.enable-auto-commit=false\nspring.kafka.listener.ack-mode=record","For a record listener, RECORD commits after successful record handling under the container's commit configuration. Default container modes and transactional behavior differ. Read the effective configuration rather than assuming manual acknowledgment is always required.","Disabling auto-commit alone does not stop the Spring container from committing.","What controls commits after auto-commit is disabled?","Spring Kafka listener container ack mode, error handler and transactional configuration govern commits. For example RECORD commits after successful listener handling under its configured rules."],["Q034",6,"How do RECORD, BATCH and manual acknowledgment differ?","They choose record-level, poll-batch-level or application-signaled progress boundaries for nontransactional container processing.","MANUAL: acknowledge queues progress by container rules\nMANUAL_IMMEDIATE: immediate on consumer thread","BATCH commits after the records from a poll are handled. MANUAL is not a promise of an immediate commit. Calling acknowledgment off the consumer thread can alter timing. Error handling and transactions further affect commit behavior.","Acknowledging does not make the database and Kafka atomic.","Why can a successful database write still be replayed?","After committing the DB change, the process can crash before Kafka stores the next offset. On restart the same record is delivered again; make the database effect idempotent."],["Q035",6,"How do at-most-once and at-least-once processing differ?","Committing before the required effect risks loss; committing afterward risks duplicates during a crash window.","commit -> charge -> crash before charge: lost work\ncharge -> crash -> no commit: possible duplicate charge","At-least-once with an idempotent business effect is often the practical choice. Define the exact durable effect and checkpoint. Manual commits do not eliminate the fundamental crash interval.","Treating duplicates as impossible is a design defect.","How would a unique eventId make a charge safe?","Put a unique `(paymentId, effectType)` constraint or `(consumerId,eventId)` inbox entry in the same database transaction as the charge ledger update. Replays then find the previous result."],["Q036",7,"How do heartbeat and max.poll.interval.ms differ?","Heartbeats maintain liveness; the poll interval limit checks whether the consumer continues making polling progress.","Long listener work -> next poll delayed\nHeartbeats alone do not justify unlimited processing time","Classic and newer consumer protocols differ in which timing settings are client- or broker- controlled. For the classic baseline, budget the worst poll batch plus retry time below the interval. Identify the actual group protocol first.","Increasing heartbeat frequency does not fix an oversized poll workload.","Which timing is exceeded by a slow batch?","For classic groups, a slow batch risks exceeding `max.poll.interval.ms`, even if heartbeats occur. Choose batch size and processing budget within the actual protocol's polling rules."],["Q037",7,"What does max.poll.records limit?","It limits the records returned per poll, not the entire broker fetch byte size.","max.poll.records=100\n100 records * 50 ms serial work = about 5 seconds","Fetched data may be cached by the client and returned across polls. Tune returned batch size against processing time, heap and downstream capacity. A few exceptionally expensive records can dominate the budget.","Lowering max.poll.records does not strictly cap all fetched bytes.","Which settings and metrics describe fetch memory?","Consider `fetch.max.bytes`, `max.partition.fetch.bytes`, `fetch.min.bytes`, `fetch.max.wait.ms`, memory used for deserialization, and bytes per partition. Watch fetch size and heap/GC metrics."],["Q038",7,"Can KafkaConsumer be shared across worker threads?","KafkaConsumer is not generally thread-safe; coordinate consumer operations on its owning thread.","Consumer thread: poll, assignment, commit\nWorkers: bounded business tasks with explicit ordering","Delegating records to workers requires partition-aware completion tracking, revocation handling and safe commits. Committing beyond unfinished earlier work can skip it on restart. Prefer container concurrency when it meets the requirement.","Offloading and immediately returning marks work complete too early.","How do you track the highest contiguous completed offset?","For each partition track completed offsets and hold gaps in an ordered set. Commit only one past the highest contiguous completed offset; never skip an unfinished earlier record."],["Q039",7,"When should a listener pause consumption?","Pause when temporary downstream saturation requires bounded intake while retaining controlled polling and membership.","Database saturated -> pause assigned processing\nCapacity restored -> resume","Use container-supported pause/resume and observe actual pause state. Maintain a finite queue and a recovery threshold to avoid oscillation. Pausing a consumer does not pause producers or stop topic retention.","An unbounded in-memory queue only moves lag out of Kafka.","What would trigger pause and resume?","Pause when queue utilization or DB latency exceeds a high threshold; resume only after load falls below a lower threshold. Monitor paused duration and retained Kafka backlog."],["Q040",7,"How should you shut down a consumer safely?","Stop new work, finish or abandon bounded in-flight tasks deliberately, and let the container close and commit according to its policy.","Termination budget > listener timeout + commit/close allowance","Long external calls need deadlines; otherwise the process may be killed mid-effect. Replayed work must remain idempotent. Coordinate readiness and termination grace with the container's stop behavior.","Graceful shutdown cannot guarantee no duplicates after every crash.","What test would simulate forced termination?","Terminate a consumer process during a slow DB write, after the DB commit and before Kafka commit, then restart. Verify safe replay, no skipped durable work, and bounded shutdown."],["Q041",8,"Why should a listener propagate processing failures?","The container must observe failure to apply retry, rollback or recovery rules.","try { charge(event); }\ncatch (Exception e) { throw e; }","Logging and returning normally can advance progress after failed work. Catch only when you complete a documented alternative outcome durably. Exception classification should separate transient infrastructure errors from permanently invalid events.","A log line is not a recovery action.","Which failures should never retry?","Do not blindly retry invalid schemas, unauthorized actions or permanent business rejections. Quarantine poison records with evidence; use retries for transient failures under a bounded policy."],["Q042",8,"What does DefaultErrorHandler do?","It applies configured retry/backoff and recovery behavior for listener failures in nontransactional containers.","new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 2L));","Two backoff retries means an initial attempt plus two retries. Seek/replay behavior, exception classification and acknowledgment settings control what happens afterward. Configure a durable recoverer instead of assuming every exhausted failure is retained safely.","Exhaustion without a deliberate recovery policy can skip business work.","How do you verify recovery failure does not advance progress?","Force the recoverer/DLT producer to fail (for example revoke write permission), restart the listener, and verify that source progress does not pass the record without the configured durable recovery guarantee."],["Q043",8,"How do blocking and nonblocking retries differ?","Blocking retries delay source processing; retry topics move failed records to later processing on other topics.","Blocking: A fails -> A retried -> B follows\nRetry topic: A deferred -> B may run before A","Nonblocking retries improve source throughput but can break original ordering. Spring Kafka 3.3 retry-topic support is for record listeners and cannot combine with container transactions. Choose the strategy from business order and atomicity needs.","Do not attach @RetryableTopic to a transactional or batch design blindly.","Which strategy fits sequential account updates?","For sequential account updates, blocking retries or a partition-preserving queue usually fit better. Retry topics can let a later account event finish before the earlier one."],["Q044",8,"What belongs in a dead-letter topic?","An unprocessable event plus enough safe metadata to investigate, repair and replay it.","DLT: original topic, partition, offset, eventId,\nschema version, failure classification","A DLT is a recovery workflow, not a trash can. Define alerts, ownership, access control, retention and replay authorization. Verify publication success before treating a source record as recovered. Preserve original key semantics where needed.","Sensitive exception messages can leak data into DLT headers.","Who approves and audits a replay?","An accountable operations or domain owner should authorize replay after root-cause repair, with approval records, event IDs, deduplication policy, target group and audit trail."],["Q045",8,"How do you handle deserialization failures?","Handle failures before normal listener conversion, for example with ErrorHandlingDeserializer and a compatible error/recovery setup.","Invalid JSON -> deserialization error metadata\nError handler -> quarantine original bytes","The listener may never receive the intended object. Recovery producers must be able to serialize raw byte payloads when required, as well as normal values. Test invalid bytes and DLT publication failures.","A try/catch inside the POJO listener cannot catch every deserializer error.","Which serializer can publish the failed raw payload?","Spring Kafka can route raw failed bytes through `ErrorHandlingDeserializer` headers and use `DeadLetterPublishingRecoverer` with a byte-array serializer for the failed value where configured."],["Q046",9,"What is a Kafka transaction?","It atomically commits or aborts a set of Kafka writes and, when included, consumed group offsets.","begin -> publish output -> include input offsets -> commit","Read-process-write pipelines can commit outputs and progress together. Consumers must use the appropriate isolation to avoid observing aborted writes. The transaction does not include an arbitrary database or external HTTP service.","Atomic Kafka writes are not a global distributed transaction.","What happens to an email sent before rollback?","The email provider is outside the Kafka transaction: the email may already be sent even if Kafka rolls back. Use provider-level idempotency or a durable delivery ledger."],["Q047",9,"What does read_committed isolation do?","It returns committed transactional records and nontransactional records while excluding aborted transactional records.","spring.kafka.consumer.properties[isolation.level]=read_committed","Open transactions can hold back visibility beyond the last stable offset. Aborted records still occupy log positions, so visible offsets can have gaps. Read-uncommitted consumers do not get the same transactional visibility guarantee.","read_committed does not validate business semantics.","Why can visible consumer lag grow during a long transaction?","A read_committed consumer waits past open transactions and hides aborted data. Its visible end offset can lag the physical log while a long-running transaction remains incomplete."],["Q048",9,"How does Spring configure a transactional listener pipeline?","Boot can configure a Kafka transaction manager from a producer transaction-id prefix and wire it into the default listener container.","spring.kafka.producer.transaction-id-prefix=${INSTANCE_ID}-","Use a unique prefix per application instance. With container transactions, listener output and input offsets can participate in one Kafka transaction. Spring Kafka 3.x uses EOS V2. Validate the custom factory wiring if you replace Boot defaults.","A shared transactional identity across active instances can cause fencing.","How do you verify the listener is actually transactional?","Test that the listener container uses a transactional Kafka producer/transaction manager and that consumed offsets join its transaction. Inject an exception and verify output and offsets are not committed."],["Q049",9,"What does exactly-once mean for a Kafka read- process-write pipeline?","The committed Kafka outcome can be exactly once even though processing code is invoked again after rollback.","Attempt 1: compute + publish -> abort\nAttempt 2: compute + publish + offsets -> commit","Spring documents the read/process steps as at-least-once; the committed sequence is the EOS boundary. External effects can repeat, so a database write or payment request still needs its own correctness mechanism.","Never claim the listener method executes only once.","How would you explain EOS in one interview sentence?","Exactly-once for Kafka read-process-write means produced Kafka records and consumed offsets commit atomically in one Kafka transaction; external databases and emails remain outside that boundary."],["Q050",9,"What happens when database and Kafka transactions are synchronized?","They still have separate commit boundaries, so a later commit can fail after the earlier system committed.","DB commit succeeds -> Kafka commit fails\nRequired response: recovery / reconciliation","Spring synchronization can coordinate order but is not a general two-phase atomic transaction across both resources. Avoid deprecated chained transaction manager designs as a magic solution. Use an outbox or explicitly accepted compensation boundary.","@Transactional alone cannot guarantee atomic database-plus-Kafka publication.","How would an outbox close the missing-publication gap?","Write business state and an outbox event in one local DB transaction. A relay retries publication after crashes; consumers deduplicate the stable event ID, closing the lost- intent window."],["Q051",10,"How do you build an idempotent consumer?","Atomically deduplicate an event and apply its business effect in the same durable transaction.","BEGIN;\nINSERT processed_event(consumer_name,event_id) VALUES (...);\nUPDATE account SET balance=balance+...;\nCOMMIT;","A unique constraint enforces the deduplication key under concurrent deliveries. Duplicate detection must be handled with the database's transaction semantics in mind; do not continue in a transaction marked rollback- only. Commit offsets after success.","A separate check-then-insert can race.","Why include consumer identity in the deduplication key?","Different consumers can legitimately apply the same event for different purposes. A uniqueness key such as `(consumerName,eventId)` prevents duplicates per effect without blocking other consumers."],["Q052",10,"Why is a Redis deduplication flag insufficient for a database effect?","A separate flag and database update have a failure gap unless a deliberate cross-system protocol closes it.","SET eventId -> crash -> DB update never happens\nDB update -> crash -> SET never happens","TTL expiry can also allow old replays through. Prefer a database invariant for database effects, or an idempotency key accepted by the external provider. Redis may optimize reads but should not silently define stronger guarantees.","A cache hit is not proof a durable effect committed.","What should the payment provider's idempotency contract say?","The provider should accept a stable scoped idempotency key, store the canonical request fingerprint and final charge result, return the original result on a replay, and reject key reuse with different input."],["Q053",10,"What is the transactional outbox pattern?","Save business data and an event row in one database transaction, then publish the row asynchronously.","BEGIN: insert order + insert outbox event; COMMIT\nPublisher: read committed outbox -> Kafka -> mark delivered","If publication succeeds but marking fails, the event can be published again. Therefore the consumer still deduplicates. The outbox provides durable publication intent, not inherently exactly-once transport.","Marking delivered before Kafka confirmation can lose the event.","How would you coordinate multiple outbox publishers?","Use database row claims such as `FOR UPDATE SKIP LOCKED`, leases or version- checked updates with small batches. Republish safely using stable IDs because a crash may occur after send."],["Q054",10,"How do polling and CDC outbox publishing differ?","Polling queries pending rows; CDC reads committed database changes from a change log through a connector.","Polling: SELECT pending ORDER BY ...\nCDC: database log -> connector -> Kafka","Polling needs claiming, indexes and cleanup. CDC needs connector lifecycle, log retention, snapshots and routing configuration. Both require stable event IDs, schema contracts and monitoring of publication delay.","CDC does not remove consumer duplicate handling.","What happens when the database log expires during connector downtime?","If the connector stays down past log retention, required database changes may be unavailable to CDC. Restore from backup/snapshot and rebuild consistently, or use a durable snapshot-and-resume strategy."],["Q055",10,"How do you prevent stale or reordered events overwriting new state?","Enforce aggregate version or another explicit monotonic invariant at the durable projection boundary.","UPDATE projection SET version=8, status='SHIPPED'\nWHERE id=42 AND version < 8;","For a full-state projection, a newer version can replace an older state. For incremental deltas, missing versions may require buffering or repair rather than skipping. Choose behavior from the event meaning.","Discarding old deltas can lose required arithmetic updates.","How would you reconcile a missing version?","Detect a version gap (received 12 after 10), defer the newer update, fetch the missing 11 from the owner or replay source, and reconcile with a snapshot if the event is no longer retained."],["Q056",11,"What do serializer and deserializer do?","They convert application keys/values to bytes and bytes back to usable data.","StringSerializer -> UTF-8 bytes\nStringDeserializer -> String","Both ends need an agreed format. Spring message conversion is a separate layer that can convert already-deserialized content for a method parameter. Explicit contracts simplify consumers written in other languages.","A matching Java generic type does not prove matching wire format.","How would you debug a serializer mismatch?","Inspect record topic/partition/offset, declared serializer format, headers and content- type/schema ID. Check that producer and consumer agree on key/value classes, encodings and trusted types."],["Q057",11,"How should a business event envelope look?","Include stable identity, type, version, occurrence time and the domain payload needed by consumers.","{\"eventId\":\"e-42\",\"type\":\"OrderPlaced\",\"version\":1,\n\"occurredAt\":\"2026-10-08T06:00:00Z\",\"orderId\":\"42\"}","Avoid embedding secrets or a complete mutable database entity. Separate event identity from correlation and aggregate identity. Define required fields, nullable values, number precision and time zone semantics.","An eventId generated anew for every retry defeats deduplication.","Which fields remain unchanged during replay?","Keep original eventId, aggregateId, logical version and the original occurrence timestamp unchanged. Add separate replay metadata or attempt count rather than silently minting a new business event."],["Q058",11,"How do you evolve JSON events safely?","Prefer compatible additive changes and tolerant readers, while validating fields required for business correctness.","v1: orderId, amount\nv2: orderId, amount, optional currency defaulted by contract","An optional field is safe only if its default has an agreed meaning. Renaming, deleting or changing units can break consumers even when JSON parses. Test old readers/new writers and new readers/old records.","Parse success does not imply semantic compatibility.","How would you change amount from rupees to paise?","Add a new `amountMinorUnits` field with clear currency and transition semantics, backfill or dual-publish during migration, test old readers, and retire the old rupees field only after compatibility checks."],["Q059",11,"What does a schema registry provide?","It manages schemas and compatibility checks for configured serialization ecosystems such as Avro or Protobuf.","Writer schema v2 -> registry ID -> encoded record\nReader resolves schema and applies compatibility rules","A schema registry is an additional component, not a built-in guarantee of every Kafka cluster. Subject naming, compatibility mode and deployment sequence matter. It catches structural changes but not every business meaning change.","A structurally compatible enum or unit change can still break business logic.","Which compatibility mode suits long historical replay?","For long replay with multiple historical schemas, use compatibility rules that support all versions a new reader will encounter (often a transitive backward-compatible policy), and verify actual schemas."],["Q060",11,"Why restrict trusted JSON types?","Type metadata from incoming messages must not authorize arbitrary class deserialization.","JsonDeserializer configured with a specific target type\nTrusted package list kept narrow","Spring Kafka JSON settings and class names differ across major versions. Prefer explicit type mapping or a fixed target type where appropriate. Treat an event source as untrusted even when the transport authenticates it.","trusted.packages=* is a broad trust decision.","How would you support multiple event types safely?","Use a documented type discriminator and explicit allowlist of event classes or type mappings; reject unrecognized types. Never allow untrusted data to pick arbitrary Java classes."],["Q061",12,"How do delete retention and compaction differ?","Delete retention removes old segments by policy; compaction eventually keeps the latest value per key.","Delete: event history window\nCompact: latest known state for each key","Compaction is asynchronous and can coexist with deletion. Older values may remain until cleaning occurs. A compacted topic is useful for rebuilding keyed state, but cannot be assumed to preserve every historical event.","Compaction is not immediate deduplication.","Which policy fits an audit ledger?","An audit ledger normally needs a durable append-only history and a retention plan suitable for compliance. Pure compaction would discard historical changes and is usually inappropriate."],["Q062",12,"What is a tombstone?","It is a record with a non-null key and null value that represents deletion in a compacted topic.","key=customer-42, value=null","Consumers rebuilding state must apply the deletion. Tombstone retention and consumer downtime affect whether a stale local entry can be removed reliably. An empty JSON object or the string \"null\" is not the same wire value.","A null key cannot express a specific keyed deletion.","How would a long-offline consumer miss a tombstone?","Compaction and retention can eventually remove older tombstones. A consumer offline too long may miss deletion evidence and need a rebuilt snapshot or an external deletion ledger."],["Q063",12,"How do you replay safely?","Use a controlled group or offset reset, verify retention coverage, and isolate or deduplicate external side effects.","New group: billing-rebuild-2026\nTarget: fresh projection table, no real payment calls","Record replay scope, schema versions, rate limits and expected result counts. An existing live group reset can reapply business effects and disrupt consumers. Rebuilding projections is often safer than repeating original commands.","earliest reads only currently retained data.","How would you compare the rebuilt and live projection?","Build a shadow projection from a known snapshot plus replay offset, then compare business aggregates, row counts, hashes or versions with the live view before cutover."],["Q064",12,"How should dead-letter events be replayed?","Repair the cause, preserve identity and provenance, then republish through an authorized rate-limited workflow.","DLT event e-42 -> repaired source event e-42\nReplay audit: operator, reason, original position","Use the original eventId when replaying the same business event; a genuinely new corrective action needs a distinct identity. Preserve or restore aggregate order where required. Avoid endless source-to-DLT loops.","Blindly replaying every DLT record can repeat permanent failures.","How do you identify a successful previous effect?","Use the stable eventId or business operation ID to query the durable inbox or target effect. If it already succeeded, mark replay as duplicate rather than repeating the payment/email."],["Q065",12,"What if a consumer is offline longer than retention?","It may lose access to unprocessed history and needs a snapshot, alternate archive or repair process.","Committed next=100; earliest available=900\nMissing history: 100..899 may no longer be recoverable here","Alert on lag age relative to retention before the gap occurs. Retention bytes can also constrain available history. The reset policy controls resume behavior but cannot reconstruct removed records.","A large numeric retention setting does not guarantee unlimited history.","Where would you source a recovery snapshot?","Load a trusted snapshot from the authoritative business database or archived event stream, record its cutover offset/version, then replay what remains. Do not assume Kafka retains history forever."],["Q066",13,"What belongs in a unit test?","Business mapping, validation, exception classification and idempotency decisions that do not require a broker.","Given invalid currency -> reject before publish\nGiven duplicate event -> no second business effect","Mocking KafkaTemplate can test how application code handles a failed future, but it does not test partitioning, commits, rebalances or broker transactions. Keep a smaller set of real integration tests for those behaviors.","A mocked successful send does not demonstrate delivery.","Which behavior needs a real broker?","Pure validation, mapping, partition-key choice and retry classification fit unit tests. Partition ownership, offsets, broker failures, transactions and DLT publication require a real Kafka integration test."],["Q067",13,"When should you use EmbeddedKafka or T estcontainers?","Use them for integration tests of actual broker interaction; choose based on fidelity and environment needs.","EmbeddedKafka: fast in-process test fixture\nTestcontainers: containerized broker with explicit image","Align the broker mode and version with the test objective. Isolate topics and groups, wait for assignment or signals and clean up resources. Broker integration is necessary for offset and transaction assertions.","A test fixture is not a production cluster reliability simulation.","How would you test a three-broker durability policy?","Use a controlled multi-broker Kafka Testcontainers or dedicated test cluster with RF=3 and min ISR=2. Kill a leader/zone, test acknowledgments and recovery, and inspect ISR transitions."],["Q068",13,"Why are sleeps weak synchronization in Kafka tests?","They guess when asynchronous work finishes and make tests flaky or unnecessarily slow.","Await until processedEventCount == 1 within 10 seconds\nThen assert stored state and commit boundary","Use bounded polling, latches or observability hooks. A condition should assert the intended invariant, not merely that a listener was invoked. Choose timeouts generous enough for CI but fail with useful diagnostics.","Seeing a callback does not prove the database committed.","What evidence would your failure message include?","Wait for explicit conditions using polling assertions and time bounds (e.g. Awaitility), not fixed sleeps. On failure report topic, partition, offset, consumed records, error and pending assertions."],["Q069",13,"How do you test duplicate handling meaningfully?","Deliver the same stable event identity more than once and verify one durable business effect.","Publish eventId=e-42 twice\nAssert balance incremented once and dedup row exists","Include concurrent delivery and restart after the effect but before progress commit. For database-backed deduplication, use the actual database constraint and transaction behavior rather than a mocked exists method.","Sequential mocked calls do not prove race safety.","How would you force the crash window?","Commit the DB write, stop the process before Kafka offset commit, then restart with the same group. Verify a replay occurs and the unique inbox/ledger prevents a second business effect."],["Q070",13,"How do you test Kafka transactions?","Verify committed outputs are visible to read_committed consumers and aborted outputs are not, with input progress moving only on success.","Fail listener after output send -> transaction abort\nRetry succeeds -> one committed output outcome","Use the production transaction manager and compatible broker fixture. Inspect offsets and output records, not only exception handling. Also test fencing or instance identity conflicts where relevant.","read_uncommitted output assertions weaken the test.","What external side effect remains outside this test's guarantee?","An HTTP payment call or email delivery performed from the listener is not rolled back by a Kafka transaction. Test its own provider identity/recovery protocol separately."],["Q071",14,"What is consumer lag?","It measures distance between a partition's end and the group's progress; its exact interpretation depends on the metric source and isolation.","Partition end=1000; group committed next=800\nApproximate offset lag=200","Offset gaps and variable record cost mean lag is not an exact count of business tasks. Add age of oldest unprocessed event and processing rate. Inspect each partition rather than only group totals.","Zero commit lag does not prove every business effect succeeded.","How can swallowed exceptions hide failure?","A listener can catch and ignore an exception, return normally and advance its offset. Lag may look healthy while the durable effect is missing; monitor business completion and error counters."],["Q072",14,"How do you diagnose increasing lag?","Compare arrival and completion rates, then identify whether the bottleneck is partition skew, processing, retries or infrastructure.","Input=2000 records/s; completion=1500 records/s\nBacklog grows about 500 records/s for this workload","Check poll duration, rebalance counts, per- partition lag, external call latency, database saturation and broker fetch behavior. Scaling consumers helps only where partition ownership and downstream capacity permit.","Increasing concurrency can overload the database and worsen lag.","What evidence would justify more partitions?","Add partitions only if multiple partitions are saturated and keys can be redistributed without violating ordering. Confirm CPU, records-per-partition, consumer parallelism and downstream headroom."],["Q073",14,"Which Kafka application metrics should be monitored?","Monitor publish errors and latency, consumer lag/age, processing failures, retries, DLT traffic and dependency saturation.","SLO: 99% of OrderPlaced projected within 30 seconds\nAlert: oldest pending event age > agreed threshold","Client metrics and Spring observations complement business outcome metrics. Bound labels such as topic and outcome; avoid unique eventIds as metric tags. Use eventId and correlationId in structured logs instead.","Consumer running is weaker evidence than business convergence.","How do you keep metric cardinality bounded?","Use bounded labels such as topic, group, outcome and environment. Never label metrics with eventId, customerId or arbitrary payload fields; keep those in sampled traces/logs."],["Q074",14,"How should tracing work across Kafka?","Propagate trace context through approved headers and create spans that reflect asynchronous producer/consumer processing.","HTTP span -> publish span -> consumer processing span\nLogs: eventId, aggregateId, traceId, partition, offset","Spring Kafka observations must be enabled and configured for the selected setup. Preserve business identity separately from trace identity. Do not log complete sensitive payloads for debugging.","A traceId is not a business deduplication key.","How would you diagnose a replay across different traces?","Propagate event correlation IDs and trace context in headers, and store stable event IDs in logs. Cross-reference replay attempts with the original event even when they belong to new traces."],["Q075",14,"How do you tune throughput responsibly?","Measure realistic record sizes, keys and downstream work, then change one limiting factor at a time.","Benchmark: p95 end-to-end latency, records/s,\nbytes/s, CPU, heap, broker load and error rate","Producer batching/compression and consumer concurrency/poll size affect different boundaries. Include failure and recovery tests, because a configuration that wins a healthy benchmark may produce unstable retry storms.","A throughput number without durability settings is incomplete.","Which SLO must not regress during tuning?","Preserve end-to-end processing freshness, durability and error-rate SLOs (for example p99 event-to-effect latency). Higher MB/s is not a win if lag age or DLT failures worsen."],["Q076",15,"How do TLS, SASL and ACLs differ?","TLS protects transport and can authenticate certificates; SASL authenticates clients; ACLs authorize Kafka operations.","SASL_SSL -> authenticated encrypted connection\nACL -> principal may read orders with approved group","Select mechanisms supported by the cluster and manage credentials securely. Permissions cover topic operations, consumer groups and transactional resources as needed. Transport security does not determine whether an event describes an authorized business action.","A valid client credential is not permission to every topic.","Which ACLs does a transactional producer need?","Depending on the Kafka cluster and authorization setup, a transactional producer needs topic Write/Describe plus permission on its transactional ID (and possibly cluster/ idempotent-write permission). Verify broker policy."],["Q077",15,"How should secrets be supplied to a Boot Kafka application?","Use a managed secret delivery mechanism and avoid committing credentials or exposing them through logs/endpoints.","spring.kafka.properties.security.protocol=SASL_SSL\nCredential material injected from protected runtime configuration","Rotate credentials with a tested reconnect or deployment plan. Validate TLS trust and hostname verification instead of disabling them to fix connectivity. Keep DLTs and backups within the same data protection review.","A secret hidden in application.yml is still a secret in source control.","How would you test credential rotation?","Rotate credentials in a staging cluster while traffic continues. Verify both old/new overlap, new connections, consumer rebalances, no lost records and eventual removal of old credentials."],["Q078",15,"What is bootstrap.servers versus advertised.listeners?","Bootstrap addresses locate the cluster; advertised addresses tell clients where to connect to individual brokers.","Bootstrap works -> metadata advertises broker:9092\nRemote client cannot resolve broker -> subsequent calls fail","Docker, Kubernetes and external access often need different reachable listener addresses. Diagnose metadata routing, DNS, ports and TLS names. Replacing the bootstrap address alone cannot repair unreachable advertised endpoints.","A successful TCP connection to bootstrap is insufficient.","How would you inspect broker metadata from the client network?","From the same network as the app, run Kafka CLI metadata commands or a small AdminClient against the bootstrap address. Confirm returned broker hostnames/ports resolve and are reachable from the pod."],["Q079",15,"Should liveness fail whenever Kafka is unavailable?","Liveness should reflect whether the process can recover; readiness and health policy should represent whether it can fulfill its assigned role.","Broker outage -> app can reconnect -> avoid restart storm\nHTTP write readiness may fail if acceptance cannot be durable","Producer-only APIs and background consumers have different admission needs. Define startup behavior, missing-topic behavior, reconnect strategy and dependency deadlines. An orchestrator restart cannot repair a remote cluster.","A healthy JVM does not prove publish capability.","What degraded behavior is acceptable for your API?","Liveness should usually reflect a stuck application process, not a temporarily unreachable broker. Readiness may degrade if required event intake is unusable, while read-only APIs can stay available by policy."],["Q080",15,"How should rolling deployments affect event contracts?","Old and new producers/consumers must coexist safely during the rollout and rollback window.","Deploy tolerant consumers -> deploy new writers\nRollback writers without invalidating stored records","Test schema compatibility, group membership changes and transaction identity uniqueness. Maintain capacity while instances drain. Database migrations and event versions need coordinated backwards-compatible sequencing.","Reusing a new event meaning under the old version breaks rollback.","How long must old event support remain?","Support old event schemas at least through the longest overlap of deployed consumers, retention and replay/recovery horizon. Prove backward compatibility before removing a field."],["Q081",16,"How does Kafka Streams differ from @KafkaListener?","Kafka Streams defines a processing topology with stateful operations; a listener is an application callback over consumed records.","Streams: groupByKey -> window -> aggregate -> output topic\nListener: receive order -> call business service","Streams handles repartitioning, state stores and recovery within its topology model. A listener fits explicit workflow integration. Boot can support Streams configuration, but the programming model remains distinct.","Kafka Streams is not simply listener concurrency with a new name.","When do you need a windowed aggregate?","Use Kafka Streams for stateful event-time joins, aggregates and windowing. A simple stateless consumer or DB write may be clearer with `@KafkaListener`."],["Q082",16,"What is a state store and changelog?","A state store holds local processing state; a changelog topic can support rebuilding that state after failure.","Store: customerId -> current total\nChangelog: durable state updates for recovery","Stateful processing introduces recovery time, disk needs and task ownership. Topic retention and topology naming affect restoration. Local query availability does not imply every instance has all keys.","Deleting changelog history can harm restoration.","How would you estimate cold-start recovery time?","Estimate changelog bytes to restore, actual restore bandwidth and number of store partitions. Measure under cold cache and broker/network load; model restoration time plus rebalance delay."],["Q083",16,"What is a repartition topic?","It redistributes records by a new key so downstream keyed operations can process related records together.","Input keyed by orderId\nSelect customerId -> repartition -> customer total","Changing an application key is a logical operation; stateful operations may need a physical shuffle. Repartitioning adds network, storage and topic-management cost. Plan topic names and topology upgrades intentionally.","Repartitioning is not free local computation.","How would you identify unnecessary shuffles?","Inspect Kafka Streams topology descriptions, internal repartition topics and `groupBy`/ key-changing operations. Preserve the key when possible so needless repartition topics are avoided."],["Q084",16,"How do event-time windows handle late records?","They group by event timestamps and use an explicit grace policy to decide how long late records can update results.","Window: 10:00-10:05\nLate event timestamp=10:04 arrives later","Window type, timestamp extraction and grace determine acceptance. Stream time is driven by observed data, not simply the wall clock. Define whether results are provisional or final and what happens to dropped late records.","A five-minute window does not imply five minutes of wall-clock waiting.","How would you explain grace to a business stakeholder?","Explain grace as extra time after the window end to accept late facts and correct results. After grace closes, the event needs a separate late-event policy rather than silently changing finalized totals."],["Q085",16,"How do Spring Cloud Stream and Spring Kafka differ?","Spring Cloud Stream provides a binder/function abstraction; Spring Kafka exposes Kafka-specific templates, listeners and container controls.","Cloud Stream: Consumer<OrderEvent> function + bindings\nSpring Kafka: @KafkaListener + container/error handler","Choose the abstraction from portability needs and required operational control. Binder configuration still relies on Kafka semantics underneath. Do not mix configuration property namespaces or assume all native options map identically.","An abstraction does not remove partitioning or commit decisions.","Which setting needs native Kafka-specific control?","For native Kafka partition assignment, transaction configuration, `DefaultErrorHandler`, `@RetryableTopic`, low-level offset controls and producer tuning, Spring Kafka may expose the needed controls directly."],["Q086",17,"How would you design an order-to-payment workflow?","Commit order intent durably, publish through an outbox, process payment idempotently, and emit explicit outcomes.","Order PENDING -> PaymentRequested -> PaymentSucceeded\nOrder CONFIRMED after permitted outcome transition","The payment provider should accept a stable idempotency key. Timeouts can mean unknown outcomes, so reconcile rather than issuing uncontrolled repeat charges. Apply valid state transitions using aggregate identity and version.","A Kafka acknowledgment is not payment confirmation.","How do you recover a timed-out payment request?","Keep the original payment operation ID and set the order to PAYMENT_UNKNOWN after timeout. Query provider status or reconcile before retrying with the same key; do not charge with a new identity."],["Q087",17,"What is a saga in Kafka-based services?","It coordinates a multi-step workflow through local transactions and explicit compensating actions.","Reserve stock -> charge payment -> arrange shipment\nFailure -> release stock / refund under policy","Choreography uses emitted events; orchestration uses a coordinator. Neither creates a global ACID transaction. Compensations can fail and need durable retries, idempotency and human escalation.","A refund is not a literal rollback of history.","Which action is irreversible in your workflow?","Shipping physical goods, sending irreversible messages or externally capturing funds may be difficult to undo. Choose the point of no return and design compensations, audit and manual recovery."],["Q088",17,"How do you estimate partition count?","Use measured per-partition throughput, desired consumer parallelism, skew and recovery headroom.","Required 12000 events/s\nMeasured safe partition processing=2000 events/s\nInitial lower bound=6; add reviewed headroom","This is a sizing starting point, not a universal formula. Include payload bytes, brokers, replicas, open files, downstream concurrency and hot keys. Partition expansion can affect key order, so plan it early.","Average throughput hides burst and skew risk.","What load test would validate the estimate?","Load-test representative key skew, average/peak message sizes, per-partition throughput, consumer processing p99, rebalances and downstream saturation. Check required headroom after a broker failure."],["Q089",17,"How do you estimate retained storage?","Start with incoming bytes times retention duration times replica count, then account for compression and operational overhead.","10 MB/s * 86400 s/day * 3 replicas\nAbout 2.59 TB/day before compression and overhead","Use consistent units and measured stored compression ratio. Include indexes, segments, growth, rebalance movement and free-space headroom. Compaction sizing depends on key churn and cleaner progress.","Replication factor affects physical storage across brokers.","What happens when one broker loses capacity?","With a broker down, remaining replicas handle leadership and replication load; spare disk and network capacity must exist. Alert on ISR loss and evaluate under-replication and retention backlogs."],["Q090",17,"How should a multi-tenant Kafka design enforce isolation?","Combine topic/key design, principal permissions and application tenant validation appropriate to the required boundary.","Event tenantId must match authorized operation\nProjection writes constrained to tenant-owned data","Shared topics reduce topic count but rely more on application isolation. Separate topics and principals can strengthen operational boundaries at higher management cost. Validate DLT/replay paths as carefully as the happy path.","A tenantId field alone is not access control.","Which tenants require dedicated infrastructure?","Regulated, noisy, high-volume or strict-isolation tenants may need separate topics, quotas, ACLs or clusters. Use risk and measurable resource contention rather than tenant count alone."],["Q091",18,"Events were published but one service sees nothing. Where do you start?","Check topic/cluster identity, group assignment, committed offsets, filtering and deserialization before blaming delivery.","Same group as another service? -> they divide work\nDifferent group? -> independent subscription","Verify actual resolved bootstrap addresses and listener endpoint state. Inspect broker records with safe tooling and the group's progress. New groups with latest may not read older events.","Two services sharing a group do not each receive every record.","How do you distinguish no records from skipped old history?","Check topic exists, producer confirms, subscription and group ID, partitions, committed offsets, reset policy and filters. A new group at latest can skip older retained records without any broker defect."],["Q092",18,"A listener runs twice for one event. Is Kafka broken?","Redelivery is expected after failure or a crash before durable progress commit; application republishing can also duplicate the event.","Effect committed -> process dies before offset commit\nNew owner receives same source position","Compare eventId and topic/partition/offset. Same source position suggests redelivery; different positions with the same eventId suggest republishing. Repair the idempotency invariant instead of merely suppressing logs.","Producer idempotence does not prevent this consumer crash window.","Which database constraint protects the effect?","No. At-least-once processing, retries or crash after business commit before offset commit can produce a repeat. Protect with a unique `(consumer,eventId)` or `(tenant,operationId)` database constraint."],["Q093",18,"Lag grows only on one partition. What is likely?","A hot key, expensive records or partition-specific failure can bottleneck that partition.","Partition 0 lag=50000; others near zero\nTop key=one large tenant","Measure key distribution and dependency latency. More consumers cannot share that same partition within the group. Redesign key granularity only if ordering permits; otherwise optimize the serial path or isolate the hot aggregate.","Randomizing keys can destroy required entity order.","What invariant constrains the redesign?","A single hot key or unusually slow records may dominate one partition. Preserve its required per-account ordering while adjusting aggregate design, processing speed or key strategy."],["Q094",18,"The app connects locally but fails in Kubernetes. What do you inspect?","Inspect advertised broker addresses, DNS, listener ports, TLS names, network policies and credentials from the pod network.","Metadata returns localhost:9092 -> points to the pod itself","Compare bootstrap reachability with every advertised endpoint. Check error causes instead of increasing retries blindly. A TLS hostname mismatch should be fixed with correct addressing/certificates rather than disabling verification.","localhost changes meaning inside a container.","Which diagnostic can show the advertised broker list?","Check DNS and connectivity to every advertised broker hostname and port from inside the pod, TLS/SASL configuration and broker listeners. Successful bootstrap alone is insufficient."],["Q095",18,"The DLT count spikes after deployment. How do you respond?","Classify failures and isolate the rollout regression before replaying or scaling retries.","Invalid schema errors -> stop incompatible writers\nTransient dependency errors -> bound retries and recover capacity","Inspect versions, sanitized failure metadata and the first affected deployment. Preserve records, rate-limit recovery and verify a fix on representative payloads. Monitor source, retry and DLT backlogs together.","Replaying before fixing the cause creates a failure loop.","What proves the repaired consumer handles old records?","Pause hazardous replay, preserve samples and deployment evidence, compare schema/ settings, fix the consumer and demonstrate old and new records in staging before controlled DLT replay."],["Q096",19,"Can we guarantee no duplicate email with a Kafka transaction?","A Kafka transaction cannot atomically include an arbitrary email provider; use a provider idempotency contract or accept and manage the remaining ambiguity.","Send email succeeds -> crash before checkpoint\nRetry can send again unless provider deduplicates","A durable notification table tracks intent and status but still has a provider-call crash window. State the achievable guarantee honestly and choose an explicit delivery policy for ambiguous outcomes.","Local sent=true is not an atomic proof of remote delivery.","What if the provider offers no idempotency support?","Without provider idempotency, a timeout after send creates an unknowable duplicate risk. Keep a durable request ledger and accept an explicit delivery tradeoff or human reconciliation."],["Q097",19,"Can the API return success before send completes?","Only if it has already accepted the request through another documented durable mechanism such as an outbox.","DB order + outbox committed -> accepted response\nAsync Kafka publication -> monitored completion","An in-memory future without a durable acceptance record can disappear on process failure. If publishing is the acceptance boundary, handle success, failure and timeout/ unknown outcome with an API idempotency policy.","Fire-and-forget is not durable acceptance.","Which boundary does your HTTP contract promise?","Only if the contract promises durable intent (e.g. a committed outbox row), not confirmed Kafka append or downstream completion. State precisely what success means and offer status tracking."],["Q098",19,"How do you perform a safe consumer-group migration?","Define replay starting points, duplicate protection, shadow validation and cutover ownership before launching a new group.","Old billing-v1 -> live effects\nNew billing-v2 -> shadow projection -> compare -> cutover","A new group starts according to reset policy unless offsets are deliberately established. Two live groups may both execute external effects. Record the checkpoint and rollback plan so cutover does not silently miss history.","Renaming groupId is a behavioral change, not a cosmetic one.","How do you choose a consistent cutover point?","Record a source offset or business version watermark, build a shadow group, catch up and compare effects. Freeze/cutover writes briefly if strict order demands an unambiguous boundary."],["Q099",19,"How do you migrate to newer Kafka consumer protocols?","Check broker/client compatibility and protocol-specific assignment and timeout settings, then validate rebalance behavior under rollout and failure.","Boot BOM -> resolved kafka-clients version\nBroker support + client support -> chosen group.protocol","Kafka 4.x introduced a new consumer protocol with different management of some timing/ assignment options. A Boot 3.5 application's older managed client should not be assumed to expose newer client behavior. Use official migration guidance and staged tests.","Broker upgrade alone does not change every client API or default.","What would your compatibility matrix include?","List broker/client protocol versions, Spring Kafka/Boot alignment, group protocol feature flags, assignor compatibility and rollback path. Test mixed versions and rolling deployments."],["Q100",19,"What makes a strong architect-level Kafka interview answer?","State the business invariant, chosen mechanism, failure window, recovery process and evidence that it works.","Invariant: payment applied once per paymentId\nMechanism: provider key + durable ledger\nEvidence: timeout, replay, concurrency and crash tests","Discuss cost, ordering, retention and operational ownership. Separate transport acceptance from business completion. Use measured sizing and acknowledge boundaries rather than claiming exactly-once across every component.","Naming Kafka, Redis and retries without an invariant is not a design.","Which assumption would you challenge first in this system?","First challenge the required guarantee and the exact business effect: is ordering global or per key, does success mean broker append or payment completed, and which failure can be tolerated?"]],"labs":[["C01 · Publish with an explicit confirmation","boundary Send a stable order key and handle both future completion and synchronous failure. Setup: spring-kafka; String serializers configured","public CompletableFuture<SendResult<String,String>> publish(\nString orderId, String json) {\ntry {\nreturn template.send(\"orders\", orderId, json);\n} catch (RuntimeException failure) {\nreturn CompletableFuture.failedFuture(failure);\n}\n}\n// Caller observes completion; does not silently discard the result."],["C02 · A record listener with durable-work","semantics Invoke the business service synchronously and propagate a processing failure. Setup: spring-kafka; String deserializers; enable-auto-commit=false; ack-mode=record","@Component\nclass OrdersListener {\nprivate final OrderHandler handler;\nOrdersListener(OrderHandler handler) { this.handler = handler; }\n@KafkaListener(topics=\"orders\", groupId=\"projection-v1\")\npublic void receive(ConsumerRecord<String,String> record) {\nhandler.apply(record.value());\n}\n}\n// OrderHandler is application code: decode, validate and commit effect."],["C03 · Bounded retries and durable quarantine","Retry twice after the initial attempt, then publish to a reviewed DLT. Setup: spring-kafka; nontransactional record container; String payload exercise","@Bean\nDefaultErrorHandler errorHandler(KafkaTemplate<String,String> t) {\nvar recoverer = new DeadLetterPublishingRecoverer(t,\n(record, ex) -> new TopicPartition(\nrecord.topic() + \".DLT\", record.partition()));\nrecoverer.setFailIfSendResultIsError(true);\nvar handler = new DefaultErrorHandler(recoverer,\nnew FixedBackOff(1000L, 2L));\nhandler.addNotRetryableExceptions(IllegalArgumentException.class);\nreturn handler;\n}"],["C04 · Retry topics with an explicit ordering tradeoff","Use nonblocking retries for independent record work, outside container transactions. Setup: spring-kafka record listener; retry-topic support enabled; nontransactional template","@Configuration\n@EnableKafkaRetryTopic\nclass RetryConfiguration { }\n@RetryableTopic(attempts=\"3\",\nbackoff=@Backoff(delay=1000, multiplier=2.0),\nkafkaTemplate=\"kafkaTemplate\")\n@KafkaListener(topics=\"notifications\", groupId=\"notification-v1\")\npublic void receive(String message) {\nnotifications.sendIdempotently(message);\n}"],["C05 · Kafka-only transactional transformation","Consume an input event and publish an output with its offset in one Kafka transaction. Setup: spring-kafka; Boot default listener factory; read_committed consumers","// application.properties\nspring.kafka.producer.transaction-id-prefix=${INSTANCE_ID}-\nspring.kafka.consumer.enable-auto-commit=false\nspring.kafka.consumer.properties[isolation.level]=read_committed\n// listener method; KafkaTemplate<String,String> injected\n@KafkaListener(topics=\"order-input\", groupId=\"transform-v1\")\npublic void transform(String value) {\ntemplate.send(\"order-output\", extractOrderId(value), convert(value));\n// A thrown failure rolls back the container transaction.\n}"],["C06 · Database inbox deduplication","Atomically claim an eventId and apply the effect without a check-then-insert race. Setup: SQL database; service transaction; PostgreSQL syntax shown","CREATE TABLE processed_event (\nconsumer_name varchar(100) NOT NULL,\nevent_id varchar(100) NOT NULL,\nPRIMARY KEY (consumer_name, event_id)\n);\n-- Inside the same transaction as the business update:\nINSERT INTO processed_event(consumer_name,event_id)\nVALUES ('balance-v1', :eventId)\nON CONFLICT DO NOTHING;\n-- If affected rows = 0: duplicate; return without applying effect.\n-- If affected rows = 1: apply validated effect, then COMMIT."],["C07 · Transactional outbox and publisher crash","window Write order and publication intent atomically, then confirm Kafka before marking delivery. Setup: SQL transaction; scheduled/CDC publisher; illustrative SQL","BEGIN;\nINSERT INTO orders(id,status) VALUES (:orderId,'PENDING');\nINSERT INTO outbox(event_id,aggregate_id,payload,state)\nVALUES (:eventId,:orderId,:json,'PENDING');\nCOMMIT;\n-- Publisher state machine, not standalone SQL:\n-- claim pending row with lease / reviewed locking strategy\n-- send stable aggregate key and stable eventId; await confirmation\n-- mark DELIVERED only after successful send\n-- retry unconfirmed rows; tolerate confirmed-but-unmarked duplicates"],["C08 · Integration test the durable effect","Use a real broker and database and wait for state instead of sleeping. Setup: spring- kafka-test or Testcontainers; actual persistence implementation","// Test sketch: fixture supplies template, repository and unique topic/group.\npublish(event(\"e-42\", \"account-7\", 100));\npublish(event(\"e-42\", \"account-7\", 100));\nawait().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {\nassertThat(repository.balance(\"account-7\")).isEqualTo(100);\nassertThat(repository.processedCount(\"e-42\")).isEqualTo(1);\n});"],["C09 · Partition-order exercise","Demonstrate key locality and the limits of asynchronous workers. Setup: broker fixture; fixed partition count; stable producer key","for (int version = 1; version <= 5; version++) {\ntemplate.send(\"account-events\", \"account-7\",\n\"version=\" + version).get(10, TimeUnit.SECONDS);\n}\n// Collect ConsumerRecord metadata in a test listener.\n// Assert one partition and increasing offsets for this key."],["C10 · Production configuration review","Review a proposed setup and repair its invalid guarantees. Setup: design exercise; no executable setup required","Proposed:\nRF=3, min.insync.replicas=1, acks=1\nconsumer group shared by billing and audit\nasync worker + listener returns immediately\n@RetryableTopic on transactional batch listener\nRedis flag TTL=10 min prevents all repeated charges"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>

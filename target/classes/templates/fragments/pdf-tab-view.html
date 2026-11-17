@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="pdfTabContent" id="thymeleaf-tab-container" class="space-y-5">
+    <!-- ALL 20 MODULES ARE 100% INTERACTIVE HTML STUDY NOTES -->
+    <div id="interactive-html-tab-wrapper" class="space-y-3.5">
+        <!-- Control Header -->
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1624] p-4 sm:px-5 sm:py-3.5 shadow-elevated dark:shadow-elevated-dark">
+            <div id="html-preview-hero-accent" class="absolute inset-x-0 top-0 h-1.5"
+                 th:style="'background: linear-gradient(90deg, ' + (${activeTab.color} != null ? ${activeTab.color} : '#4f46e5') + ', #10b981)'"></div>
+
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pt-0.5">
+                <div class="flex flex-wrap items-center gap-2.5 min-w-0">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Interactive HTML Notes</span>
+                    </span>
+                    <h1 id="html-preview-full-title" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight truncate"
+                        th:text="${activeTab.fullTitle}">
+                        Interactive Study Notes
+                    </h1>
+                    <span id="html-preview-badge" class="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/25"
+                          th:text="${activeTab.badge}">180 Q&amp;A + Labs</span>
+                </div>
+
+                <!-- Quick Sub-View Controls & Actions -->
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <div class="inline-flex items-center rounded-xl bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800 text-xs font-semibold">
+                        <button type="button" onclick="switchEmbeddedHtmlSubTab('roadmap')" class="px-2.5 py-1 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer" title="Jump to Chapter Roadmap">
+                            🗺️ Roadmap
+                        </button>
+                        <button type="button" onclick="switchEmbeddedHtmlSubTab('reader')" class="px-2.5 py-1 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer" title="Jump to Q&amp;A Study Notes">
+                            📖 Q&amp;A Notes
+                        </button>
+                        <button type="button" onclick="switchEmbeddedHtmlSubTab('flashcards')" class="px-2.5 py-1 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer" title="Jump to 30s Interview Arena">
+                            ⚡ 30s Arena
+                        </button>
+                        <button type="button" onclick="switchEmbeddedHtmlSubTab('labs')" class="px-2.5 py-1 rounded-lg text-slate-800 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer" title="Jump to Hands-On Labs">
+                            💻 Labs
+                        </button>
+                    </div>
+
+                    <button type="button"
+                            onclick="openDedicatedIdeTab(null, null)"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-700 shadow-sm transition cursor-pointer">
+                        <span>🚀 Open IDE</span>
+                    </button>
+
+                    <button type="button"
+                            onclick="toggleEmbeddedHtmlFullscreen()"
+                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-bold transition cursor-pointer"
+                            title="Fullscreen Interactive HTML Study Notes">
+                        <span>⛶ Fullscreen</span>
+                    </button>
+
+                    <a th:href="@{'/pdfs/' + ${activeTab.filename}}" target="_blank"
+                       onclick="return handleOpenStandaloneHtml(event, this.getAttribute('data-tab-id'), this.getAttribute('href'))"
+                       th:attr="data-tab-id=${activeTab.id}"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold border border-indigo-700 shadow-sm transition">
+                        <span>↗ New Tab</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Embedded Full-Viewport Interactive HTML Study Application -->
+        <div id="interactive-html-frame-container" class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-elevated dark:shadow-elevated-dark bg-[#0b0f19]">
+            <iframe id="interactive-html-viewer"
+                    th:src="@{'/pdfs/' + ${activeTab.filename}}"
+                    th:attr="data-tab-id=${activeTab.id},data-filename=${activeTab.filename}"
+                    title="Zero to Hero Interactive HTML Study Notes"
+                    class="w-full border-0 block bg-[#0b0f19]"
+                    style="height: calc(100vh - 145px); min-height: 820px;"></iframe>
+        </div>
+    </div>
+</div>
+</body>
+</html>

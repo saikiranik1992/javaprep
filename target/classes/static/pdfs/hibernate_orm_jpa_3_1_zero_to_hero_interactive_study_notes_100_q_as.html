@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hibernate ORM &amp; JPA 3.1 — Zero to Hero Interactive Study Notes (100 Q&amp;As)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-elevated: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #26334d;
+      --book-accent: #d97706;
+    }
+    html.light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border-color: #e2e8f0;
+    }
+    html.notebook {
+      --bg-primary: #faf6ed;
+      --bg-secondary: #f3ede0;
+      --bg-card: #fffdf7;
+      --bg-elevated: #efe6d5;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --border-color: #dcd2be;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .theme-card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+    }
+    .theme-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+    .theme-elevated {
+      background-color: var(--bg-elevated);
+      border-color: var(--border-color);
+    }
+    .theme-text-muted {
+      color: var(--text-secondary);
+    }
+    .accent-bg {
+      background-color: var(--book-accent);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b theme-secondary backdrop-blur-md bg-opacity-95">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <!-- Topic Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl accent-bg flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+          ZH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm sm:text-base tracking-tight">Hibernate ORM &amp; JPA 3.1</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold theme-elevated border">
+              20 Chapters · 100 Q&amp;As · 12 Labs
+            </span>
+          </div>
+          <p class="text-[11px] theme-text-muted hidden sm:block">
+            Zero to Hero Clean Premium Notes · Java 17 · JPA 3.1 · Hibernate 6.6
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1 p-1 rounded-xl theme-elevated border text-xs font-medium overflow-x-auto max-w-full">
+        <button id="tabBtn-roadmap" onclick="switchTab('roadmap')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap">
+          <span>🗺️</span>
+          <span>Chapter Roadmap (20)</span>
+        </button>
+        <button id="tabBtn-reader" onclick="switchTab('reader')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>📖</span>
+          <span>Q&amp;A Study Notes (100)</span>
+        </button>
+        <button id="tabBtn-flashcards" onclick="switchTab('flashcards')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>⚡</span>
+          <span>30s Interview Arena</span>
+        </button>
+        <button id="tabBtn-labs" onclick="switchTab('labs')" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap">
+          <span>💻</span>
+          <span>Hands-On Labs (12)</span>
+        </button>
+      </nav>
+
+      <!-- Global Stats & Theme -->
+      <div class="flex items-center gap-2">
+        <button id="btnOpenStatsModal" onclick="openStatsModal()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium flex items-center gap-1.5 hover:border-blue-500/60 transition" title="View Chapter Mastery & Bookmarks">
+          <span class="text-emerald-400 font-bold" id="headerMasteredCount">0</span>
+          <span class="theme-text-muted">/ 100</span>
+          <span class="text-amber-400 ml-1">★ <span id="headerStarredCount">0</span></span>
+        </button>
+        <button id="btnCycleTheme" onclick="cycleTheme()" class="px-2.5 py-1.5 rounded-lg border theme-card text-xs font-medium hover:border-blue-500/60 transition" title="Switch Theme">
+          <span id="themeLabel">🌙 Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5">
+
+    <!-- ==================== VIEW 1: CHAPTER ROADMAP ==================== -->
+    <section id="view-roadmap" class="space-y-6">
+      <div class="rounded-2xl p-5 sm:p-6 border theme-card relative overflow-hidden">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold theme-elevated border">
+              <span>📘 Data &amp; Persistence</span>
+              <span>•</span>
+              <span>142 PDF Pages Digitized</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Hibernate ORM &amp; JPA 3.1 — Complete Study Roadmap
+            </h2>
+            <p class="text-xs sm:text-sm theme-text-muted leading-relaxed">
+              Zero to Hero Clean Premium Notes (Java 17 · JPA 3.1 · Hibernate 6.6). Select any chapter below to study its interview questions, 30-second spoken answers, code traces, pitfalls, and answered follow-ups, or launch the 30-second mock interview arena.
+            </p>
+          </div>
+          <div class="w-full lg:w-80 space-y-2.5">
+            <div class="relative">
+              <input id="roadmapQuickSearch" type="text" placeholder="Search all 100 questions in this book..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="handleRoadmapQuickSearch(this.value)" />
+              <span class="absolute left-3 top-2.5 text-sm opacity-60">🔍</span>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="theme-text-muted">Book Mastery: <strong id="roadmapMasteryPct" class="text-emerald-400">0%</strong></span>
+                <button onclick="openChapterInArena('all')" class="text-blue-400 hover:underline font-semibold">Quiz Full Book →</button>
+              </div>
+              <div class="w-full h-2 rounded-full theme-elevated overflow-hidden">
+                <div id="roadmapMasteryBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapters Grid -->
+      <div id="chaptersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: Q&A READER ==================== -->
+    <section id="view-reader" class="hidden">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- Left Sidebar: Chapter & Status Filter -->
+        <aside class="w-full lg:w-72 shrink-0 rounded-2xl border theme-card p-4 space-y-4 lg:sticky lg:top-16 max-h-[85vh] flex flex-col">
+          <!-- Status Filter Buttons -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider theme-text-muted mb-1.5">
+              Filter by Status
+            </label>
+            <div class="grid grid-cols-2 gap-1.5 text-xs">
+              <button id="statusBtn-all" onclick="setReaderStatus('all')" class="px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center">
+                <span>All</span><span id="statusCnt-all" class="opacity-80 text-[11px]">100</span>
+              </button>
+              <button id="statusBtn-starred" onclick="setReaderStatus('starred')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>★ Starred</span><span id="statusCnt-starred" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-mastered" onclick="setReaderStatus('mastered')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>✓ Mastered</span><span id="statusCnt-mastered" class="opacity-80 text-[11px]">0</span>
+              </button>
+              <button id="statusBtn-review" onclick="setReaderStatus('review')" class="px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center">
+                <span>↻ Review</span><span id="statusCnt-review" class="opacity-80 text-[11px]">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chapter List -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-wider theme-text-muted">Chapters (20)</span>
+              <button onclick="selectReaderChapter('all')" class="text-[11px] text-blue-400 hover:underline">Show All</button>
+            </div>
+            <div id="readerChapterList" class="space-y-1 overflow-y-auto custom-scrollbar pr-1 max-h-64 lg:max-h-[55vh]"></div>
+          </div>
+        </aside>
+
+        <!-- Right Main Area: Search + Cards -->
+        <div class="flex-1 min-w-0 w-full space-y-4">
+          <div class="rounded-2xl border theme-card p-3.5 sm:p-4 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+              <div class="relative flex-1">
+                <input id="readerSearchInput" type="text" placeholder="Search questions, direct answers, code snippets, or follow-ups..." oninput="handleReaderSearch(this.value)" class="w-full pl-9 pr-8 py-2 rounded-xl border theme-elevated text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute left-3 top-2.5 text-xs opacity-60">🔍</span>
+                <button id="btnClearSearch" onclick="clearReaderSearch()" class="hidden absolute right-2.5 top-2 text-xs theme-text-muted hover:opacity-100">✕</button>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button id="btnToggleAllFollowups" onclick="toggleAllFollowups()" class="px-3 py-2 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60 transition">
+                  👁️ Expand Follow-Ups
+                </button>
+                <button onclick="openCurrentFilterInArena()" class="px-3 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition">
+                  ⚡ Quiz This Set
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-700/30 text-xs">
+              <div id="readerSummaryLabel" class="font-medium theme-text-muted">
+                Showing questions
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="changeReaderPage(-1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">← Prev</button>
+                <span id="readerPageIndicator" class="px-2 font-semibold">Page 1</span>
+                <button id="btnNextPage" onclick="changeReaderPage(1)" class="px-2.5 py-1 rounded-lg border theme-elevated disabled:opacity-40">Next →</button>
+                <select id="readerPageSize" onchange="changeReaderPageSize(this.value)" class="ml-1 px-2 py-1 rounded-lg border theme-elevated text-xs">
+                  <option value="15">15 / page</option>
+                  <option value="30">30 / page</option>
+                  <option value="150">Show All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="readerQuestionsContainer" class="space-y-4"></div>
+
+          <div class="rounded-2xl border theme-card p-3 flex items-center justify-between text-xs">
+            <button onclick="changeReaderPage(-1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">← Previous Page</button>
+            <span id="readerBottomPageInfo" class="theme-text-muted font-medium">Page 1</span>
+            <button onclick="changeReaderPage(1)" class="px-3 py-1.5 rounded-lg border theme-elevated font-medium">Next Page →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: 30s INTERVIEW ARENA ==================== -->
+    <section id="view-flashcards" class="hidden max-w-4xl mx-auto space-y-5">
+      <div class="rounded-2xl border theme-card p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="arenaChapterSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+            <option value="all">All 20 Chapters (100 Qs)</option>
+          </select>
+          <select id="arenaModeSelect" onchange="updateArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium">
+            <option value="all">All Questions</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="review">Needs Review Only (↻)</option>
+            <option value="starred">Starred Only (★)</option>
+          </select>
+          <button onclick="shuffleArenaDeck()" class="px-3 py-1.5 rounded-xl border theme-elevated text-xs font-medium hover:border-blue-500/60">
+            🔀 Shuffle
+          </button>
+        </div>
+
+        <!-- 30s Timer -->
+        <div class="flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl border theme-elevated flex items-center gap-2 text-xs font-mono">
+            <span>⏱️</span>
+            <span id="arenaTimerDisplay" class="font-bold text-sm text-blue-400">00:30</span>
+          </div>
+          <button id="btnArenaTimerToggle" onclick="toggleArenaTimer()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            Start 30s Timer
+          </button>
+          <button onclick="resetArenaTimer()" class="px-2.5 py-1.5 rounded-xl border theme-elevated text-xs" title="Reset 30s Timer">
+            ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Flashcard Box -->
+      <div id="arenaCardBox" class="rounded-2xl border theme-card p-5 sm:p-7 shadow-lg space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white accent-bg">Hibernate ORM &amp; JPA 3.1</span>
+            <span id="arenaChapterBadge" class="text-xs theme-text-muted font-medium">Chapter</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="arenaCounter" class="text-xs font-mono theme-text-muted">1 / 100</span>
+            <button id="arenaStarBtn" onclick="toggleArenaStar()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium">
+              ☆ Star
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 py-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-blue-400" id="arenaQId">QUESTION Q001</div>
+          <h3 id="arenaQuestionText" class="text-lg sm:text-xl font-extrabold leading-snug">
+            Loading question...
+          </h3>
+          <p class="text-xs theme-text-muted italic">
+            💡 Speak your 30-second answer aloud first, then reveal the Direct Answer, Code Trace, and Follow-Up Q&amp;A.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button id="btnRevealStep1" onclick="revealArenaStep(1)" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30 transition">
+            1. Reveal Direct Answer
+          </button>
+          <button id="btnRevealStep2" onclick="revealArenaStep(2)" class="px-3.5 py-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-300 text-xs font-semibold hover:bg-purple-600/30 transition">
+            2. Reveal Code &amp; Trace
+          </button>
+          <button id="btnRevealStep3" onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30 transition">
+            3. Reveal Follow-Up Q&amp;A
+          </button>
+          <button onclick="revealArenaStep(3)" class="px-3.5 py-2 rounded-xl border theme-elevated text-xs font-medium ml-auto">
+            Reveal All
+          </button>
+        </div>
+
+        <div id="arenaStep1Panel" class="hidden rounded-xl p-4 bg-blue-500/10 border border-blue-500/30 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Answer</div>
+          <p id="arenaAnswerText" class="text-sm sm:text-base font-medium leading-relaxed"></p>
+        </div>
+
+        <div id="arenaStep2Panel" class="hidden space-y-3">
+          <div id="arenaCodeWrap" class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+            <div class="px-3.5 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+              <span>CODE / ARCHITECTURE TRACE</span>
+              <button onclick="copyArenaCode()" class="hover:text-white font-medium">📋 Copy</button>
+            </div>
+            <pre id="arenaCodeText" class="p-3.5 text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl p-3.5 theme-elevated border space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism / Trace</div>
+              <p id="arenaTraceText" class="text-xs leading-relaxed"></p>
+            </div>
+            <div class="rounded-xl p-3.5 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch For</div>
+              <p id="arenaTrapText" class="text-xs leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="arenaStep3Panel" class="hidden rounded-xl p-4 bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Interviewer Follow-Up Question</div>
+          <p id="arenaFollowupQ" class="text-sm font-bold"></p>
+          <div class="pt-1 border-t border-emerald-500/20">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Follow-Up Answer: </span>
+            <span id="arenaFollowupA" class="text-xs sm:text-sm leading-relaxed"></span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+          <button onclick="stepArenaCard(-1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            ← Previous
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="markArenaCard('review')" class="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 text-xs font-bold transition">
+              ↻ Needs Review
+            </button>
+            <button onclick="markArenaCard('mastered')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+              ✓ Mastered &amp; Next
+            </button>
+          </div>
+          <button onclick="stepArenaCard(1)" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold">
+            Next →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: HANDS-ON LABS ==================== -->
+    <section id="view-labs" class="hidden space-y-5">
+      <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-extrabold">Hibernate ORM &amp; JPA 3.1 — Hands-On Labs &amp; Reference Guides (12)</h2>
+          <p class="text-xs theme-text-muted">
+            Complete runnable lab exercises and revision checklists from the appendix of Hibernate ORM &amp; JPA 3.1.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="labsSearchInput" type="text" placeholder="Filter labs..." oninput="renderLabsView()" class="px-3 py-2 rounded-xl border theme-elevated text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div id="labsGridContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STATS MODAL ==================== -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl border theme-card max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold">Hibernate ORM &amp; JPA 3.1 — Chapter Mastery Breakdown</h3>
+          <p class="text-xs theme-text-muted">Progress is stored locally in your browser.</p>
+        </div>
+        <button onclick="closeStatsModal()" class="px-2.5 py-1 rounded-lg border theme-elevated text-xs font-bold">✕</button>
+      </div>
+
+      <div id="statsModalChapterBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar"></div>
+
+      <div class="pt-3 border-t border-slate-700/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="exportProgressJson()" class="px-3 py-1.5 rounded-xl accent-bg text-white text-xs font-semibold">
+            📋 Copy Progress JSON
+          </button>
+          <button id="btnResetConfirmTrigger" onclick="showResetConfirmation()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold">
+            🗑️ Reset Progress
+          </button>
+          <div id="resetConfirmInline" class="hidden items-center gap-1.5 text-xs">
+            <span class="text-rose-400 font-medium">Clear this book's progress?</span>
+            <button onclick="confirmResetProgress()" class="px-2 py-1 rounded bg-rose-600 text-white font-bold">Yes, Reset</button>
+            <button onclick="cancelResetProgress()" class="px-2 py-1 rounded border theme-elevated">Cancel</button>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="px-4 py-1.5 rounded-xl border theme-elevated text-xs font-semibold">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white border border-slate-700 shadow-xl text-xs font-medium flex items-center gap-2">
+    <span id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    const BOOK = {"id":"hibernate","title":"Hibernate ORM & JPA 3.1","subtitle":"Zero to Hero Clean Premium Notes","category":"Data & Persistence","badge":"Java 17 · JPA 3.1 · Hibernate 6.6","color":"#d97706","pages":142,"chapters":["Orm Foundations And Mental Models","Entities, Identifiers And Value Types","Entity Lifecycle And State Changes","Dirty Checking, Flush And Write Behavior","Relationships And Ownership","Cascades And Orphan Removal","Fetching, Proxies And Lazyinitializationexception","N+1 Queries And Fetch Strategies","Jpql, Hql And Dto Projections","Criteria Api, Filters And Specifications","Transaction Boundaries And Spring Integration","Concurrency, Isolation And Locking","First-Level Cache And Persistence Context","Second -Level And Query Caches","Batching, Ids And Write Optimization","Bulk Updates, Native Sql And Consistency","Inheritance, Polymorphism And Mapping Tradeoffs","Testing, Schema Migrations And Verification","Observability And Production Performance","Senior Architect Scenarios And Upgrades"],"questions":[["Q001",0,"What problem does Hibernate ORM solve?","Hibernate maps Java objects to relational rows and helps track changes, relationships and queries. It does not remove the need to understand SQL.","@Entity class Customer { @Id Long id; String name; }","entity class → persistence context → database row","ORM is not a replacement for data modeling.","Does ORM eliminate SQL tuning?","No. Hibernate still sends SQL. Inspect generated statements, indexes and execution plans when performance matters."],["Q002",0,"How do JPA and Hibernate differ?","Jakarta Persistence defines standard mapping and persistence contracts. Hibernate ORM is one implementation that also offers provider-specific features.","EntityManager em; // JPA API, Hibernate provider","entity class → persistence context → database row","A JPA annotation does not mean every provider generates identical SQL.","When should you prefer standard JPA APIs?","Use EntityManager and standard annotations for portable behavior; use Hibernate extensions when they solve a concrete need."],["Q003",0,"What do EntityManager and Session represent?","They manage a persistence context that tracks entity identities and changes. Hibernate Session provides extra native APIs alongside JPA EntityManager.","em.find(Customer.class, 42L);","entity class → persistence context → database row","Do not store EntityManager in a singleton field.","Can two threads share one EntityManager?","No. Treat an EntityManager or Session as a non-thread-safe unit of work and keep it scoped to one operation."],["Q004",0,"How are EntityManagerFactory and EntityManager lifetimes different?","EntityManagerFactory is relatively costly and shared across application operations. EntityManager is lightweight, short-lived and not thread-safe.","try (var em = emf.createEntityManager()) { /* work */ }","entity class → persistence context → database row","Opening a new factory for every request wastes resources.","Who closes these resources?","The container normally manages them in Spring; in plain Java, close each EntityManager and close the factory at application shutdown."],["Q005",0,"Why must you still design the database when using ORM?","Tables, constraints, types and indexes enforce important rules and determine query cost. Entity annotations are only one representation of that schema.","@Column(nullable=false) String email; // also use DB constraints","entity class → persistence context → database row","Do not rely on Java validation alone under concurrent writes.","Which rule belongs in the database?","Business uniqueness, required foreign keys and nonnegative stock constraints should be enforced by suitable database mechanisms."],["Q006",1,"Which Java class can be a JPA entity?","An entity is mapped with @Entity and has an identifier. For portable JPA, provide an accessible no-argument constructor and a non-final entity class.","@Entity class Order { @Id Long id; protected Order() {} }","identifier → entity mapping → persisted row","Do not assume every immutable record can be a JPA entity.","Why is the no-arg constructor needed?","JPA providers instantiate entities reflectively or through enhancement; keep a protected constructor for domain control."],["Q007",1,"How do @Id and @GeneratedValue work?","@Id marks the persistent identity. @GeneratedValue asks the provider or database to generate identifiers under a selected strategy.","@Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id;","identifier → entity mapping → persisted row","Do not assume an identifier exists before the insert happens.","What is the tradeoff of IDENTITY generation?","IDENTITY usually needs a database insert to obtain the identifier, which can limit JDBC insert batching."],["Q008",1,"When should you use @Embedded and @Embeddable?","Use an embeddable for value fields that belong to the owning row or mapping. It has no separate entity identity.","@Embedded Address shippingAddress;","identifier → entity mapping → persisted row","Value objects can still hold mutable references unless carefully designed.","Should an Address be an entity or value?","Make it an embeddable when it has no independent lifecycle; make it an entity when it must be shared and independently updated."],["Q009",1,"How should enum values be stored?","Prefer EnumType.STRING for readable stable names, and plan migrations before renaming constants. ORDINAL depends on declaration order.","@Enumerated(EnumType.STRING) OrderStatus status;","identifier → entity mapping → persisted row","Reordering ORDINAL values can silently change meaning.","What if an enum constant must be renamed?","Use an explicit converter or migration so persisted codes remain compatible."],["Q010",1,"When should you use an AttributeConverter?","Use it to translate a domain value to an agreed database representation when basic mapping is insufficient.","@Converter class CurrencyCodeConverter implements\nAttributeConverter<CurrencyCode,String> { ... }","identifier → entity mapping → persisted row","Converters do not automatically make ciphertext searchable or secure.","Can one converter handle encrypted secrets transparently?","Technically conversion is possible, but encryption needs keys, rotation and query constraints designed separately."],["Q011",2,"What are transient, managed, detached and removed entity states?","A new object is transient; a managed entity is tracked; a detached entity is no longer tracked; a removed entity is scheduled for deletion.","Customer c = new Customer(); em.persist(c); // managed","transient → managed → detached / removed","Avoid equating a Java object reference with active persistence tracking.","Can a detached object's setter update the database?","No. Changes to a detached object are not tracked unless they are merged or explicitly reattached using an appropriate operation."],["Q012",2,"What does persist() do?","persist makes a new entity managed and schedules insertion according to flush and identifier rules.","em.persist(new Customer(\"Meena\"));","transient → managed → detached / removed","Persist is not an independent durable commit.","Does persist always issue INSERT immediately?","No. SQL timing depends on the identifier generator and flush requirements; commit normally triggers flushing."],["Q013",2,"How does merge() differ from persist()?","merge copies the state of a detached or new object into a managed instance and returns that managed instance. The input reference does not become managed.","Customer managed = em.merge(detached);","transient → managed → detached / removed","Ignoring the return value can cause stale- reference mistakes.","Which object should you use after merge?","Use the returned object; it is the managed result in the current persistence context."],["Q014",2,"What does remove() mean for a managed entity?","remove marks a managed entity for deletion at flush, subject to mappings and database constraints.","em.remove(em.find(Customer.class, id));","transient → managed → detached / removed","Cascade REMOVE can erase more rows than intended.","Can you remove a detached entity directly?","Not portably. Find or merge an appropriate managed instance first, and check authorization before deleting."],["Q015",2,"What are detach(), clear() and refresh() used for?","detach stops tracking one entity; clear detaches all managed entities; refresh reloads database state into a managed entity.","em.flush(); em.clear();","transient → managed → detached / removed","Clearing is not the same as committing a transaction.","Why can clear() lose work?","Unflushed changes are discarded from tracking, so flush intentionally before clearing when those updates must persist."],["Q016",3,"How does Hibernate dirty checking work?","Hibernate compares or tracks a managed entity's state and generates writes when flushing changes.","Customer c=em.find(Customer.class,id); c.setName(\"New\");","managed mutation → dirty check → generated UPDATE","Changing a detached entity will not be picked up automatically.","Do you always need save() after editing a managed entity?","No. Within a writable transaction, dirty checking can persist the change during flush without another repository save call."],["Q017",3,"What is the difference between flush and commit?","Flush synchronizes pending persistence operations to the database inside the current transaction. Commit decides whether the transaction becomes durable.","em.persist(order); em.flush(); tx.rollback();","managed mutation → dirty check → generated UPDATE","A successful flush is not proof of business success.","Can a flushed INSERT still roll back?","Yes. A later transaction rollback can undo flushed database writes."],["Q018",3,"When does Hibernate flush automatically?","Flush can happen before transaction commit and before some queries whose results require pending changes, depending on flush mode and provider behavior.","em.setFlushMode(FlushModeType.AUTO);","managed mutation → dirty check → generated UPDATE","Do not rely on accidental query-triggered flushing.","Can flush mode affect queries?","Yes. AUTO and COMMIT modes can produce different synchronization timing; validate actual query behavior."],["Q019",3,"What does @DynamicUpdate change?","It asks Hibernate to generate UPDATE SQL with changed columns when possible, trading SQL-statement variation for narrower updates.","@org.hibernate.annotations.DynamicUpdate","managed mutation → dirty check → generated UPDATE","Narrow UPDATEs can reduce batching and statement-plan reuse.","Does it eliminate optimistic lock needs?","No. It does not provide cross-request conflict detection or protect an invariant by itself."],["Q020",3,"Why does write ordering matter during flush?","Insert, update and delete actions may execute in an order chosen to satisfy batching and persistence rules, not the order of Java setter calls.","em.flush(); // verify SQL and constraint timing","managed mutation → dirty check → generated UPDATE","Do not assume Java statement order equals SQL execution order.","How can a unique-key swap fail?","Two updates may conflict mid-flush; design temporary values or database-supported deferrable constraints where available."],["Q021",4,"How do @ManyToOne and @OneToMany differ?","Many orders can refer to one customer via a foreign key. A collection on the customer side represents the inverse one-to-many view.","@ManyToOne(fetch=FetchType.LAZY) Customer customer;","owning side → foreign key → association integrity","Do not assume the collection is the database owner.","Which side normally owns the foreign key?","The @ManyToOne side typically holds and updates the foreign key column."],["Q022",4,"What does mappedBy mean?","mappedBy identifies the field that owns a bidirectional relationship; the inverse side does not maintain the foreign key independently.","customer.addOrder(order); // sets order.customer and collection","owning side → foreign key → association integrity","Updating only inverse collection can fail to change the FK.","Do both Java references need updating?","Yes for a consistent in-memory object graph, even though only the owning side controls persistence."],["Q023",4,"When should you use @OneToOne?","Use it when each row relates to at most one other row under an enforced uniqueness rule.","@OneToOne @JoinColumn(name=\"passport_id\", unique=true)","owning side → foreign key → association integrity","A missing unique constraint can violate the assumed one-to-one rule.","Does @OneT oOne automatically guarantee a unique business relation?","Only with the correct schema constraints and mapping; verify the generated database definition."],["Q024",4,"Why is @ManyToMany often avoided for rich domains?","The join table usually becomes a real domain relationship when it needs timestamps, status or ownership rules. Map that join row as an entity.","class Enrollment { Student student; Course course; LocalDate enrolledAt; }","owning side → foreign key → association integrity","A bare @ManyToMany cannot carry join-row fields naturally.","How would you store enrollment date?","Create an Enrollment entity with @ManyToOne references to Student and Course."],["Q025",4,"What is a useful helper method for bidirectional associations?","A helper changes the owning field and the inverse collection together so the in- memory graph stays coherent.","void addOrder(Order o){orders.add(o);o.setCustomer(this);}","owning side → foreign key → association integrity","Watch for recursive equals/toString across both sides.","Is a helper sufficient to enforce database integrity?","No. Foreign keys and uniqueness constraints remain necessary."],["Q026",5,"What does CascadeType.PERSIST do?","It propagates persist from a parent to related objects through a mapped association. Only configure it when the parent controls that creation lifecycle.","@OneToMany(cascade= CascadeType.PERSIST) List<Item> items;","owner change → cascading action → child lifecycle","ALL is not a default that fits every association.","Should you cascade from child to shared parent?","Usually no. Persisting one order should not automatically create unrelated customer records."],["Q027",5,"How do cascade and orphanRemoval differ?","Cascade REMOVE propagates deletion when the parent is removed. orphanRemoval deletes a child when it is removed from its owning collection/ relationship.","@OneToMany(mappedBy=\"order\", orphanRemoval=true) List<Item> items;","owner change → cascading action → child lifecycle","Removing a list entry can delete a database row.","What if a child is merely moved to another parent?","Handle the move explicitly and verify ownership rules; orphan removal can schedule deletion if modeled incorrectly."],["Q028",5,"Why is CascadeType.REMOVE risky on @ManyToMany?","Related entities are usually shared by many owners. Cascading delete could remove another owner's shared entity.","@ManyToMany Set<Tag> tags; // no REMOVE cascade","owner change → cascading action → child lifecycle","Shared reference data must not be cascaded away.","What should deletion remove in a many-to-many relation?","Remove the join association, not the shared peer entity."],["Q029",5,"Why might a cascade seem to do nothing?","Cascade directions only follow configured paths; the parent must be in the relevant operation/state and associations must be synchronized.","em.persist(order); // inspect new item insert","owner change → cascading action → child lifecycle","Cascade is not equivalent to unlimited graph persistence.","How do you debug it?","Inspect owning side, cascade configuration, transaction, flush and SQL output."],["Q030",5,"How should aggregate boundaries guide cascades?","Use cascading for children whose lifecycle genuinely belongs to one aggregate root. Shared external aggregates should be addressed explicitly.","Order -> OrderItem : owned; Order -> Customer : reference","owner change → cascading action → child lifecycle","Mapping convenience must not define business ownership.","Should checkout cascade updates into Customer?","Not merely because an Order references Customer; ownership is a business design choice."],["Q031",6,"What does LAZY fetching mean?","Hibernate may defer association loading until it is accessed in an open persistence context. It is a fetch hint/contract subject to provider and mapping rules.","@ManyToOne(fetch=FetchType.LAZY) Customer customer;","request → fetch plan → initialized fields","Never assume lazy means no database call during serialization.","Does LAZY guarantee zero SQL at initial load?","No. Mapping and instrumentation details can affect whether an association is fetched eagerly."],["Q032",6,"What causes LazyInitializationException?","Code accesses an uninitialized lazy association after its persistence context is unavailable.","List<OrderView> getOrders(); // map within transaction","request → fetch plan → initialized fields","Do not fix it by making every relationship EAGER.","Is Open Session in View the ideal fix?","Not necessarily. Prefer transaction-scoped queries and intentional DTO fetch plans; OSIV can hide extra SQL and extend persistence work."],["Q033",6,"What is an entity proxy?","A proxy can stand in for an entity and load its state when needed. Its concrete runtime type may differ from the mapped class.","Customer ref = em.getReference(Customer.class,id);","request → fetch plan → initialized fields","Avoid dereferencing a proxy outside its context.","Why can getClass() and equals() be tricky?","Proxy subclasses and uninitialized identifiers complicate entity equality; use a carefully tested identity strategy."],["Q034",6,"When should you use an EntityGraph?","An EntityGraph declares which relationships should be included for a particular operation without changing all mappings globally.","em.find(Order.class,id, Map.of(\"jakarta.persistence.fetchgraph\",graph));","request → fetch plan → initialized fields","Fetch graphs must be designed for query shape and cardinality.","Is an EntityGraph identical to SQL JOIN FETCH?","No. A provider can choose how to implement a fetch plan; inspect resulting SQL and duplicates."],["Q035",6,"What should a REST controller return instead of entities?","Return DTOs representing the API contract, with data loaded intentionally inside a service transaction.","record OrderDto(Long id, String status) {}","request → fetch plan → initialized fields","A JSON annotation does not substitute for a proper fetch plan.","What risk comes from serializing entities directly?","Lazy loading, recursion, leaking fields and accidental deep graph queries."],["Q036",7,"What is the N+1 select problem?","A query loads N parents and then causes another query for each parent's relationship, producing 1+N round trips.","orders.forEach(o -> o.getCustomer().getName());","initial SELECT → repeated child load → bounded query plan","A method that works with 3 rows can become slow with 3,000.","How can you detect N+1?","Turn on SQL/statistics in tests and assert statement counts for representative fixture sizes."],["Q037",7,"How can JOIN FETCH help?","It requests association data in the same query where appropriate, reducing round trips for the selected graph.","select o from Order o join fetch o.customer","initial SELECT → repeated child load → bounded query plan","A join fetch can inflate result rows and transferred bytes.","Why is joining multiple collections dangerous?","Joining two bags can be unsupported or multiply rows; bound collection cardinality and consider multiple queries."],["Q038",7,"What does @BatchSize optimize?","Batch fetching gathers several uninitialized associations into fewer SELECTs, often with an IN-list.","@BatchSize(size=32) List<OrderItem> items;","initial SELECT → repeated child load → bounded query plan","Batching reduces trips but may still load unused data.","Is batch size 100 always better than 20?","No. Tune against DB parameter limits, network cost and typical association counts."],["Q039",7,"What is subselect fetching?","Hibernate can fetch collections for multiple loaded parents using a subquery derived from the parent-loading scope.","@Fetch(FetchMode.SUBSELECT) List<Item> items;","initial SELECT → repeated child load → bounded query plan","Subselect fetch is not a universal N+1 fix.","When is it a bad choice?","When a large parent result forces fetching many collections not needed by the screen."],["Q040",7,"How should you fetch data for a paginated list?","Page root IDs or DTO rows first, then fetch bounded needed details using a second query if necessary.","select o.id from Order o order by o.id","initial SELECT → repeated child load → bounded query plan","A warning about in-memory pagination should not be ignored.","Why avoid paging directly over a collection fetch join?","SQL row multiplication can make root pagination incorrect or force expensive in- memory paging."],["Q041",8,"What is JPQL and how is it different from SQL?","JPQL queries the entity model and its fields, while SQL queries database tables and columns. Hibernate HQL adds provider features.","select o from Order o where o.customer.id = :id","entity query → parameter binding → selected result","JPQL and SQL are not interchangeable text.","Will JPQL naming match physical column names?","No. Use Java entity property names and associations."],["Q042",8,"How do you bind query parameters safely?","Use typed or named parameters rather than concatenating untrusted values into JPQL/SQL.","query.setParameter(\"customerId\", customerId);","entity query → parameter binding → selected result","Never concatenate user-supplied filtering values.","Does a bound parameter substitute for a table name?","No. Whitelist any dynamic identifiers separately; parameters represent values."],["Q043",8,"What are DTO constructor projections?","A constructor projection selects only needed fields into a class with a matching constructor instead of a managed entity.","select new app.OrderSummary(o.id,o.total) from Order o","entity query → parameter binding → selected result","A DTO projection is not managed and won't be dirty-checked.","Why use a DTO for a dashboard?","It reduces entity materialization and prevents accidental lazy loading for read-only views."],["Q044",8,"What is the difference between getResultList and getSingleResult?","getResultList returns zero or more results; getSingleResult expects one and throws for no result or more than one.","query.setMaxResults(1).getResultList();","entity query → parameter binding → selected result","LIMIT 1 without ORDER BY can choose an arbitrary match.","How would you handle optional lookup?","Use an appropriate bounded list or supported convenience API and encode absence explicitly."],["Q045",8,"When do you use a native SQL query?","Use it when a database-specific feature or proven query requirement cannot be expressed well through JPQL/HQL.","em.createNativeQuery(\"select ...\");","entity query → parameter binding → selected result","Native SQL still needs binding, authorization and review.","What is the portability cost?","Schema names, result mapping, dialect functions and behavior can change by database."],["Q046",9,"What is the JPA Criteria API?","Criteria lets Java code construct an entity query dynamically using typed expression objects.","CriteriaBuilder cb=em.getCriteriaBuilder();","requested filter → typed query → safe predicate","Criteria is not automatically faster than JPQL.","When is it better than a constant JPQL string?","When optional filters and composition justify the extra verbosity."],["Q047",9,"How can optional filters be composed?","Add only active predicates and combine them with CriteriaBuilder.and/or according to the requested semantics.","List<Predicate> parts=new ArrayList<>();","requested filter → typed query → safe predicate","An absent predicate must not bypass tenant isolation.","What happens with no filters?","Choose whether to return a bounded default result or reject an unbounded query."],["Q048",9,"What is Spring Data JPA Specification?","A Specification composes JPA Criteria predicates for Spring Data repository queries.","Specification<Order> byStatus = (root,q,cb) -> cb.equal(root.get(\"status\"),status);","requested filter → typed query → safe predicate","Dynamic criteria can still produce bad indexes or N+1 queries.","Does Specification change persistence- provider rules?","No. It builds queries that Hibernate still executes within ORM constraints."],["Q049",9,"How do you implement safe dynamic sorting?","Map an allowlisted API sort field to a known entity path, then use a stable tie- breaker.","ORDER BY createdAt DESC, id DESC","requested filter → typed query → safe predicate","Stable ordering is mandatory for reliable pagination.","Why should sort expressions be allowlisted?","Unrestricted paths can create expensive joins or expose unauthorized fields."],["Q050",9,"How do you apply multi-tenant predicates?","Apply tenant scope on every relevant query path and validate ownership at the service boundary.","where order.tenantId = :authenticatedTenant","requested filter → typed query → safe predicate","Do not trust a tenant ID supplied only by the client.","Are repository filters enough for hard isolation?","Not always. Bulk/native queries and bypass paths need review; defense-in-depth via DB policies may be appropriate."],["Q051",10,"What does @Transactional do in a Spring JPA service?","When properly intercepted, it opens or joins a transaction and manages commit or rollback according to the transaction manager and rules.","@Transactional public void placeOrder(...) { ... }","service command → transaction → commit or rollback","A method annotation alone is not proof of a transaction.","Does @Transactional on a private method work by default?","No. Default proxy advice usually applies to eligible calls through a Spring proxy, not internal self-invocation."],["Q052",10,"Why should a transaction be short?","Long transactions hold locks and database connections, increase contention and can keep stale snapshots alive.","reserveLocally(); // commit; then coordinate payment","service command → transaction → commit or rollback","A database transaction cannot atomically cover an unrelated remote API.","Should you make an HTTP payment call inside a DB transaction?","Usually avoid it. Use a durable workflow with explicit state and recovery across independent systems."],["Q053",10,"How do checked and unchecked exceptions affect Spring rollback?","By default Spring rolls back on RuntimeException and Error, while checked exceptions require explicit rules unless configured differently.","@Transactional(rollbackFor=PaymentFailure.class)","service command → transaction → commit or rollback","Catching a failure and returning normally may commit partial work.","How do you roll back for a checked business exception?","Declare rollbackFor or use a suitable domain runtime exception after examining the service contract."],["Q054",10,"What does readOnly=true mean?","It is a transaction hint that can reduce unnecessary work for reads, but enforcement and optimizations depend on provider and database.","@Transactional(readOnly=true) public List<OrderDto> list()","service command → transaction → commit or rollback","Read-only does not replace database privileges.","Does it guarantee write attempts are rejected?","No. Do not treat it as a security or integrity boundary."],["Q055",10,"Why can transaction self-invocation fail?","A call from one method of a Spring bean to another on the same instance bypasses the default proxy interception.","service.process(); // through Spring proxy","service command → transaction → commit or rollback","Adding annotations without testing boundaries can silently fail.","How can you fix it?","Move the transactional operation to another Spring-managed collaborator, or use a deliberately selected interception strategy."],["Q056",11,"What does optimistic locking with @Version do?","Hibernate includes a version condition in managed entity updates/deletes, detecting some concurrent modifications.","@Version long version;","competing writes → conflict policy → consistent outcome","Version checks cover updates that participate in the protocol.","How should a stale update be handled?","Return a conflict or retry the complete decision using fresh state when the operation is safely retryable."],["Q057",11,"What is pessimistic locking?","A database lock is acquired to coordinate access before a decision, potentially blocking competing transactions.","em.find(Stock.class,id,LockModeType.PESSIMISTIC_WRITE);","competing writes → conflict policy → consistent outcome","A long remote call while holding a row lock harms throughput.","What costs does it add?","Waiting, deadlocks, connection occupancy and timeout management."],["Q058",11,"Why can two updates lose one writer's changes?","Both transactions can read the same old state and write a new value without an adequate conflict mechanism.","update stock set qty=qty-1 where id=? and qty>0","competing writes → conflict policy → consistent outcome","A Java synchronized block does not coordinate multiple JVMs.","Can @Version fix every race?","No. Cross-row invariants and bulk/native writes need their own constraints and transaction design."],["Q059",11,"What is write skew and why is it dangerous?","Two transactions can each update different rows based on a shared condition that becomes false after both commits.","two doctors each disable own on-call row","competing writes → conflict policy → consistent outcome","Row-level @Version on separate rows alone may not prevent it.","How can you protect the invariant?","Use suitable serializable isolation or explicit locking/coordination around the complete invariant."],["Q060",11,"How should deadlock retries work?","Retry the complete idempotent transaction with a bounded policy and fresh reads after the database aborts one participant.","retry with jitter and maxAttempts=3","competing writes → conflict policy → consistent outcome","Blind retries can repeat external side effects.","Why is retrying only the last SQL statement unsafe?","Previous reads and decisions may no longer be valid; the entire transaction must be re- evaluated."],["Q061",12,"What is Hibernate's first-level cache?","It is the identity map of the persistence context: the same entity key maps to one managed object within that context.","em.find(User.class,1L) == em.find(User.class,1L)","query identity → managed instance → repeat access","A first-level cache is not shared across requests.","Will repeated find() always run SQL?","Not if the entity is already managed and no refresh semantics force a read."],["Q062",12,"Does the first-level cache guarantee fresh database values?","No. Managed state can become stale when another transaction or bulk statement changes rows.","em.refresh(customer);","query identity → managed instance → repeat access","A cached entity is not a substitute for locking.","How do you reload authoritative state?","Use refresh, clear, or a new persistence context as the correctness scenario requires."],["Q063",12,"How can a persistence context grow too large?","Loading or persisting many entities keeps managed references and snapshots until they are detached or cleared.","if(i%100==0){ em.flush(); em.clear(); }","query identity → managed instance → repeat access","Unbounded persistence contexts can exhaust heap.","How do you batch large imports?","Process bounded chunks, flush and clear deliberately, and avoid materializing the entire source."],["Q064",12,"What does EntityManager .contains(entity) tell you?","It reports whether a specific entity instance is managed by that EntityManager.","boolean tracked=em.contains(order);","query identity → managed instance → repeat access","A removed entity may be managed until context transitions complete.","Does contains() check that a database row exists?","No. It reports management state, not committed existence."],["Q065",12,"Why should entities not be used as cross- request cache objects?","They can carry proxies, stale state, context-dependent semantics and mutable relationships tied to a transaction.","Cache<OrderDto> not Cache<OrderEntity>","query identity → managed instance → repeat access","Do not serialize an open persistence context across requests.","What should cross-request caches store?","Immutable IDs or deliberately versioned DTO/read models with a clear freshness policy."],["Q066",13,"What is the second-level cache?","It is an optional SessionFactory-scoped cache for eligible entity/collection state, managed through configured cache regions/providers.","@Cache(usage = READ_ONLY) on immutable reference entity","entity id → optional cache region → database fallback","A cache provider is required; an annotation alone is insufficient.","Is it enabled and populated for all entities by default?","No. Configure a suitable region provider and selective caching for entities where it is safe."],["Q067",13,"How is the second-level cache different from first-level cache?","First-level cache is mandatory per persistence context; second-level cache is optional across sessions and adds concurrency/freshness policies.","Session A -> L2 region <- Session B","entity id → optional cache region → database fallback","L2 cache does not make entity instances thread-safe.","Can two sessions share the same managed Java object?","No. They can reuse cached state but each manages its own entity instance."],["Q068",13,"What are READ_ONL Y and READ_WRITE cache concurrency strategies?","READ_ONLY suits immutable cached data; READ_WRITE uses provider coordination for mutable entity state under supported assumptions.","@Cache(usage=CacheConcurrencyStrategy.READ_WRITE)","entity id → optional cache region → database fallback","Choose strategies by data mutation and consistency needs.","Does READ_WRITE remove database transactions?","No. Business correctness still depends on database guarantees and cache configuration."],["Q069",13,"What does a query cache store?","It can cache query-result identifiers/scalars for eligible cacheable queries, often relying on entity cache/invalidations as well.","query.setHint(\"org.hibernate.cacheable\",true);","entity id → optional cache region → database fallback","A query result cache is not a universal SQL performance fix.","Should you enable it globally?","No. Measure hit rate and invalidation behavior; frequently changing tables may yield poor value."],["Q070",13,"How should a distributed cache react to external writers?","Design eviction/refresh when other applications update the same tables, or avoid caching data whose updates cannot be coordinated.","external ETL UPDATE -> evict affected cache","entity id → optional cache region → database fallback","Stale cross-service cache state can violate business expectations.","Can Hibernate know every external SQL write automatically?","No. Out-of-band changes may not trigger provider cache invalidation."],["Q071",14,"What is JDBC statement batching in Hibernate?","Hibernate can group compatible INSERT/UPDATE/DELETE statements for fewer database round trips when configured and supported.","hibernate.jdbc.batch_size=32","pending inserts → JDBC batches → fewer network trips","Batch size is a throughput tuning parameter, not an invariant.","Will batching always improve performance?","Not automatically. Benchmark with your driver, generator strategy, table and batch size."],["Q072",14,"Why can IDENTITY IDs reduce insert batching?","The generated identifier may require immediate insertion to retrieve its value, limiting how Hibernate groups inserts.","@GeneratedValue(strategy=SEQUENCE)","pending inserts → JDBC batches → fewer network trips","Changing ID strategy needs migration and ordering review.","What is a possible alternative?","Use a suitable sequence-based strategy on databases supporting it, considering allocation and identity requirements."],["Q073",14,"What is an allocation size for sequences?","It lets identifiers be reserved in blocks to reduce calls to a sequence provider, depending on optimizer behavior.","@SequenceGenerator(allocationSize=50)","pending inserts → JDBC batches → fewer network trips","Use a separate business rule if contiguous invoice numbering is required.","Will unused IDs after a crash be a bug?","Gaps are normal in many generated ID strategies; never assume sequential gap-free business numbers."],["Q074",14,"How do ordered inserts and updates help?","Grouping statements by entity and key can make JDBC batching more effective, though it introduces ordering and processing cost.","hibernate.order_inserts=true","pending inserts → JDBC batches → fewer network trips","Reordered statements can expose previously hidden constraint timing.","Should these flags always be enabled?","Measure realistic workloads and verify any constraint-sensitive operations."],["Q075",14,"How can you process a million rows safely?","Prefer chunked reads or streaming with bounded state, per-chunk transactions, and flush/clear instead of loading all entities.","for each batch -> write -> flush -> clear","pending inserts → JDBC batches → fewer network trips","Bulk tooling changes guarantees; read the API contract.","When might StatelessSession be useful?","For specialized bulk operations where you deliberately give up normal persistence- context behavior and some event/cascade semantics."],["Q076",15,"How does JPQL bulk UPDATE differ from entity dirty checking?","Bulk DML acts directly on matching database rows and bypasses normal per- entity dirty checking and lifecycle callbacks.","update Order o set o.status=:s where o.id in :ids","bulk statement → database rows → stale loaded state","Bulk DML may bypass optimistic-version checks unless explicitly designed.","What happens to already-managed entities?","They may remain stale; clear or refresh the context after the bulk operation."],["Q077",15,"When should you use a bulk delete?","Use it for validated set-based removal with correct tenant, retention, FK and audit rules, rather than loading every row.","delete from ExpiredToken t where t.expiresAt<:now","bulk statement → database rows → stale loaded state","Not all object lifecycle hooks run in bulk SQL.","Does it invoke entity @PreRemove callbacks?","Bulk DML generally bypasses entity callbacks/cascades; validate requirements first."],["Q078",15,"How do you combine native SQL with managed entities safely?","Flush pending relevant changes, execute bounded native SQL, and clear/refresh affected managed state as needed.","em.flush(); em.createNativeQuery(\"update ...\").executeUpdate(); em.clear();","bulk statement → database rows → stale loaded state","Stale context state can overwrite SQL changes later.","Can a native UPDATE invalidate every cache?","Do not assume complete invalidation for arbitrary external statements."],["Q079",15,"Why should query update counts be checked?","Affected-row counts can express optimistic concurrency, absent rows or insufficient-stock outcomes.","UPDATE inventory SET qty=qty-1 WHERE qty>0 AND id=:id","bulk statement → database rows → stale loaded state","An UPDATE that returns zero may be an expected conflict.","What should zero changed rows mean?","Define a business response; distinguish missing identity, stale version or predicate failure where needed."],["Q080",15,"How do you avoid long retention cleanup transactions?","Delete in limited batches, use indexed predicates and monitor locks, replication lag and vacuum/purge behavior.","DELETE FROM events WHERE created_at < :cutoff LIMIT ...","bulk statement → database rows → stale loaded state","DELETE LIMIT syntax and semantics differ across databases.","Should ORM entity removal be used for millions of old rows?","Usually consider reviewed bulk operations or archival jobs instead of one giant persistence context."],["Q081",16,"What is SINGLE_TABLE inheritance?","Several related entity subclasses live in one table with a discriminator, avoiding joins but allowing nullable subtype columns.","@Inheritance(strategy=InheritanceType.SINGLE_TABLE)","inheritance model → discriminator / joins → SQL queries","Database constraints must still reflect subtype rules.","When is it unsuitable?","When many subtype-specific columns and constraints make the common table unwieldy."],["Q082",16,"What is JOINED inheritance?","Common fields live in a base table and subtype fields in separate tables linked by keys.","@Inheritance(strategy=InheritanceType.JOINED)","inheritance model → discriminator / joins → SQL queries","Evaluate query patterns rather than choosing solely for normalization.","What query cost can it add?","Polymorphic reads may require joins, making SQL more complex."],["Q083",16,"What is TABLE_PER_CLASS inheritance?","Concrete classes have independent tables; polymorphic queries may need unions.","@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)","inheritance model → discriminator / joins → SQL queries","Identifier strategy and query support need validation.","Where does this become expensive?","Querying a base type across many subclasses can require UNION-style work."],["Q084",16,"How do @MappedSuperclass and @Entity inheritance differ?","A mapped superclass contributes mapping fields but is not itself an entity you query polymorphically.","@MappedSuperclass class Audited { Instant createdAt; }","inheritance model → discriminator / joins → SQL queries","Do not query a mapped superclass as though it owns a table.","When does @MappedSuperclass fit?","For shared audit fields when no domain polymorphism is required."],["Q085",16,"How would you choose an inheritance strategy?","Start from domain substitutions, query patterns, schema constraints and anticipated subtype growth.","PaymentMethod -> CardDetails / BankDetails","inheritance model → discriminator / joins → SQL queries","Do not make inheritance a default just because Java supports extends.","Can composition be better?","Yes. A status or separate value component may be simpler than a deep entity hierarchy."],["Q086",17,"What is a useful Hibernate integration test?","It uses a real mapped EntityManager and database schema to verify flush, SQL constraints, associations, transactions and queries.","persist -> flush -> clear -> find -> assert","representative fixture → SQL evidence → regression guard","A passing service mock test does not validate ORM mapping.","Why aren't mocks sufficient?","Mocks don't prove actual SQL, joins, flush timing or constraint behavior."],["Q087",17,"Why should tests flush and clear before reading back?","It prevents first-level cache state from hiding a missing database write or incorrect mapping.","em.flush(); em.clear(); assertEquals(..., em.find(...));","representative fixture → SQL evidence → regression guard","Always distinguish persistence-context behavior from DB evidence.","What does an immediate find() without clear prove?","It may only return the managed object already in memory."],["Q088",17,"Should Hibernate hbm2ddl auto-update production schemas?","Production schema changes should be version-controlled and reviewed using migration tools such as Flyway or Liquibase.","spring.jpa.hibernate.ddl-auto=validate","representative fixture → SQL evidence → regression guard","Schema generation is not a production migration plan.","What should hbm2ddl use in production?","Typically validation at most, depending on deployment policy; never rely on uncontrolled auto-migrations."],["Q089",17,"Why can H2 tests differ from PostgreSQL or MySQL?","SQL dialects differ in constraints, types, locking, sequences and execution plans, even when a simple test passes.","Testcontainers with PostgreSQL in CI","representative fixture → SQL evidence → regression guard","H2 cannot prove production deadlock or isolation behavior.","What additional test is valuable?","Run important integration tests against the actual database family and version, often through containers."],["Q090",17,"How can you test SQL query counts?","Enable Hibernate Statistics or instrument JDBC, seed enough entities to expose N+1, and assert bounded statements.","statistics.getPrepareStatementCount()","representative fixture → SQL evidence → regression guard","Query-count assertions should be stable under test setup.","Why isn't one-row test data enough?","N+1 and multiplication problems appear as the number of parents/children grows."],["Q091",18,"Which Hibernate logs and metrics matter first?","Inspect SQL statements, bind values safely in nonproduction, query counts, slow statements, transaction duration and connection-pool usage.","hibernate.generate_statistics=true // targeted diagnostics","ORM operations → database metrics → root cause","SQL logging can leak personal data and passwords.","Should you log every bind parameter in production?","No. Sensitive values and overhead need controls and redaction."],["Q092",18,"How do you investigate slow Hibernate requests?","Trace endpoint latency through pool wait, ORM queries and database execution plans, then fix the measured bottleneck.","EXPLAIN (ANALYZE, BUFFERS) ... // Postgres","ORM operations → database metrics → root cause","Do not optimize only Java CPU when SQL dominates latency.","Can a second-level cache solve a missing index?","It may hide some reads, but doesn't remove write cost or uncached query problems."],["Q093",18,"What is connection-pool exhaustion?","Active connections occupy the configured pool so new operations wait or time out, often because transactions are slow or leaked.","Hikari maximumPoolSize vs DB max_connections","ORM operations → database metrics → root cause","More pool connections can overload the database.","What should you inspect?","Pool active/idle/pending, slow SQL, lock waits and remote calls inside transactions."],["Q094",18,"Why is a cartesian product dangerous in ORM queries?","Joining several to-many paths can multiply rows and inflate transfer, materialization and memory costs.","Order(3 items) JOIN payments(4) => 12 rows","ORM operations → database metrics → root cause","DISTINCT doesn't undo all wasted database work.","How do you fix it?","Fetch bounded relationships separately, project DTOs or aggregate at the correct grain."],["Q095",18,"When does the second-level cache make performance worse?","Poor hit rates, frequent invalidations, extra serialization or coherence work can outweigh avoided queries.","cache hit %, region size, query p99","ORM operations → database metrics → root cause","Cache success must be judged by correctness as well as speed.","How would you decide to enable it?","Measure hit/miss rate, invalidations, stale- read tolerance and memory cost under realistic load."],["Q096",19,"How would you design an order service with Hibernate?","Use a small transactional aggregate for order, items and durable idempotency state; validate stock with an authoritative conditional write.","Order + Items + Outbox -> local COMMIT","critical invariant → ORM mechanism → recovery evidence","A @Transactional method does not provide distributed atomicity.","What part cannot be in the same DB transaction?","An external payment network; represent it as a recoverable workflow with outbox and reconciliation."],["Q097",19,"How do you prevent double booking through JPA?","Use a database uniqueness/conditional update rule and an idempotency key under a transaction, rather than read-then-insert checks.","UNIQUE(event_id, seat_id) on confirmed allocation","critical invariant → ORM mechanism → recovery evidence","Two JVMs can race past a Java precheck.","Can optimistic locking alone enforce seat uniqueness?","Only if all conflicting decisions touch the same protected versioned state; database uniqueness is often safer."],["Q098",19,"How would you migrate Hibernate 5 to Hibernate 6 safely?","Inventory javax-to-jakarta namespaces, changed query/mapping behavior, dialects and extensions, then upgrade libraries and run integration tests.","javax.persistence.* -> jakarta.persistence.*","critical invariant → ORM mechanism → recovery evidence","Changing imports alone is not a complete migration.","What should block rollout?","Schema/query regressions, unsupported APIs and unverified SQL/transaction behavior."],["Q099",19,"How do you handle multi-tenancy with Hibernate?","Choose a deliberate strategy such as database/schema separation or discriminator-based scoping, with tenant identity from trusted security context.","tenant context -> resolver -> DB routing/filter","critical invariant → ORM mechanism → recovery evidence","Tenant filtering must never depend solely on user input.","What are high-risk bypass paths?","Native SQL, bulk DML, caches, batch jobs and administrative endpoints can miss tenant constraints."],["Q100",19,"What does a strong ORM architecture interview answer include?","State the business invariant, mapping and ownership, fetch/query plan, transaction boundary, failure recovery and observable evidence.","requirement -> invariant -> SQL evidence -> recovery","critical invariant → ORM mechanism → recovery evidence","Naming annotations is not enough to demonstrate correctness.","How would you prove the system meets its guarantee?","Use constraint tests, concurrency tests, representative data, query plans and failure- injection checks."]],"labs":[["HANDS-ON LAB C01 — Persist and read an entity","An entity inserted in one transaction must be retrievable from another transaction. Run the Maven project locally and confirm C01 PASS, then change the input to test a","private static void lab01(){\nlong id=customer();String name=tx(em->em.find(CustomerEntity.class,id).getName());\ncheck(name.startsWith(\"Customer\"),\"C01 persist/find\");\n}"],["HANDS-ON LAB C02 — First-level cache identity","Two finds of the same ID inside one context return the same managed instance. Run the Maven project locally and confirm C02 PASS, then change the input to test a","private static void lab02(){\nlong id=customer();tx(em->{CustomerEntity a=em.find(CustomerEntity.class,id);CustomerEntity\nb=em.find(CustomerEntity.class,id);\ncheck(a==b,\"C02 first-level identity\");return null;});\n}"],["HANDS-ON LAB C03 — Dirty checking","Change a managed field, commit, and read the change in a fresh context. Run the Maven project locally and confirm C03 PASS, then change the input to test a","private static void lab03(){\nlong id=customer();tx(em->{em.find(CustomerEntity.class,id).setName(\"Updated\");return null;});\ncheck(tx(em->em.find(CustomerEntity.class,id).getName()).equals(\"Updated\"),\"C03 dirty\nchecking\");\n}"],["HANDS-ON LAB C04 — Detach and merge","Modify a detached object then merge and use the returned managed instance. Run the Maven project locally and confirm C04 PASS, then change the input to test a","private static void lab04(){\nlong id=customer();CustomerEntity detached=tx(em->{CustomerEntity\nc=em.find(CustomerEntity.class,id);em.detach(c);return c;});\ndetached.setName(\"Merged\");tx(em->{CustomerEntity m=em.merge(detached);check(m!=detached,\"C04\nmerge returns managed copy\");return null;});\ncheck(tx(em->em.find(CustomerEntity.class,id).getName()).equals(\"Merged\"),\"C04 merged\npersisted\");\n}"],["HANDS-ON LAB C05 — Flush versus commit","Flush an UPDATE then roll back and prove it did not persist. Run the Maven project locally and confirm C05 PASS, then change the input to test a","private static void lab05(){\nlong id=customer();EntityManager em=emf.createEntityManager();\ntry{em.getTransaction().begin();em.find(CustomerEntity.class,id).setName(\"RolledBack\");em.flush();\nem.getTransaction().rollback();}\nfinally{em.close();}\ncheck(!tx(x->x.find(CustomerEntity.class,id).getName()).equals(\"RolledBack\"),\"C05 flush not\ncommit\");\n}"],["HANDS-ON LAB C06 — Cascade and orphan removal","Persist order lines through an aggregate root, then remove a line. Run the Maven project locally and confirm C06 PASS, then change the input to test a","private static void lab06(){\nlong c=customer();long o=order(c,\"NEW\",2);\ntx(em->{PurchaseOrder p=em.find(PurchaseOrder.class,o);check(p.getLines().size()==2,\"C06 cascade\npersist\");\np.removeFirstLine();return null;});\ncheck(tx(em->em.find(PurchaseOrder.class,o).getLines().size())==1,\"C06 orphan removal\");\n}"],["HANDS-ON LAB C07 — JPQL projection","Bind a parameter and return a scalar view of an order. Run the Maven project locally and confirm C07 PASS, then change the input to test a","private static void lab07(){\nlong c=customer();long o=order(c,\"DRAFT\",0);\nString text=tx(em->em.createQuery(\"select o.status from PurchaseOrder o where\no.id=:id\",String.class)\n.setParameter(\"id\",o).getSingleResult());\ncheck(text.equals(\"DRAFT\"),\"C07 JPQL scalar projection\");\n}"],["HANDS-ON LAB C08 — Bounded join fetching","Use a fetch join for a known single-order detail screen. Run the Maven project locally and confirm C08 PASS, then change the input to test a","private static void lab08(){\nlong c=customer();long o=order(c,\"FETCH\",1);\ntx(em->{List<PurchaseOrder> rows=em.createQuery(\n\"select distinct o from PurchaseOrder o join fetch o.customer left join fetch o.lines where\no.id=:id\",PurchaseOrder.class)\n.setParameter(\"id\",o).getResultList();\ncheck(rows.size()==1 && rows.get(0).getLines().size()==1,\"C08 bounded join fetch\");return\nnull;});\n}"],["HANDS-ON LAB C09 — Optimistic locking conflict","Read one entity in two contexts and reject the stale second commit. Run the Maven project locally and confirm C09 PASS, then change the input to test a","private static void lab09(){\nlong id=customer();EntityManager a=emf.createEntityManager();EntityManager\nb=emf.createEntityManager();\ntry {a.getTransaction().begin();b.getTransaction().begin();\nCustomerEntity ca=a.find(CustomerEntity.class,id), cb=b.find(CustomerEntity.class,id);\nca.setName(\"Winner\");a.getTransaction().commit();cb.setName(\"Loser\");\nboolean conflict=false;\ntry {b.getTransaction().commit();}\ncatch (RollbackException|OptimisticLockException expected){conflict=true;}\ncheck(conflict,\"C09 optimistic lock must detect stale writer\");\n}\nfinally{if(a.getTransaction().isActive())a.getTransaction().rollback();if(b.getTransaction().isAct\nive())b.getTransaction().rollback();a.close();b.close();}\n}"],["HANDS-ON LAB C10 — Bulk DML and stale state","Execute JPQL bulk UPDATE and refresh managed state. Run the Maven project locally and confirm C10 PASS, then change the input to test a","private static void lab10(){\nlong c=customer();long o=order(c,\"BEFORE\",0);\ntx(em->{PurchaseOrder loaded=em.find(PurchaseOrder.class,o);\nint n=em.createQuery(\"update PurchaseOrder o set o.status='AFTER' where o.id=:id\")\n.setParameter(\"id\",o).executeUpdate();check(n==1,\"C10 bulk count\");\ncheck(loaded.getStatus().equals(\"BEFORE\"),\"C10 context remains stale until refreshed\");\nem.refresh(loaded);check(loaded.getStatus().equals(\"AFTER\"),\"C10 refresh\");return null;});\n}"],["HANDS-ON LAB C11 — Conditional inventory update","Allow only one decrement of a single available unit. Run the Maven project locally and confirm C11 PASS, then change the input to test a failure","private static void lab11(){\nlong id=10000+next();tx(em->{em.persist(new InventoryEntity(id,1));return null;});\ntx(em->{int first=em.createQuery(\"update InventoryEntity i set i.available=i.available-1 where\ni.id=:id and i.available>=1\")\n.setParameter(\"id\",id).executeUpdate();\nint second=em.createQuery(\"update InventoryEntity i set i.available=i.available-1 where\ni.id=:id and i.available>=1\")\n.setParameter(\"id\",id).executeUpdate();check(first==1 && second==0,\"C11 conditional stock\nupdate\");return null;});\n}"],["HANDS-ON LAB C12 — Detach stops tracking","Detach a managed entity and modify it without persistence. Run the Maven project locally and confirm C12 PASS, then change the input to test a failure","private static void lab12(){\nlong id=customer();tx(em->{CustomerEntity c=em.find(CustomerEntity.class,id);\ncheck(em.contains(c),\"C12 managed\");em.detach(c);check(!em.contains(c),\"C12 detached\");\nc.setName(\"DetachedOnly\");return null;});\ncheck(!tx(em->em.find(CustomerEntity.class,id).getName()).equals(\"DetachedOnly\"),\"C12 detached\nchange ignored\");\n}"]]};
+    const STORAGE_KEY = 'zh_topic_state_' + BOOK.id;
+
+    const state = {
+      activeTab: 'roadmap',
+      theme: 'dark',
+      readerChapterIdx: 'all',
+      readerStatus: 'all',
+      readerSearch: '',
+      readerPage: 1,
+      readerPageSize: 15,
+      expandAllFollowups: false,
+      mastered: {},
+      review: {},
+      starred: {},
+      arenaDeck: [],
+      arenaIndex: 0,
+      arenaTimerSec: 30,
+      arenaTimerHandle: null
+    };
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.mastered) state.mastered = parsed.mastered;
+          if (parsed.review) state.review = parsed.review;
+          if (parsed.starred) state.starred = parsed.starred;
+          if (parsed.theme) applyTheme(parsed.theme);
+        }
+      } catch (e) {}
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          mastered: state.mastered,
+          review: state.review,
+          starred: state.starred,
+          theme: state.theme
+        }));
+      } catch (e) {}
+      updateGlobalCounters();
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      const label = document.getElementById('toastMessage');
+      if (!box || !label) return;
+      label.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 2200);
+    }
+
+    function copyTextSafe(text, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied!')).catch(() => fallbackCopy(text, label));
+      } else {
+        fallbackCopy(text, label);
+      }
+    }
+
+    function fallbackCopy(text, label) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(label || 'Copied!');
+      } catch (e) {
+        showToast('Copy completed');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function applyTheme(themeName) {
+      state.theme = themeName;
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'notebook');
+      root.classList.add(themeName);
+      const label = document.getElementById('themeLabel');
+      if (label) {
+        if (themeName === 'dark') label.textContent = '🌙 Dark';
+        else if (themeName === 'light') label.textContent = '☀️ Light';
+        else label.textContent = '📓 Notebook';
+      }
+    }
+
+    function cycleTheme() {
+      const order = ['dark', 'light', 'notebook'];
+      const next = order[(order.indexOf(state.theme) + 1) % order.length];
+      applyTheme(next);
+      saveProgress();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['roadmap', 'reader', 'flashcards', 'labs'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (view) {
+          if (t === tabId) view.classList.remove('hidden');
+          else view.classList.add('hidden');
+        }
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 accent-bg text-white shadow-sm whitespace-nowrap';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 theme-text-muted hover:opacity-90 whitespace-nowrap';
+          }
+        }
+      });
+      if (tabId === 'roadmap') renderRoadmapGrid();
+      else if (tabId === 'reader') renderReaderView();
+      else if (tabId === 'flashcards') {
+        if (state.arenaDeck.length === 0) updateArenaDeck();
+        else renderArenaCard();
+      } else if (tabId === 'labs') renderLabsView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateGlobalCounters() {
+      const total = BOOK.questions.length;
+      const mCount = Object.keys(state.mastered).length;
+      const sCount = Object.keys(state.starred).length;
+      const rCount = Object.keys(state.review).length;
+      const pct = Math.round((mCount / total) * 100);
+
+      const elM = document.getElementById('headerMasteredCount');
+      const elS = document.getElementById('headerStarredCount');
+      const elPct = document.getElementById('roadmapMasteryPct');
+      const elBar = document.getElementById('roadmapMasteryBar');
+      if (elM) elM.textContent = mCount;
+      if (elS) elS.textContent = sCount;
+      if (elPct) elPct.textContent = `${mCount} / ${total} (${pct}%)`;
+      if (elBar) elBar.style.width = pct + '%';
+
+      const cAll = document.getElementById('statusCnt-all');
+      const cStar = document.getElementById('statusCnt-starred');
+      const cMast = document.getElementById('statusCnt-mastered');
+      const cRev = document.getElementById('statusCnt-review');
+      if (cAll) cAll.textContent = total;
+      if (cStar) cStar.textContent = sCount;
+      if (cMast) cMast.textContent = mCount;
+      if (cRev) cRev.textContent = rCount;
+    }
+
+    // ==================== ROADMAP VIEW ====================
+    function handleRoadmapQuickSearch(val) {
+      const trimmed = (val || '').trim();
+      if (trimmed.length >= 2) {
+        state.readerChapterIdx = 'all';
+        state.readerSearch = trimmed;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = trimmed;
+        switchTab('reader');
+      }
+    }
+
+    function renderRoadmapGrid() {
+      const grid = document.getElementById('chaptersGrid');
+      if (!grid) return;
+
+      grid.innerHTML = BOOK.chapters.map((chName, chIdx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === chIdx);
+        const totalQ = chQs.length;
+        let doneQ = 0;
+        let starQ = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) doneQ++;
+          if (state.starred[q[0]]) starQ++;
+        });
+        const pct = totalQ > 0 ? Math.round((doneQ / totalQ) * 100) : 0;
+        const firstId = chQs.length > 0 ? chQs[0][0] : '';
+        const lastId = chQs.length > 0 ? chQs[chQs.length - 1][0] : '';
+
+        return `
+          <div class="rounded-2xl border theme-card p-5 flex flex-col justify-between gap-4 hover:border-blue-500/60 transition shadow-sm">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white accent-bg">
+                  Chapter ${String(chIdx + 1).padStart(2, '0')}
+                </span>
+                <span class="text-xs font-mono theme-text-muted">
+                  ${firstId}–${lastId} (${totalQ} Qs)
+                </span>
+              </div>
+
+              <h3 class="text-base font-extrabold tracking-tight">${escapeHtml(chName)}</h3>
+
+              <div class="space-y-1 text-xs theme-text-muted">
+                ${chQs.slice(0, 3).map(q => `
+                  <div class="truncate">• <strong>${escapeHtml(q[0])}:</strong> ${escapeHtml(q[2])}</div>
+                `).join('')}
+                ${chQs.length > 3 ? `<div class="text-[11px] opacity-75">+ ${chQs.length - 3} more questions in chapter</div>` : ''}
+              </div>
+
+              <div class="space-y-1 pt-1">
+                <div class="flex justify-between text-[11px]">
+                  <span class="theme-text-muted">Mastered: <strong class="text-emerald-400">${doneQ}/${totalQ}</strong> (${pct}%)</span>
+                  <span class="text-amber-400">★ ${starQ}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full theme-elevated overflow-hidden">
+                  <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700/30 grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button onclick="openChapterInReader(${chIdx})" class="px-3 py-2 rounded-xl accent-bg text-white text-center transition hover:opacity-95">
+                📖 Read Chapter
+              </button>
+              <button onclick="openChapterInArena(${chIdx})" class="px-3 py-2 rounded-xl border theme-elevated hover:border-blue-500/60 text-center transition">
+                ⚡ Quiz Chapter
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterInReader(chIdx) {
+      state.readerChapterIdx = chIdx;
+      state.readerPage = 1;
+      switchTab('reader');
+    }
+
+    function openChapterInArena(chIdx) {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (sel) sel.value = String(chIdx);
+      updateArenaDeck();
+      switchTab('flashcards');
+    }
+
+    // ==================== READER VIEW ====================
+    function initArenaDropdown() {
+      const sel = document.getElementById('arenaChapterSelect');
+      if (!sel) return;
+      sel.innerHTML = `<option value="all">All ${BOOK.chapters.length} Chapters (${BOOK.questions.length} Qs)</option>` +
+        BOOK.chapters.map((ch, idx) => `<option value="${idx}">Ch ${idx + 1}: ${escapeHtml(ch)}</option>`).join('');
+    }
+
+    function selectReaderChapter(chIdx) {
+      state.readerChapterIdx = chIdx === 'all' ? 'all' : Number(chIdx);
+      state.readerPage = 1;
+      renderReaderView();
+    }
+
+    function setReaderStatus(st) {
+      state.readerStatus = st;
+      state.readerPage = 1;
+      ['all', 'starred', 'mastered', 'review'].forEach(k => {
+        const btn = document.getElementById('statusBtn-' + k);
+        if (btn) {
+          if (k === st) {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium accent-bg text-white text-left flex justify-between items-center';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-lg font-medium theme-elevated border text-left flex justify-between items-center';
+          }
+        }
+      });
+      renderReaderView();
+    }
+
+    function handleReaderSearch(val) {
+      state.readerSearch = (val || '').trim();
+      state.readerPage = 1;
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (state.readerSearch) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderReaderQuestions();
+    }
+
+    function clearReaderSearch() {
+      state.readerSearch = '';
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function toggleAllFollowups() {
+      state.expandAllFollowups = !state.expandAllFollowups;
+      const btn = document.getElementById('btnToggleAllFollowups');
+      if (btn) btn.textContent = state.expandAllFollowups ? '🙈 Collapse Follow-Ups' : '👁️ Expand Follow-Ups';
+      renderReaderQuestions();
+    }
+
+    function changeReaderPage(delta) {
+      const filtered = getFilteredQuestions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.readerPageSize));
+      const next = Math.min(totalPages, Math.max(1, state.readerPage + delta));
+      if (next !== state.readerPage) {
+        state.readerPage = next;
+        renderReaderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changeReaderPageSize(size) {
+      state.readerPageSize = Number(size) || 15;
+      state.readerPage = 1;
+      renderReaderQuestions();
+    }
+
+    function getFilteredQuestions() {
+      const qLower = state.readerSearch.toLowerCase();
+      return BOOK.questions.filter(q => {
+        if (state.readerChapterIdx !== 'all' && q[1] !== state.readerChapterIdx) return false;
+        const key = q[0];
+        if (state.readerStatus === 'starred' && !state.starred[key]) return false;
+        if (state.readerStatus === 'mastered' && !state.mastered[key]) return false;
+        if (state.readerStatus === 'review' && !state.review[key]) return false;
+        if (qLower) {
+          const hay = (q[0] + ' ' + BOOK.chapters[q[1]] + ' ' + q[2] + ' ' + q[3] + ' ' + q[4] + ' ' + q[5] + ' ' + q[6] + ' ' + q[7] + ' ' + q[8]).toLowerCase();
+          if (!hay.includes(qLower)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderReaderView() {
+      renderReaderChapters();
+      renderReaderQuestions();
+    }
+
+    function renderReaderChapters() {
+      const container = document.getElementById('readerChapterList');
+      if (!container) return;
+      const counts = new Array(BOOK.chapters.length).fill(0);
+      BOOK.questions.forEach(q => { counts[q[1]] = (counts[q[1]] || 0) + 1; });
+
+      const allCls = state.readerChapterIdx === 'all'
+        ? 'accent-bg text-white font-semibold'
+        : 'theme-elevated border hover:border-blue-500/40';
+
+      let html = `
+        <button onclick="selectReaderChapter('all')" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${allCls} flex items-center justify-between">
+          <span>All Chapters (${BOOK.chapters.length})</span>
+          <span class="text-[11px] font-mono">${BOOK.questions.length}</span>
+        </button>
+      `;
+
+      html += BOOK.chapters.map((ch, idx) => {
+        const cls = state.readerChapterIdx === idx
+          ? 'accent-bg text-white font-semibold'
+          : 'theme-elevated border hover:border-blue-500/40';
+        return `
+          <button onclick="selectReaderChapter(${idx})" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${cls} flex items-center justify-between gap-1.5">
+            <span class="truncate">${idx + 1}. ${escapeHtml(ch)}</span>
+            <span class="text-[11px] font-mono opacity-75 shrink-0">${counts[idx]}</span>
+          </button>
+        `;
+      }).join('');
+      container.innerHTML = html;
+    }
+
+    function renderReaderQuestions() {
+      const container = document.getElementById('readerQuestionsContainer');
+      if (!container) return;
+
+      const filtered = getFilteredQuestions();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / state.readerPageSize));
+      if (state.readerPage > totalPages) state.readerPage = totalPages;
+
+      const startIdx = (state.readerPage - 1) * state.readerPageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + state.readerPageSize);
+
+      const summaryEl = document.getElementById('readerSummaryLabel');
+      const pageInd = document.getElementById('readerPageIndicator');
+      const botInd = document.getElementById('readerBottomPageInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+
+      if (summaryEl) {
+        summaryEl.textContent = total === 0
+          ? 'No matching questions found'
+          : `Showing ${startIdx + 1}–${Math.min(total, startIdx + pageItems.length)} of ${total} questions`;
+      }
+      if (pageInd) pageInd.textContent = `Page ${state.readerPage} / ${totalPages}`;
+      if (botInd) botInd.textContent = `Page ${state.readerPage} of ${totalPages} (${total} matching questions)`;
+      if (prevBtn) prevBtn.disabled = state.readerPage <= 1;
+      if (nextBtn) nextBtn.disabled = state.readerPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-2xl border theme-card p-8 text-center space-y-3">
+            <div class="text-2xl">🔍</div>
+            <h3 class="text-base font-bold">No questions match your current filter</h3>
+            <button onclick="resetReaderFilters()" class="px-4 py-2 rounded-xl accent-bg text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pageItems.map(q => {
+        const key = q[0];
+        const isStarred = !!state.starred[key];
+        const isMastered = !!state.mastered[key];
+        const isReview = !!state.review[key];
+        const fupOpen = state.expandAllFollowups;
+
+        return `
+          <article class="rounded-2xl border theme-card p-4 sm:p-5 space-y-3.5 transition hover:border-slate-500/60">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold text-white accent-bg">
+                  ${escapeHtml(q[0])}
+                </span>
+                <span class="text-xs theme-text-muted font-medium">
+                  Chapter ${q[1] + 1}: ${escapeHtml(BOOK.chapters[q[1]])}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleItemStar('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isStarred ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'theme-elevated'}">
+                  ${isStarred ? '★ Starred' : '☆ Star'}
+                </button>
+                <button onclick="toggleItemReview('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isReview ? 'bg-orange-500/20 border-orange-500/50 text-orange-400' : 'theme-elevated'}">
+                  ↻ Review
+                </button>
+                <button onclick="toggleItemMastered('${key}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${isMastered ? 'bg-emerald-600 text-white border-emerald-500' : 'theme-elevated'}">
+                  ${isMastered ? '✓ Mastered' : 'Mark Mastered'}
+                </button>
+              </div>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-extrabold leading-snug">
+              ${escapeHtml(q[2])}
+            </h3>
+
+            <div class="rounded-xl p-3.5 bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct / 30-Second Interview Answer</div>
+              <p class="text-xs sm:text-sm font-medium leading-relaxed">${escapeHtml(q[3])}</p>
+            </div>
+
+            ${q[4] ? `
+              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-950 text-slate-100">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>JAVA / YAML / ARCHITECTURE TRACE</span>
+                  <div class="flex items-center gap-2"><button onclick="runQuestionInPortalIde('${q[0]}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">▶ Run in IDE</button><button onclick="copyQuestionCode('${q[0]}')" class="hover:text-white font-medium">📋 Copy Snippet</button></div>
+                </div>
+                <pre class="p-3 text-xs font-mono overflow-x-auto leading-relaxed">${escapeHtml(q[4])}</pre>
+              </div>
+            ` : ''}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${q[5] ? `
+                <div class="rounded-xl p-3 theme-elevated border space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Deep Mechanism &amp; Context</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[5])}</p>
+                </div>
+              ` : ''}
+              ${q[6] ? `
+                <div class="rounded-xl p-3 bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-amber-400">⚠️ Interview Trap / Watch Out</div>
+                  <p class="text-xs leading-relaxed">${escapeHtml(q[6])}</p>
+                </div>
+              ` : ''}
+            </div>
+
+            ${q[7] ? `
+              <div class="pt-1">
+                <button onclick="toggleFollowupPanel('fup-${q[0]}')" class="w-full text-left px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/15 transition flex items-center justify-between gap-2">
+                  <div class="text-xs font-bold text-emerald-400">
+                    <span>🎯 Follow-Up: </span>
+                    <span class="font-semibold">${escapeHtml(q[7])}</span>
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-400 shrink-0">Toggle Answer ▾</span>
+                </button>
+                <div id="fup-${q[0]}" class="${fupOpen ? '' : 'hidden'} mt-2 px-4 py-3 rounded-xl theme-elevated border-l-4 border-emerald-500 text-xs sm:text-sm leading-relaxed">
+                  <strong class="text-emerald-400">Follow-Up Answer:</strong> ${escapeHtml(q[8])}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFollowupPanel(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function copyQuestionCode(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) copyTextSafe(q[4], `Copied ${qId} code snippet!`);
+    }
+
+    function resetReaderFilters() {
+      state.readerChapterIdx = 'all';
+      state.readerStatus = 'all';
+      state.readerSearch = '';
+      state.readerPage = 1;
+      const inp = document.getElementById('readerSearchInput');
+      if (inp) inp.value = '';
+      setReaderStatus('all');
+    }
+
+    function toggleItemStar(key) {
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemMastered(key) {
+      if (state.mastered[key]) delete state.mastered[key];
+      else {
+        state.mastered[key] = true;
+        delete state.review[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function toggleItemReview(key) {
+      if (state.review[key]) delete state.review[key];
+      else {
+        state.review[key] = true;
+        delete state.mastered[key];
+      }
+      saveProgress();
+      renderReaderQuestions();
+    }
+
+    function openCurrentFilterInArena() {
+      const filtered = getFilteredQuestions();
+      if (filtered.length === 0) {
+        showToast('No questions in current filter!');
+        return;
+      }
+      state.arenaDeck = filtered;
+      state.arenaIndex = 0;
+      switchTab('flashcards');
+      renderArenaCard();
+    }
+
+    // ==================== 30s INTERVIEW ARENA ====================
+    function updateArenaDeck() {
+      const chSel = document.getElementById('arenaChapterSelect');
+      const modeSel = document.getElementById('arenaModeSelect');
+      const chVal = chSel ? chSel.value : 'all';
+      const mode = modeSel ? modeSel.value : 'all';
+
+      let deck = BOOK.questions.filter(q => {
+        if (chVal !== 'all' && q[1] !== Number(chVal)) return false;
+        const key = q[0];
+        if (mode === 'unmastered' && state.mastered[key]) return false;
+        if (mode === 'review' && !state.review[key]) return false;
+        if (mode === 'starred' && !state.starred[key]) return false;
+        return true;
+      });
+
+      if (deck.length === 0) {
+        showToast('No cards match filter — loading all in chapter scope.');
+        deck = BOOK.questions.filter(q => chVal === 'all' || q[1] === Number(chVal));
+      }
+
+      state.arenaDeck = deck;
+      state.arenaIndex = 0;
+      renderArenaCard();
+    }
+
+    function shuffleArenaDeck() {
+      for (let i = state.arenaDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = state.arenaDeck[i];
+        state.arenaDeck[i] = state.arenaDeck[j];
+        state.arenaDeck[j] = tmp;
+      }
+      state.arenaIndex = 0;
+      renderArenaCard();
+      showToast('Deck shuffled!');
+    }
+
+    function renderArenaCard() {
+      if (state.arenaDeck.length === 0) updateArenaDeck();
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+
+      const chBadge = document.getElementById('arenaChapterBadge');
+      const counter = document.getElementById('arenaCounter');
+      const starBtn = document.getElementById('arenaStarBtn');
+      const qId = document.getElementById('arenaQId');
+      const qText = document.getElementById('arenaQuestionText');
+
+      if (chBadge) chBadge.textContent = `Ch ${q[1] + 1}: ${BOOK.chapters[q[1]]}`;
+      if (counter) counter.textContent = `${state.arenaIndex + 1} / ${state.arenaDeck.length}`;
+      if (starBtn) {
+        const st = !!state.starred[key];
+        starBtn.textContent = st ? '★ Starred' : '☆ Star';
+        starBtn.className = st
+          ? 'px-2.5 py-1 rounded-lg border bg-amber-500/20 border-amber-500/50 text-amber-400 text-xs font-bold'
+          : 'px-2.5 py-1 rounded-lg border theme-elevated text-xs font-medium';
+      }
+      if (qId) qId.textContent = `INTERVIEW QUESTION ${q[0]}`;
+      if (qText) qText.textContent = q[2];
+
+      const ansEl = document.getElementById('arenaAnswerText');
+      const codeWrap = document.getElementById('arenaCodeWrap');
+      const codeEl = document.getElementById('arenaCodeText');
+      const traceEl = document.getElementById('arenaTraceText');
+      const trapEl = document.getElementById('arenaTrapText');
+      const fqEl = document.getElementById('arenaFollowupQ');
+      const faEl = document.getElementById('arenaFollowupA');
+
+      if (ansEl) ansEl.textContent = q[3];
+      if (codeWrap && codeEl) {
+        if (q[4]) {
+          codeWrap.classList.remove('hidden');
+          codeEl.textContent = q[4];
+        } else {
+          codeWrap.classList.add('hidden');
+        }
+      }
+      if (traceEl) traceEl.textContent = q[5] || 'Trace the core contract and runtime state transition.';
+      if (trapEl) trapEl.textContent = q[6] || 'Always state boundary conditions and failure handling.';
+      if (fqEl) fqEl.textContent = q[7] || '';
+      if (faEl) faEl.textContent = q[8] || '';
+
+      ['arenaStep1Panel', 'arenaStep2Panel', 'arenaStep3Panel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function revealArenaStep(step) {
+      for (let s = 1; s <= step; s++) {
+        const panel = document.getElementById('arenaStep' + s + 'Panel');
+        if (panel) panel.classList.remove('hidden');
+      }
+    }
+
+    function stepArenaCard(delta) {
+      if (state.arenaDeck.length === 0) return;
+      state.arenaIndex = (state.arenaIndex + delta + state.arenaDeck.length) % state.arenaDeck.length;
+      resetArenaTimer();
+      renderArenaCard();
+    }
+
+    function markArenaCard(status) {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (status === 'mastered') {
+        state.mastered[key] = true;
+        delete state.review[key];
+        showToast(`Marked ${key} as Mastered!`);
+      } else {
+        state.review[key] = true;
+        delete state.mastered[key];
+        showToast(`Marked ${key} for Review`);
+      }
+      saveProgress();
+      stepArenaCard(1);
+    }
+
+    function toggleArenaStar() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (!q) return;
+      const key = q[0];
+      if (state.starred[key]) delete state.starred[key];
+      else state.starred[key] = true;
+      saveProgress();
+      renderArenaCard();
+    }
+
+    function copyArenaCode() {
+      const q = state.arenaDeck[state.arenaIndex];
+      if (q && q[4]) copyTextSafe(q[4], 'Copied code snippet!');
+    }
+
+    function updateArenaTimerDisplay() {
+      const el = document.getElementById('arenaTimerDisplay');
+      if (!el) return;
+      const sec = Math.max(0, state.arenaTimerSec);
+      el.textContent = '00:' + String(sec).padStart(2, '0');
+      el.className = sec <= 5 ? 'font-bold text-sm text-rose-400' : 'font-bold text-sm text-blue-400';
+    }
+
+    function toggleArenaTimer() {
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+        if (btn) btn.textContent = 'Resume 30s Timer';
+      } else {
+        if (state.arenaTimerSec <= 0) state.arenaTimerSec = 30;
+        if (btn) btn.textContent = 'Pause Timer';
+        state.arenaTimerHandle = setInterval(() => {
+          state.arenaTimerSec--;
+          updateArenaTimerDisplay();
+          if (state.arenaTimerSec <= 0) {
+            clearInterval(state.arenaTimerHandle);
+            state.arenaTimerHandle = null;
+            if (btn) btn.textContent = 'Start 30s Timer';
+            revealArenaStep(1);
+            showToast('⏰ 30 seconds up! Compare with the Direct Answer.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetArenaTimer() {
+      if (state.arenaTimerHandle) {
+        clearInterval(state.arenaTimerHandle);
+        state.arenaTimerHandle = null;
+      }
+      state.arenaTimerSec = 30;
+      updateArenaTimerDisplay();
+      const btn = document.getElementById('btnArenaTimerToggle');
+      if (btn) btn.textContent = 'Start 30s Timer';
+    }
+
+    // ==================== HANDS-ON LABS VIEW ====================
+    function renderLabsView() {
+      const container = document.getElementById('labsGridContainer');
+      if (!container) return;
+      const sInp = document.getElementById('labsSearchInput');
+      const query = (sInp ? sInp.value : '').trim().toLowerCase();
+
+      const items = BOOK.labs.map((lab, idx) => ({ lab, idx })).filter(item => {
+        if (!query) return true;
+        return (item.lab[0] + ' ' + item.lab[1] + ' ' + item.lab[2]).toLowerCase().includes(query);
+      });
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-full rounded-2xl border theme-card p-8 text-center text-sm font-bold">No matching labs found.</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="rounded-2xl border theme-card p-4 sm:p-5 flex flex-col justify-between gap-3">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white accent-bg">
+                Lab ${item.idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="runLabInPortalIde(${item.idx})" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  ▶ Run in IDE
+                </button>
+                <button onclick="copyLabCode(${item.idx})" class="text-xs font-semibold text-blue-400 hover:underline">
+                  📋 Copy Source
+                </button>
+              </div>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold">${escapeHtml(item.lab[0])}</h3>
+            <p class="text-xs theme-text-muted leading-relaxed">${escapeHtml(item.lab[1])}</p>
+          </div>
+          <pre class="p-3 rounded-xl bg-slate-950 text-slate-100 border border-slate-800 text-xs font-mono overflow-x-auto max-h-64 custom-scrollbar leading-relaxed">${escapeHtml(item.lab[2])}</pre>
+        </div>
+      `).join('');
+    }
+
+    function copyLabCode(labIdx) {
+      if (BOOK.labs[labIdx]) copyTextSafe(BOOK.labs[labIdx][2], 'Copied lab source!');
+    }
+
+    // ==================== STATS MODAL ====================
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      const list = document.getElementById('statsModalChapterBreakdown');
+      if (!modal || !list) return;
+
+      list.innerHTML = BOOK.chapters.map((ch, idx) => {
+        const chQs = BOOK.questions.filter(q => q[1] === idx);
+        const total = chQs.length;
+        let mast = 0, rev = 0, star = 0;
+        chQs.forEach(q => {
+          if (state.mastered[q[0]]) mast++;
+          if (state.review[q[0]]) rev++;
+          if (state.starred[q[0]]) star++;
+        });
+        const pct = total > 0 ? Math.round((mast / total) * 100) : 0;
+        return `
+          <div class="p-3 rounded-xl theme-elevated border space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold">Ch ${idx + 1}: ${escapeHtml(ch)}</span>
+              <span class="font-mono text-[11px]">
+                <span class="text-emerald-400 font-bold">✓ ${mast}/${total} (${pct}%)</span>
+                · <span class="text-orange-400">↻ ${rev}</span>
+                · <span class="text-amber-400">★ ${star}</span>
+              </span>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-slate-700/40 overflow-hidden">
+              <div class="h-full bg-emerald-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      modal.classList.remove('hidden');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.add('hidden');
+      cancelResetProgress();
+    }
+
+    function exportProgressJson() {
+      const data = JSON.stringify({
+        bookId: BOOK.id,
+        bookTitle: BOOK.title,
+        exportedAt: new Date().toISOString(),
+        mastered: state.mastered,
+        starred: state.starred,
+        review: state.review
+      }, null, 2);
+      copyTextSafe(data, 'Copied progress JSON!');
+    }
+
+    function showResetConfirmation() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.add('hidden');
+      if (box) { box.classList.remove('hidden'); box.classList.add('flex'); }
+    }
+
+    function cancelResetProgress() {
+      const btn = document.getElementById('btnResetConfirmTrigger');
+      const box = document.getElementById('resetConfirmInline');
+      if (btn) btn.classList.remove('hidden');
+      if (box) { box.classList.add('hidden'); box.classList.remove('flex'); }
+    }
+
+    function confirmResetProgress() {
+      state.mastered = {};
+      state.review = {};
+      state.starred = {};
+      saveProgress();
+      cancelResetProgress();
+      openStatsModal();
+      renderRoadmapGrid();
+      renderReaderQuestions();
+      showToast('Progress reset for this book.');
+    }
+
+
+    function sendSnippetToPortalIde(code, title) {
+      if (!code) return;
+      try {
+        if (window.parent && window.parent !== window && typeof window.parent.loadSnippetIntoIde === 'function') {
+          window.parent.loadSnippetIntoIde(code, title);
+          showToast('Opened in Portal Full-Screen Java IDE!');
+          return;
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZH_LOAD_SNIPPET_INTO_IDE', code: code, title: title }, '*');
+          showToast('Sent to Portal Full-Screen Java IDE!');
+          return;
+        }
+      } catch (e) {}
+      copyTextSafe(code, 'Copied code snippet!');
+    }
+
+    function runQuestionInPortalIde(qId) {
+      const q = BOOK.questions.find(item => item[0] === qId);
+      if (q && q[4]) {
+        sendSnippetToPortalIde(q[4], BOOK.title + ' · ' + q[0] + ': ' + q[2]);
+      }
+    }
+
+    function runLabInPortalIde(labIdx) {
+      const lab = BOOK.labs[labIdx];
+      if (lab && lab[2]) {
+        sendSnippetToPortalIde(lab[2], BOOK.title + ' · ' + lab[0]);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.type === 'ZH_PORTAL_SEARCH') {
+        const q = (data.query || '').trim();
+        state.readerChapterIdx = 'all';
+        state.readerSearch = q;
+        state.readerPage = 1;
+        const inp = document.getElementById('readerSearchInput');
+        if (inp) inp.value = q;
+        const rInp = document.getElementById('roadmapQuickSearch');
+        if (rInp) rInp.value = q;
+        if (q.length > 0 && state.activeTab === 'roadmap') {
+          switchTab('reader');
+        } else if (state.activeTab === 'reader') {
+          renderReaderQuestions();
+        }
+      } else if (data.type === 'ZH_SWITCH_SUBTAB' && data.subTab) {
+        switchTab(data.subTab);
+      } else if (data.type === 'ZH_SET_THEME' && data.theme) {
+        applyTheme(data.theme);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      initArenaDropdown();
+      updateGlobalCounters();
+      renderRoadmapGrid();
+      updateArenaDeck();
+    });
+  </script>
+</body>
+</html>
